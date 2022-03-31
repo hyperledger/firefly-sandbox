@@ -5,7 +5,8 @@
     "strict": true,
     "skipLibCheck": true,
     "declaration": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "resolveJsonModule": true
   },
   "exclude": ["dist"]
 }

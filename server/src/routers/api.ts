@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import * as swaggerUi from 'swagger-ui-express';
-import * as YAML from 'yamljs';
 import { firefly } from '../clients/firefly';
+import * as swaggerJson from '../../swagger.json';
 
 const router = Router();
 
@@ -15,12 +15,12 @@ const router = Router();
  *         description: Message was accepted.
  */
 router.post('/messages/broadcast', async (req, res) => {
-  await firefly.sendBroadcast({
+  const response = await firefly.sendBroadcast({
     data: [{ value: 'Hello' }],
   });
-  res.status(202).send();
+  res.status(202).send(response);
 });
 
-router.use('/', swaggerUi.serve, swaggerUi.setup(YAML.load(`${__dirname}/../../swagger.yaml`)));
+router.use('/', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 export default router;

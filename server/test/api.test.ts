@@ -1,6 +1,5 @@
 import * as request from 'supertest';
-import FireFly from '@photic/firefly-sdk-nodejs';
-import { FireFlyMessage } from '@photic/firefly-sdk-nodejs/dist/interfaces';
+import FireFly, { FireFlyMessage } from '@photic/firefly-sdk-nodejs';
 import { app } from '../src/app';
 import { firefly } from '../src/clients/firefly';
 

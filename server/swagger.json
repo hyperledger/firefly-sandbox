@@ -1,0 +1,42 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "FireFly Samples Gallery - Backend Server",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/messages/broadcast": {
+      "post": {
+        "description": "Send a FireFly broadcast message",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "topic": {
+                    "type": "string"
+                  },
+                  "tag": {
+                    "type": "string"
+                  },
+                  "value": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Message was accepted."
+          }
+        }
+      }
+    }
+  },
+  "components": {},
+  "tags": []
+}

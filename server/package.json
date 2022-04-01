@@ -5,7 +5,7 @@
   "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
-    "prepublish": "npm run build",
+    "prepare": "npm run build",
     "prestart": "npm run build",
     "start": "node .",
     "start:dev": "tsnd --respawn ./src/index.ts",

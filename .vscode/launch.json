@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run server tests",
+      "cwd": "${workspaceFolder}/server",
+      "runtimeExecutable": "npm",
+      "args": ["run", "test"],
+      "request": "launch",
+      "type": "node",
+      "outputCapture": "std"
+    }
+  ]
+}

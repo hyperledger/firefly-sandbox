@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/kaleido-io/firefly-samples-gallery#readme",
   "dependencies": {
-    "@photic/firefly-sdk-nodejs": "^0.0.6",
+    "@photic/firefly-sdk-nodejs": "^0.0.9",
     "express": "^4.17.3",
     "swagger-ui-express": "^4.3.0"
   },

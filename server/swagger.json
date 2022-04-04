@@ -5,9 +5,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/messages/broadcast": {
+    "/api/simple/broadcast": {
       "post": {
-        "description": "Send a FireFly broadcast message",
+        "summary": "Send a FireFly broadcast message",
+        "tags": [
+          "Simple Operations"
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -31,7 +34,7 @@
         },
         "responses": {
           "202": {
-            "description": "Message was accepted."
+            "description": "Accepted"
           }
         }
       }

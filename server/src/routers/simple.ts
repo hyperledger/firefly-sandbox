@@ -1,14 +1,29 @@
 import { Router } from 'express';
 import { firefly } from '../clients/firefly';
 import { BroadcastRequest, SampleApp } from '../interfaces';
+import { FireFlySubscriptionBase } from '@photic/firefly-sdk-nodejs';
+import { nanoid } from 'nanoid';
 
 export default function (app: SampleApp) {
   const router = Router();
   const wss = app.addWebsocket('/api/simple/ws');
 
-  firefly.listen({}, (socket, data) => {
-    wss.clients.forEach((client) => {
+  wss.on('connection', (client, request) => {
+    const id = nanoid();
+    console.log(`Connecting websocket client ${id}`);
+
+    const url = new URL(request.url ?? '', `http://${request.headers.host}`);
+    const sub: FireFlySubscriptionBase = {
+      filter: {
+        events: url.searchParams.get('filter.events') ?? undefined,
+      },
+    };
+    const ffSocket = firefly.listen(sub, (socket, data) => {
       client.send(JSON.stringify(data));
+    });
+    client.on('close', () => {
+      console.log(`Disconnecting websocket client ${id}`);
+      ffSocket.close();
     });
   });
 
@@ -37,6 +52,7 @@ export default function (app: SampleApp) {
    *         description: Accepted
    */
   router.post('/broadcast', async (req, res) => {
+    console.log('Sending broadcast message');
     const body: BroadcastRequest = req.body;
     const response = await firefly.sendBroadcast({
       header: {

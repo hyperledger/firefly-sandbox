@@ -1,27 +1,17 @@
-<<<<<<< HEAD
 import { Grid, Tab, Tabs, Paper, Typography } from '@mui/material';
-=======
-import { Grid, Tab, Tabs } from '@mui/material';
->>>>>>> 610de5dce38b3677a68b2eb1ad22d0e479fdb5ee
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-<<<<<<< HEAD
 import { FFAccordion } from '../../../components/Accordion/FFAccordion';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { EventSubscriptionForm } from '../../../components/Forms/EventSubscriptionForm';
-=======
->>>>>>> 610de5dce38b3677a68b2eb1ad22d0e479fdb5ee
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
-<<<<<<< HEAD
   DEFAULT_SPACING,
-=======
->>>>>>> 610de5dce38b3677a68b2eb1ad22d0e479fdb5ee
   FFColors,
 } from '../../../theme';
 import { LeftPane } from './LeftPane';

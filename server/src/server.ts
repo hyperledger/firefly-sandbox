@@ -1,16 +1,16 @@
+import * as http from 'http';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as swaggerUi from 'swagger-ui-express';
 import { WebSocketServer } from 'ws';
 import * as swaggerJson from '../swagger.json';
 import simpleRouter from './routers/simple';
-import { SampleApp } from './interfaces';
+import { WebsocketHandler } from './interfaces';
 
+const app = express();
 const websockets = new Map<string, WebSocketServer>();
 
-const app: SampleApp = {
-  e: express(),
-
+const wsHandler: WebsocketHandler = {
   addWebsocket: (path) => {
     const wss = new WebSocketServer({ noServer: true });
     websockets.set(path, wss);
@@ -30,8 +30,16 @@ const app: SampleApp = {
   },
 };
 
-app.e.use(bodyParser.json());
-app.e.use('/api/simple', simpleRouter(app));
-app.e.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerJson));
+app.use(bodyParser.json());
+app.use('/api/simple', simpleRouter(wsHandler));
+app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
-export default app;
+const server = new http.Server(app);
+
+server.on('upgrade', function upgrade(request, socket, head) {
+  if (!wsHandler.handleUpgrade(request, socket, head)) {
+    socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
+  }
+});
+
+export default server;

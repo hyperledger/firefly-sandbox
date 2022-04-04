@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import { firefly } from '../clients/firefly';
-import { BroadcastRequest, SampleApp } from '../interfaces';
 import { FireFlySubscriptionBase } from '@photic/firefly-sdk-nodejs';
 import { nanoid } from 'nanoid';
+import { firefly } from '../clients/firefly';
+import { BroadcastRequest, WebsocketHandler } from '../interfaces';
 
-export default function (app: SampleApp) {
+export default function (app: WebsocketHandler) {
   const router = Router();
   const wss = app.addWebsocket('/api/simple/ws');
 

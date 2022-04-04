@@ -1,12 +1,20 @@
 import * as request from 'supertest';
 import FireFly, { FireFlyMessage } from '@photic/firefly-sdk-nodejs';
-import { app } from '../src/app';
+import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 
 jest.mock('@photic/firefly-sdk-nodejs');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Messages', () => {
+  beforeEach((done) => {
+    server.listen(0, 'localhost', done);
+  });
+
+  afterEach((done) => {
+    server.close(done);
+  });
+
   test('Broadcast', () => {
     const msg = {
       header: { id: '123' },
@@ -14,12 +22,12 @@ describe('Messages', () => {
 
     mockFireFly.sendBroadcast.mockResolvedValueOnce(msg);
 
-    return request(app).post('/api/messages/broadcast').expect(202).expect(msg);
+    return request(server).post('/api/simple/broadcast').expect(202).expect(msg);
   });
 });
 
 describe('Misc', () => {
   test('Swagger UI', () => {
-    return request(app).get('/api/').expect(200);
+    return request(server).get('/api/').expect(200);
   });
 });

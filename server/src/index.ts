@@ -1,7 +1,5 @@
-import * as http from 'http';
-import { app } from './app';
+import server from './server';
 
-const PORT = 3000;
+const PORT = 3001;
 
-const server = new http.Server(app);
 server.listen(PORT, () => console.log(`Application listening on port ${PORT}`));

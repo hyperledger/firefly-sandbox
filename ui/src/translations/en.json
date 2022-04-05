@@ -58,5 +58,6 @@
   "transferShortInfo": "Transfer tokens from one address to another",
   "transferTitle": "Transfer Tokens",
   "type": "Type",
-  "typescriptSDK": "Typescript SDK"
+  "typescriptSDK": "Typescript SDK",
+  "websocketConnectionFailure" : "Failed to connect to websocket. Please try again."
 }

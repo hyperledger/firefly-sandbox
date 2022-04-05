@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "target": "es2016",
     "module": "commonjs",
-    "strict": true,
-    "skipLibCheck": true,
     "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "target": "es2017",
     "outDir": "./dist",
-    "resolveJsonModule": true
+    "incremental": true,
+    "resolveJsonModule": true,
   },
   "exclude": ["dist"]
 }

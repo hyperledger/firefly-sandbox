@@ -1,14 +1,12 @@
-import * as http from 'http';
-import { Duplex } from 'stream';
-import { WebSocketServer } from 'ws';
+import { IsOptional, IsString } from 'class-validator';
 
-export interface BroadcastRequest {
+export class BroadcastRequest {
+  @IsOptional()
   topic?: string;
-  tag?: string;
-  value?: string;
-}
 
-export interface WebsocketHandler {
-  addWebsocket: (path: string) => WebSocketServer;
-  handleUpgrade: (request: http.IncomingMessage, socket: Duplex, head: Buffer) => boolean;
+  @IsOptional()
+  tag?: string;
+
+  @IsString()
+  value: string;
 }

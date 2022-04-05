@@ -28,7 +28,7 @@ import { fetchWithCredentials, summarizeFetchError } from './utils/fetches';
 export const SELECTED_NAMESPACE = 'default';
 
 function App() {
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState(true);
   const [initError, setInitError] = useState<string | undefined>();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<SnackbarMessageType>('error');
@@ -50,85 +50,85 @@ function App() {
   );
   const [jsonPayload, setJsonPayload] = useState<object>({});
 
-  useEffect(() => {
-    Promise.all([
-      fetchWithCredentials(FF_Paths.nsPrefix),
-      fetchWithCredentials(`${FF_Paths.apiPrefix}${FF_Paths.status}`),
-      fetchWithCredentials(
-        `${FF_Paths.apiPrefix}${FF_Paths.networkIdentities}`
-      ),
-      fetchWithCredentials(
-        `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.tokenConnectors}`
-      ),
-    ])
-      .then(
-        async ([
-          namespaceResponse,
-          statusResponse,
-          identitiesResponse,
-          connectorsResponse,
-        ]) => {
-          if (
-            namespaceResponse.ok &&
-            statusResponse.ok &&
-            identitiesResponse.ok &&
-            connectorsResponse.ok
-          ) {
-            const status: IStatus = await statusResponse.json();
-            const nodeDID = status.org.did;
-            setIdentity(nodeDID);
-            setOrgID(status.org.id);
-            setOrgName(status.org.name);
-            setNodeID(status.node.id);
-            setNodeName(status.node.name);
-            setSelectedNamespace(status.defaults.namespace);
-            const ns: INamespace[] = await namespaceResponse.json();
-            setNamespaces(ns);
-            const identities: INetworkIdentity[] =
-              await identitiesResponse.json();
-            setIdentities(identities.filter((id) => id.did !== nodeDID));
-            const connectors: ITokenConnector[] =
-              await connectorsResponse.json();
-            setConnectors(connectors);
-          }
-        }
-      )
-      .catch((e) => {
-        setInitError(e);
-      })
-      .finally(() => {
-        setInitialized(true);
-      });
-  }, []);
+  // useEffect(() => {
+  //   Promise.all([
+  //     fetchWithCredentials(FF_Paths.nsPrefix),
+  //     fetchWithCredentials(`${FF_Paths.apiPrefix}${FF_Paths.status}`),
+  //     fetchWithCredentials(
+  //       `${FF_Paths.apiPrefix}${FF_Paths.networkIdentities}`
+  //     ),
+  //     fetchWithCredentials(
+  //       `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.tokenConnectors}`
+  //     ),
+  //   ])
+  //     .then(
+  //       async ([
+  //         namespaceResponse,
+  //         statusResponse,
+  //         identitiesResponse,
+  //         connectorsResponse,
+  //       ]) => {
+  //         if (
+  //           namespaceResponse.ok &&
+  //           statusResponse.ok &&
+  //           identitiesResponse.ok &&
+  //           connectorsResponse.ok
+  //         ) {
+  //           const status: IStatus = await statusResponse.json();
+  //           const nodeDID = status.org.did;
+  //           setIdentity(nodeDID);
+  //           setOrgID(status.org.id);
+  //           setOrgName(status.org.name);
+  //           setNodeID(status.node.id);
+  //           setNodeName(status.node.name);
+  //           setSelectedNamespace(status.defaults.namespace);
+  //           const ns: INamespace[] = await namespaceResponse.json();
+  //           setNamespaces(ns);
+  //           const identities: INetworkIdentity[] =
+  //             await identitiesResponse.json();
+  //           setIdentities(identities.filter((id) => id.did !== nodeDID));
+  //           const connectors: ITokenConnector[] =
+  //             await connectorsResponse.json();
+  //           setConnectors(connectors);
+  //         }
+  //       }
+  //     )
+  //     .catch((e) => {
+  //       setInitError(e);
+  //     })
+  //     .finally(() => {
+  //       setInitialized(true);
+  //     });
+  // }, []);
 
-  useEffect(() => {
-    if (selectedNamespace) {
-      ws.current = new ReconnectingWebSocket(
-        process.env.NODE_ENV === 'development'
-          ? `ws://localhost:5000/ws?namespace=${selectedNamespace}&ephemeral&autoack`
-          : `${protocol}://${window.location.hostname}:${window.location.port}/ws?namespace=${selectedNamespace}&ephemeral&autoack`
-      );
-      ws.current.onmessage = (event: any) => {
-        const eventData = JSON.parse(event.data);
-        const eventType: FF_EVENTS = eventData.type;
-        if (Object.values(FF_EVENTS).includes(eventType)) {
-          setNewEvents((existing) => [eventType, ...existing]);
-        }
-      };
-      ws.current.onopen = () => {
-        setIsWsConnected(true);
-      };
-      ws.current.onclose = () => {
-        setIsWsConnected(false);
-      };
+  // useEffect(() => {
+  //   if (selectedNamespace) {
+  //     ws.current = new ReconnectingWebSocket(
+  //       process.env.NODE_ENV === 'development'
+  //         ? `ws://localhost:5000/ws?namespace=${selectedNamespace}&ephemeral&autoack`
+  //         : `${protocol}://${window.location.hostname}:${window.location.port}/ws?namespace=${selectedNamespace}&ephemeral&autoack`
+  //     );
+  //     ws.current.onmessage = (event: any) => {
+  //       const eventData = JSON.parse(event.data);
+  //       const eventType: FF_EVENTS = eventData.type;
+  //       if (Object.values(FF_EVENTS).includes(eventType)) {
+  //         setNewEvents((existing) => [eventType, ...existing]);
+  //       }
+  //     };
+  //     ws.current.onopen = () => {
+  //       setIsWsConnected(true);
+  //     };
+  //     ws.current.onclose = () => {
+  //       setIsWsConnected(false);
+  //     };
 
-      return () => {
-        if (ws.current) {
-          ws.current.close();
-        }
-      };
-    }
-  }, [selectedNamespace]);
+  //     return () => {
+  //       if (ws.current) {
+  //         ws.current.close();
+  //       }
+  //     };
+  //   }
+  // }, [selectedNamespace]);
 
   // Error snackbar
   const reportFetchError = (err: any) => {

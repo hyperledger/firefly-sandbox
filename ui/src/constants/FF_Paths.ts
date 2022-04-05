@@ -60,7 +60,7 @@ export const FF_Paths = {
   identitiesById: (identityID: string) => `/identities/${identityID}`,
   // Messages
   messages: '/messages',
-  messagesBroadcast: '/messages/broadcast',
+  messagesBroadcast: '/api/simple/broadcast',
   messagesPrivate: '/messages/private',
   messagesReqReply: '/messages/requestreply',
   messagesById: (msgId: string) => `/messages/${msgId}`,

@@ -1,17 +1,14 @@
-import { Grid, Tab, Tabs, Paper, Typography } from '@mui/material';
+import { Grid, Tab, Tabs } from '@mui/material';
 import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import { FFAccordion } from '../../../components/Accordion/FFAccordion';
-import { RunButton } from '../../../components/Buttons/RunButton';
-import { EventSubscriptionForm } from '../../../components/Forms/EventSubscriptionForm';
+import { EventSubscription } from './EventSubscription';
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
-  DEFAULT_SPACING,
   FFColors,
 } from '../../../theme';
 import { LeftPane } from './LeftPane';
@@ -21,7 +18,7 @@ const styles = {
   width: '4px',
   cursor: 'col-resize',
   margin: '0 5px',
-  height: '100%',
+  height: 'auto',
 };
 
 export const HomeDashboard: () => JSX.Element = () => {
@@ -64,6 +61,7 @@ export const HomeDashboard: () => JSX.Element = () => {
             minSize={100}
             defaultSize={'50%'}
             resizerStyle={styles}
+            onChange={(size) => console.log('resized width: ' + size)}
           >
             <Grid container p={DEFAULT_PADDING}>
               <Grid
@@ -94,18 +92,7 @@ export const HomeDashboard: () => JSX.Element = () => {
               </Grid>
             </Grid>
             <Grid pb={DEFAULT_PADDING}>
-              <Grid item pl={DEFAULT_PADDING} pt={DEFAULT_PADDING}>
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  {t('eventSubscription')}
-                </Typography>
-              </Grid>
-              <Grid container item p={DEFAULT_PADDING}>
-                <Paper sx={{ overflow: 'auto', width: '100%' }}>
-                  <Grid container spacing={1} p={2} wrap="nowrap">
-                    <EventSubscriptionForm />
-                  </Grid>
-                </Paper>
-              </Grid>
+              <EventSubscription />
             </Grid>
           </SplitPane>
         </SplitPane>

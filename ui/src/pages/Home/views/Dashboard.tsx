@@ -1,17 +1,17 @@
-import { Grid, Tab, Tabs } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import { Grid, Tab, Tabs, Typography } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
 import { LeftPane } from './LeftPane';
+import * as _ from 'underscore';
 
 const styles = {
   background: FFColors.Pink,
@@ -23,27 +23,39 @@ const styles = {
 
 export const HomeDashboard: () => JSX.Element = () => {
   const { t } = useTranslation();
-  const { jsonPayload } = useContext(JsonPayloadContext);
+  const [displayCodeBlock, setDisplayCodeBlock] = useState<string>('');
 
-  const supportedLanguages = [
-    {
-      name: t('payload'),
-      format: 'json',
-    },
-    {
-      name: t('typescriptSDK'),
-      format: 'typescript',
-    },
-  ];
-
-  const [selectedTabIdx, setSelectedTabIdx] = useState(0);
-
-  const handleLanguageChange = (
-    event: React.SyntheticEvent,
-    newIdx: number
-  ) => {
-    setSelectedTabIdx(newIdx);
-  };
+  useEffect(() => {
+    const fetchCodeBlock = () => {
+      return fetch(
+        `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/broadcast`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          const compiled = _.template(data);
+          const result = compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: 'Hello',
+          });
+          setDisplayCodeBlock(result);
+          console.log(result);
+        })
+        .catch(() => {
+          return null;
+        });
+    };
+    fetchCodeBlock();
+  }, []);
 
   return (
     <>
@@ -64,7 +76,13 @@ export const HomeDashboard: () => JSX.Element = () => {
               resizerStyle={styles}
             >
               <Grid container p={DEFAULT_PADDING}>
+                <Grid item>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    {t('typescriptSDK')}
+                  </Typography>
+                </Grid>
                 <Grid
+                  pt={2}
                   container
                   item
                   wrap="nowrap"
@@ -72,22 +90,12 @@ export const HomeDashboard: () => JSX.Element = () => {
                   sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
                   fontSize="12px"
                 >
-                  <Tabs
-                    textColor="secondary"
-                    indicatorColor="secondary"
-                    value={selectedTabIdx}
-                    onChange={handleLanguageChange}
-                  >
-                    {supportedLanguages.map((l, idx) => (
-                      <Tab key={idx} label={l.name} />
-                    ))}
-                  </Tabs>
                   <SyntaxHighlighter
                     showLineNumbers
-                    language={supportedLanguages[selectedTabIdx].format}
+                    language={'typescript'}
                     style={tomorrowNightBright}
                   >
-                    {JSON.stringify(jsonPayload, null, 2)}
+                    {displayCodeBlock}
                   </SyntaxHighlighter>
                 </Grid>
               </Grid>

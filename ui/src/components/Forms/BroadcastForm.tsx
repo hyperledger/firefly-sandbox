@@ -5,13 +5,15 @@ import { SELECTED_NAMESPACE } from '../../App';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
+import * as _ from 'underscore';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
 import { RunButton } from '../Buttons/RunButton';
 
-export const BroadcastForm: React.FC = () => {
+export const BroadcastForm: React.FC = (props: any) => {
+  const { setDisplayCodeBlock } = props;
   const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
@@ -19,6 +21,38 @@ export const BroadcastForm: React.FC = () => {
   );
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
+
+  useEffect(() => {
+    const fetchCodeBlock = () => {
+      return fetch(
+        `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/broadcast`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          console.log(data);
+          const compiled = _.template(data);
+          const result = compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: 'Hello',
+          });
+          setDisplayCodeBlock(result);
+          console.log(result);
+        })
+        .catch(() => {
+          return null;
+        });
+    };
+    fetchCodeBlock();
+  }, []);
 
   useEffect(() => {
     setJsonPayload({

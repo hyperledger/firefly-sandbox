@@ -82,7 +82,6 @@ export const EventSubscription: React.FC = () => {
           .replaceAll(',', '|')}`
       );
       webSocket.current.onerror = function () {
-        console.log('Error');
         setErrorMessage(t('websocketConnectionFailure'));
       };
       webSocket.current.onopen = function () {
@@ -196,7 +195,7 @@ export const EventSubscription: React.FC = () => {
                   <Grid container item>
                     <FormControl fullWidth>
                       <InputLabel id="event-subscriptions-selection-label">
-                        Subscribe to Events
+                        {t('filterEventSubscriptions')}
                       </InputLabel>
                       <Select
                         labelId="event-subscriptions-selection-label"
@@ -207,7 +206,7 @@ export const EventSubscription: React.FC = () => {
                         input={
                           <OutlinedInput
                             id="select-multiple-chip"
-                            label="Subscribe to Events"
+                            label={t('filterEventSubscriptions')}
                           />
                         }
                         renderValue={(selected) => (

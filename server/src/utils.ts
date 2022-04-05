@@ -4,6 +4,7 @@ import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-contr
 import { routingControllersToSpec } from 'routing-controllers-openapi';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { WebSocketServer } from 'ws';
+import stripIndent = require('strip-indent');
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
@@ -37,4 +38,12 @@ export class WebsocketHandler {
     });
     return true;
   }
+}
+
+export function formatTemplate(template: string) {
+  return stripIndent(template).trim();
+}
+
+export function quoteAndEscape(varName: string) {
+  return `"'" + ${varName}.replaceAll("'", "\\\\'") + "'"`;
 }

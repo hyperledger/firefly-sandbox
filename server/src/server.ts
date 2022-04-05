@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import * as http from 'http';
 import * as express from 'express';
+import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as swaggerUi from 'swagger-ui-express';
 import { useExpressServer, RoutingControllersOptions } from 'routing-controllers';
@@ -15,7 +16,14 @@ const serverOptions: RoutingControllersOptions = { routePrefix: '/api', controll
 const wsHandler = new WebsocketHandler();
 controllers.forEach((c) => c.init(wsHandler));
 
+
 useExpressServer(app, serverOptions);
+
+const corsOpts = {
+  origin: '*'
+};
+
+app.use(cors(corsOpts));
 app.use('/api', swaggerUi.serve);
 app.get('/api', swaggerUi.setup(genOpenAPI(serverOptions)));
 

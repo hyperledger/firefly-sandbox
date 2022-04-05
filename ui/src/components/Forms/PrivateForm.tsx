@@ -35,22 +35,22 @@ export const PrivateForm: React.FC = () => {
   const [topics, setTopics] = useState<string[]>();
 
   useEffect(() => {
-    setJsonPayload({
-      header: {
-        tag: tag,
-        topics: topics,
-      },
-      data: [
-        {
-          value: message,
-        },
-      ],
-      group: {
-        members: recipients.map((r) => {
-          return { identity: r };
-        }),
-      },
-    });
+    // setJsonPayload({
+    //   header: {
+    //     tag: tag,
+    //     topics: topics,
+    //   },
+    //   data: [
+    //     {
+    //       value: message,
+    //     },
+    //   ],
+    //   group: {
+    //     members: recipients.map((r) => {
+    //       return { identity: r };
+    //     }),
+    //   },
+    // });
   }, [message, recipients, tag, topics]);
 
   const handleRecipientChange = (

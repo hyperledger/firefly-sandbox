@@ -6,6 +6,7 @@ import { WebSocketServer } from 'ws';
 import * as swaggerJson from '../swagger.json';
 import simpleRouter from './routers/simple';
 import { WebsocketHandler } from './interfaces';
+import * as cors from 'cors';
 
 const app = express();
 const websockets = new Map<string, WebSocketServer>();
@@ -30,6 +31,11 @@ const wsHandler: WebsocketHandler = {
   },
 };
 
+const corsOpts = {
+  origin: '*'
+};
+
+app.use(cors(corsOpts));
 app.use(bodyParser.json());
 app.use('/api/simple', simpleRouter(wsHandler));
 app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerJson));

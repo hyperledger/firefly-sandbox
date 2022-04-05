@@ -23,7 +23,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload }) => {
 
   const handlePost = () => {
     fetch(
-      `${window.location.protocol}//${window.location.hostname}:${window.location.port}${endpoint}`,
+      `${window.location.protocol}//${window.location.hostname}:3001${endpoint}`,
       {
         method: 'POST',
         headers: {

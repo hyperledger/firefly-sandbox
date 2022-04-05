@@ -58,6 +58,7 @@ function getStyles(
 
 export const EventSubscription: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [subscriptionType, setSubscriptionType] = useState<string>('ephemeral');
   const [subscriptionName, setSubscriptionName] = useState<string>('');
@@ -65,11 +66,19 @@ export const EventSubscription: React.FC = () => {
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const [logs, setLogs] = useState<string[]>([]);
 
+  const [selectedSubscriptions, setselectedSubscriptions] = React.useState<
+    string[]
+  >([]);
+
   const webSocket: any = useRef(null);
 
   React.useEffect(() => {
     if (!wsConnected && connectingStatus === 'connecting') {
-      webSocket.current = new WebSocket('ws://localhost:3001/api/simple/ws');
+      webSocket.current = new WebSocket(
+        `ws://localhost:3001/api/simple/ws?filter.events=${selectedSubscriptions
+          .toString()
+          .replaceAll(',', '|')}`
+      );
       console.log(webSocket);
       setWsConnected(true);
       webSocket.current.onmessage = (message: any) => {
@@ -84,12 +93,6 @@ export const EventSubscription: React.FC = () => {
       }
     }
   }, [wsConnected, connectingStatus]);
-
-  const theme = useTheme();
-  const [selectedSubscriptions, setselectedSubscriptions] = React.useState<
-    string[]
-  >([]);
-
   const handleChange = (
     event: SelectChangeEvent<typeof selectedSubscriptions>
   ) => {
@@ -258,6 +261,7 @@ export const EventSubscription: React.FC = () => {
           <Paper
             sx={{
               width: '100%',
+              minHeight: '400px',
             }}
           >
             <Grid container p={2}>

@@ -30,6 +30,7 @@ import {
 } from '../../../theme';
 import * as React from 'react';
 import { ArrowForwardIos } from '@mui/icons-material';
+import { getEnrichedEventText } from '../../../ff_models/eventTypes';
 
 const AVAILABLE_SUBSCRIPTIONS = [
   'blockchain_event_received',
@@ -83,7 +84,8 @@ export const EventSubscription: React.FC = () => {
       setWsConnected(true);
       webSocket.current.onmessage = (message: any) => {
         console.log(message);
-        setLogs((prev) => [...prev, message.data]);
+        const event = getEnrichedEventText(JSON.parse(message.data)) + '\n';
+        setLogs((prev) => [...prev, event]);
       };
     } else {
       if (connectingStatus === 'disconnecting' && webSocket.current) {
@@ -281,11 +283,12 @@ export const EventSubscription: React.FC = () => {
                       maxHeight: '450px',
                       wordWrap: 'break-word',
                       overflow: 'scroll',
+                      whiteSpace: 'pre-line',
                     }}
                   >
                     {logs.length === 0
                       ? 'Subscribe to events to view logs.'
-                      : logs.toString()}
+                      : logs}
                   </Typography>
                 </Box>
               </Grid>

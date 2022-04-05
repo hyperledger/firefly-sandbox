@@ -64,6 +64,7 @@ export const EventSubscription: React.FC = () => {
   const [subscriptionType, setSubscriptionType] = useState<string>('ephemeral');
   const [subscriptionName, setSubscriptionName] = useState<string>('');
   const [connectingStatus, setConnectingStatus] = useState<string>('');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -80,8 +81,16 @@ export const EventSubscription: React.FC = () => {
           .toString()
           .replaceAll(',', '|')}`
       );
+      webSocket.current.onerror = function () {
+        console.log('Error');
+        setErrorMessage(t('websocketConnectionFailure'));
+      };
+      webSocket.current.onopen = function () {
+        setWsConnected(true);
+        setErrorMessage('');
+      };
       console.log(webSocket);
-      setWsConnected(true);
+
       webSocket.current.onmessage = (message: any) => {
         console.log(message);
         const event = getEnrichedEventText(JSON.parse(message.data)) + '\n';
@@ -244,11 +253,12 @@ export const EventSubscription: React.FC = () => {
                     onClick={handleConnect}
                   >
                     <Typography>
-                      {connectingStatus === 'connecting'
-                        ? t('disconnect')
-                        : t('connect')}
+                      {wsConnected ? t('disconnect') : t('connect')}
                     </Typography>
                   </Button>
+                </Grid>
+                <Grid container item>
+                  <Typography>{errorMessage}</Typography>
                 </Grid>
               </Grid>
             </Grid>

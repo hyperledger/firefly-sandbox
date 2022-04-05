@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { EventSubscription } from './EventSubscription';
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -17,7 +18,7 @@ const styles = {
   width: '4px',
   cursor: 'col-resize',
   margin: '0 5px',
-  height: '100%',
+  height: 'auto',
 };
 
 export const HomeDashboard: () => JSX.Element = () => {
@@ -46,52 +47,57 @@ export const HomeDashboard: () => JSX.Element = () => {
 
   return (
     <>
-      <Grid container px={DEFAULT_PADDING}>
-        <SplitPane
-          split="vertical"
-          minSize={100}
-          defaultSize={'30%'}
-          resizerStyle={styles}
-          style={{ position: 'relative' }}
-        >
-          <LeftPane />
+      <div style={{ height: '100vh', width: '100vw' }}>
+        <Grid container px={DEFAULT_PADDING} height="100%">
           <SplitPane
             split="vertical"
             minSize={100}
-            defaultSize={'50%'}
+            defaultSize={'30%'}
             resizerStyle={styles}
+            style={{ position: 'relative' }}
           >
-            <Grid container p={DEFAULT_PADDING}>
-              <Grid
-                container
-                item
-                wrap="nowrap"
-                direction="column"
-                sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                fontSize="12px"
-              >
-                <Tabs
-                  textColor="secondary"
-                  indicatorColor="secondary"
-                  value={selectedTabIdx}
-                  onChange={handleLanguageChange}
+            <LeftPane />
+            <SplitPane
+              split="vertical"
+              minSize={100}
+              defaultSize={'50%'}
+              resizerStyle={styles}
+            >
+              <Grid container p={DEFAULT_PADDING}>
+                <Grid
+                  container
+                  item
+                  wrap="nowrap"
+                  direction="column"
+                  sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                  fontSize="12px"
                 >
-                  {supportedLanguages.map((l, idx) => (
-                    <Tab key={idx} label={l.name} />
-                  ))}
-                </Tabs>
-                <SyntaxHighlighter
-                  showLineNumbers
-                  language={supportedLanguages[selectedTabIdx].format}
-                  style={tomorrowNightBright}
-                >
-                  {JSON.stringify(jsonPayload, null, 2)}
-                </SyntaxHighlighter>
+                  <Tabs
+                    textColor="secondary"
+                    indicatorColor="secondary"
+                    value={selectedTabIdx}
+                    onChange={handleLanguageChange}
+                  >
+                    {supportedLanguages.map((l, idx) => (
+                      <Tab key={idx} label={l.name} />
+                    ))}
+                  </Tabs>
+                  <SyntaxHighlighter
+                    showLineNumbers
+                    language={supportedLanguages[selectedTabIdx].format}
+                    style={tomorrowNightBright}
+                  >
+                    {JSON.stringify(jsonPayload, null, 2)}
+                  </SyntaxHighlighter>
+                </Grid>
               </Grid>
-            </Grid>
+              <Grid pb={DEFAULT_PADDING}>
+                <EventSubscription />
+              </Grid>
+            </SplitPane>
           </SplitPane>
-        </SplitPane>
-      </Grid>
+        </Grid>
+      </div>
     </>
   );
 };

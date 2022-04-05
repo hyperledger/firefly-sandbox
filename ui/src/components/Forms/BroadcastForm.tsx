@@ -18,19 +18,13 @@ export const BroadcastForm: React.FC = () => {
     DEFAULT_MESSAGE_STRING
   );
   const [tag, setTag] = useState<string>();
-  const [topics, setTopics] = useState<string[]>();
+  const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
     setJsonPayload({
-      header: {
-        tag: tag,
-        topics: topics,
-      },
-      data: [
-        {
-          value: message,
-        },
-      ],
+      topic: topics,
+      tag: tag,
+      value: message,
     });
   }, [message, tag, topics]);
 
@@ -47,7 +41,7 @@ export const BroadcastForm: React.FC = () => {
       setTopics(undefined);
       return;
     }
-    setTopics([event.target.value]);
+    setTopics(event.target.value);
   };
 
   return (
@@ -82,7 +76,7 @@ export const BroadcastForm: React.FC = () => {
           </Grid>
           <Grid container item justifyContent="flex-end">
             <RunButton
-              endpoint={`${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.messagesBroadcast}`}
+              endpoint={`${FF_Paths.messagesBroadcast}`}
               payload={jsonPayload}
             />
           </Grid>

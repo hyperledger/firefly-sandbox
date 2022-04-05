@@ -1,51 +1,36 @@
+import 'reflect-metadata';
 import * as http from 'http';
 import * as express from 'express';
+import * as cors from 'cors';
 import * as bodyParser from 'body-parser';
 import * as swaggerUi from 'swagger-ui-express';
-import { WebSocketServer } from 'ws';
-import * as swaggerJson from '../swagger.json';
-import simpleRouter from './routers/simple';
-import { WebsocketHandler } from './interfaces';
-import * as cors from 'cors';
+import { useExpressServer, RoutingControllersOptions } from 'routing-controllers';
+import { genOpenAPI, WebsocketHandler } from './utils';
+import simpleController from './controllers/simple';
 
 const app = express();
-const websockets = new Map<string, WebSocketServer>();
+app.use(bodyParser.json());
 
-const wsHandler: WebsocketHandler = {
-  addWebsocket: (path) => {
-    const wss = new WebSocketServer({ noServer: true });
-    websockets.set(path, wss);
-    return wss;
-  },
+const controllers = [simpleController];
+const serverOptions: RoutingControllersOptions = { routePrefix: '/api', controllers };
+const wsHandler = new WebsocketHandler();
+controllers.forEach((c) => c.init(wsHandler));
 
-  handleUpgrade: (request, socket, head) => {
-    const url = new URL(request.url ?? '', `http://${request.headers.host}`);
-    const wss = websockets.get(url.pathname);
-    if (wss === undefined) {
-      return false;
-    }
-    wss.handleUpgrade(request, socket, head, function done(ws) {
-      wss.emit('connection', ws, request);
-    });
-    return true;
-  },
-};
+
+useExpressServer(app, serverOptions);
 
 const corsOpts = {
   origin: '*'
 };
 
 app.use(cors(corsOpts));
-app.use(bodyParser.json());
-app.use('/api/simple', simpleRouter(wsHandler));
-app.use('/api', swaggerUi.serve, swaggerUi.setup(swaggerJson));
+app.use('/api', swaggerUi.serve);
+app.get('/api', swaggerUi.setup(genOpenAPI(serverOptions)));
 
 const server = new http.Server(app);
-
 server.on('upgrade', function upgrade(request, socket, head) {
   if (!wsHandler.handleUpgrade(request, socket, head)) {
     socket.write('HTTP/1.1 404 Not Found\r\n\r\n');
   }
 });
-
 export default server;

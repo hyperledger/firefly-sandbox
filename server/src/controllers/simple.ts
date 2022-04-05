@@ -4,7 +4,7 @@ import { JsonController, Body, Post, Get, HttpCode } from 'routing-controllers';
 import { OpenAPI } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
 import { BroadcastRequest } from '../interfaces';
-import { WebsocketHandler } from '../utils';
+import { formatTemplate, WebsocketHandler, quoteAndEscape as q } from '../utils';
 
 @JsonController('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
@@ -38,11 +38,25 @@ class SimpleController {
     console.log('Sending broadcast message');
     return firefly.sendBroadcast({
       header: {
-        tag: body.tag ?? '',
-        topics: body.topic !== undefined ? [body.topic] : undefined,
+        tag: body.tag || undefined,
+        topics: body.topic ? [body.topic] : undefined,
       },
       data: [{ value: body.value }],
     });
+  }
+
+  // Templated code for the above method
+  @Get('/template/broadcast')
+  broadcastTemplate() {
+    return formatTemplate(`
+      return firefly.sendBroadcast({
+        header: {
+          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+        }
+        data: [{ value: <%= ${q('value')} %> }],
+      });
+    `);
   }
 }
 

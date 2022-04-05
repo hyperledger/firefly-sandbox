@@ -25,6 +25,7 @@
   "exampleFromAddress": "ex. 0x987....321",
   "exampleTag": "ex. new_widget",
   "exampleTopic": "ex. widget_123",
+  "filterEventSubscriptions": "Filter Event Subscriptions",
   "fromAddress": "From Address",
   "fungible": "Fungible",
   "home": "Home",

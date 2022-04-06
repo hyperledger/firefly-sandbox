@@ -9,6 +9,7 @@ import {
   Body,
   JsonController,
   BadRequestError,
+  QueryParam,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
@@ -18,9 +19,11 @@ import {
   BroadcastBlob,
   BroadcastValue,
   Organization,
-  MessageResponse,
+  FireFlyResponse,
   PrivateValue,
   PrivateBlob,
+  TokenPool,
+  TokenPoolInput,
 } from '../interfaces';
 import { plainToClassFromExist } from 'class-transformer';
 
@@ -51,9 +54,9 @@ export class SimpleController {
 
   @Post('/broadcast')
   @HttpCode(202)
-  @ResponseSchema(MessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
-  async broadcast(@Body() body: BroadcastValue): Promise<MessageResponse> {
+  async broadcast(@Body() body: BroadcastValue): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendBroadcast({
       header: {
@@ -68,12 +71,12 @@ export class SimpleController {
   @Post('/broadcastblob')
   @HttpCode(202)
   @FormDataSchema(BroadcastBlob)
-  @ResponseSchema(MessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<MessageResponse> {
+  ): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -90,16 +93,20 @@ export class SimpleController {
   @Get('/organizations')
   @ResponseSchema(Organization, { isArray: true })
   @OpenAPI({ summary: 'List all organizations in network' })
-  async organizations(): Promise<Organization[]> {
-    const orgs = await firefly.getOrganizations();
+  async organizations(@QueryParam('exclude_self') exclude_self: boolean): Promise<Organization[]> {
+    let orgs = await firefly.getOrganizations();
+    if (exclude_self) {
+      const status = await firefly.getStatus();
+      orgs = orgs.filter((o) => o.id !== status.org.id);
+    }
     return orgs.map((o) => ({ id: o.id, did: o.did, name: o.name }));
   }
 
   @Post('/private')
   @HttpCode(202)
-  @ResponseSchema(MessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: PrivateValue): Promise<MessageResponse> {
+  async send(@Body() body: PrivateValue): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage({
       header: {
@@ -117,12 +124,12 @@ export class SimpleController {
   @Post('/privateblob')
   @HttpCode(202)
   @FormDataSchema(PrivateBlob)
-  @ResponseSchema(MessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<MessageResponse> {
+  ): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -137,6 +144,28 @@ export class SimpleController {
       data: [{ id: data.id }],
     });
     return { id: message.header.id };
+  }
+
+  @Get('/tokenpools')
+  @ResponseSchema(TokenPool, { isArray: true })
+  @OpenAPI({ summary: 'List all token pools' })
+  async tokenpools(): Promise<TokenPool[]> {
+    const pools = await firefly.getTokenPools();
+    return pools.map((p) => ({ id: p.id, name: p.name, symbol: p.symbol, type: p.type }));
+  }
+
+  @Post('/tokenpools')
+  @HttpCode(202)
+  @ResponseSchema(FireFlyResponse)
+  @OpenAPI({ summary: 'Create a token pool' })
+  async createtokenpool(@Body() body: TokenPoolInput): Promise<FireFlyResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const pool = await firefly.createTokenPool({
+      name: body.name,
+      symbol: body.symbol,
+      type: body.type,
+    });
+    return { id: pool.id };
   }
 }
 
@@ -166,7 +195,7 @@ export class SimpleTemplateController {
   }
 
   @Get('/broadcastblob')
-  broadcastBlobTemplate() {
+  broadcastblobTemplate() {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
       const message = await firefly.sendBroadcast({
@@ -196,7 +225,7 @@ export class SimpleTemplateController {
   }
 
   @Get('/privateblob')
-  sendBlobTemplate() {
+  sendblobTemplate() {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
       const message = await firefly.sendPrivateMessage({
@@ -208,6 +237,17 @@ export class SimpleTemplateController {
           members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
         },
         data: [{ id: data.id }],
+      });
+    `);
+  }
+
+  @Get('/tokenpools')
+  tokenpoolsTemplate() {
+    return formatTemplate(`
+      const pool = await firefly.createTokenPool({
+        name: <%= ${q('name')} %>,
+        symbol: <%= ${q('symbol')} %>,
+        type: <%= ${q('type')} %>,
       });
     `);
   }

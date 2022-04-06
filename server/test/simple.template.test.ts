@@ -159,4 +159,28 @@ describe('Templates: Simple Operations', () => {
         );
       });
   });
+
+  test('Token pool template', () => {
+    return request(server)
+      .get('/api/simple/template/tokenpools')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            name: 'pool1',
+            symbol: 'P1',
+            type: 'fungible',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const pool = await firefly.createTokenPool({
+              name: 'pool1',
+              symbol: 'P1',
+              type: 'fungible',
+            });
+        `),
+        );
+      });
+  });
 });

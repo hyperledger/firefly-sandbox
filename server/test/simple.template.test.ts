@@ -4,14 +4,6 @@ import server from '../src/server';
 import { formatTemplate } from '../src/utils';
 
 describe('Templates: Simple Operations', () => {
-  beforeEach((done) => {
-    server.listen(0, 'localhost', done);
-  });
-
-  afterEach((done) => {
-    server.close(done);
-  });
-
   test('Broadcast', () => {
     return request(server)
       .get('/api/simple/template/broadcast')

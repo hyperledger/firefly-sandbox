@@ -8,14 +8,6 @@ jest.mock('@photic/firefly-sdk-nodejs');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Simple Operations', () => {
-  beforeEach((done) => {
-    server.listen(0, 'localhost', done);
-  });
-
-  afterEach((done) => {
-    server.close(done);
-  });
-
   test('Broadcast with value', async () => {
     const req: BroadcastRequestWithValue = {
       tag: 'test-tag',

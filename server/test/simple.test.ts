@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import FireFly, { FireFlyDataRef, FireFlyMessage } from '@photic/firefly-sdk-nodejs';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
-import { BroadcastRequest } from '../src/interfaces';
+import { BroadcastRequestWithValue } from '../src/interfaces';
 
 jest.mock('@photic/firefly-sdk-nodejs');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
@@ -17,7 +17,7 @@ describe('Simple Operations', () => {
   });
 
   test('Broadcast with value', async () => {
-    const req: BroadcastRequest = {
+    const req: BroadcastRequestWithValue = {
       tag: 'test-tag',
       topic: 'test-topic',
       value: 'Hello',

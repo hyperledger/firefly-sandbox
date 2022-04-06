@@ -13,6 +13,7 @@ import { OpenAPI } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
 import { formatTemplate, WebsocketHandler, quoteAndEscape as q } from '../utils';
+import { BroadcastRequestWithFile, BroadcastRequestWithValue } from '../interfaces';
 
 @Controller('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
@@ -46,22 +47,25 @@ class SimpleController {
     summary: 'Send a FireFly broadcast message',
     requestBody: {
       content: {
+        'application/json': {
+          schema: { $ref: '#/components/schemas/BroadcastRequestWithValue' },
+        },
         'multipart/form-data': {
-          schema: { $ref: '#/components/schemas/BroadcastRequest' },
+          schema: { $ref: '#/components/schemas/BroadcastRequestWithFile' },
         },
       },
     },
   })
   async broadcast(@Req() req: Request, @UploadedFile('file') file: Express.Multer.File) {
     console.log('Sending broadcast message');
-    const data =
-      file !== undefined
-        ? await firefly.uploadDataBlob(file.buffer, file.originalname)
-        : { value: req.body.value };
+    const body: BroadcastRequestWithValue | BroadcastRequestWithFile = req.body;
+    const data = file
+      ? await firefly.uploadDataBlob(file.buffer, file.originalname)
+      : { value: body.value };
     return firefly.sendBroadcast({
       header: {
-        tag: req.body.tag || undefined,
-        topics: req.body.topic ? [req.body.topic] : undefined,
+        tag: body.tag || undefined,
+        topics: body.topic ? [body.topic] : undefined,
       },
       data: [data],
     });

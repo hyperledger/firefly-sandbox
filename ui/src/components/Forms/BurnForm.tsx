@@ -24,7 +24,8 @@ import { RunButton } from '../Buttons/RunButton';
 
 export const BurnForm: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -44,6 +45,7 @@ export const BurnForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    if (activeForm !== 'burn') return;
     if (!message) {
       setJsonPayload({
         pool: pool,
@@ -65,7 +67,7 @@ export const BurnForm: React.FC = () => {
         ],
       },
     });
-  }, [pool, amount, fromAddress, message]);
+  }, [pool, amount, fromAddress, message, activeForm]);
 
   useEffect(() => {
     const qParams = `?limit=25`;

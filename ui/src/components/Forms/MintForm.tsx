@@ -23,7 +23,8 @@ import {
 import { RunButton } from '../Buttons/RunButton';
 
 export const MintForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -37,6 +38,9 @@ export const MintForm: React.FC = () => {
   const [toAddress, setToAddress] = useState<string>();
 
   useEffect(() => {
+    if (activeForm !== 'mint') {
+      return;
+    }
     if (!message) {
       setJsonPayload({
         pool: pool,
@@ -58,7 +62,7 @@ export const MintForm: React.FC = () => {
         ],
       },
     });
-  }, [pool, amount, toAddress, message]);
+  }, [pool, amount, toAddress, message, activeForm]);
 
   useEffect(() => {
     const qParams = `?limit=25`;

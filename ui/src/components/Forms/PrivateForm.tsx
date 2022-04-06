@@ -25,7 +25,8 @@ import { RunButton } from '../Buttons/RunButton';
 
 export const PrivateForm: React.FC = () => {
   const { identities } = useContext(ApplicationContext);
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
     DEFAULT_MESSAGE_STRING
@@ -35,23 +36,26 @@ export const PrivateForm: React.FC = () => {
   const [topics, setTopics] = useState<string[]>();
 
   useEffect(() => {
-    // setJsonPayload({
-    //   header: {
-    //     tag: tag,
-    //     topics: topics,
-    //   },
-    //   data: [
-    //     {
-    //       value: message,
-    //     },
-    //   ],
-    //   group: {
-    //     members: recipients.map((r) => {
-    //       return { identity: r };
-    //     }),
-    //   },
-    // });
-  }, [message, recipients, tag, topics]);
+    if (!activeForm.includes('private')) {
+      return;
+    }
+    setJsonPayload({
+      header: {
+        tag: tag,
+        topics: topics,
+      },
+      data: [
+        {
+          value: message,
+        },
+      ],
+      group: {
+        members: recipients.map((r) => {
+          return { identity: r };
+        }),
+      },
+    });
+  }, [message, recipients, tag, topics, activeForm]);
 
   const handleRecipientChange = (
     event: SelectChangeEvent<typeof recipients>

@@ -12,21 +12,27 @@ import {
 import { RunButton } from '../Buttons/RunButton';
 
 export const BroadcastForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm, setActiveForm } =
+    useContext(JsonPayloadContext);
+
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
     DEFAULT_MESSAGE_STRING
   );
+  const [fileName, setFileName] = useState<string>('');
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    setJsonPayload({
-      topic: topics,
-      tag,
-      value: message,
-    });
-  }, [message, tag, topics]);
+    if (activeForm.includes('broadcast')) {
+      setJsonPayload({
+        topic: topics,
+        tag,
+        value: message,
+        filename: fileName,
+      });
+    }
+  }, [message, tag, topics, fileName, activeForm]);
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -53,7 +59,10 @@ export const BroadcastForm: React.FC = () => {
             noUndefined
             message={message}
             onSetMessage={(msg: string | object) => {
-              return null;
+              setMessage(msg);
+            }}
+            onSetFileName={(file: string) => {
+              setFileName(file);
             }}
           />
           <Grid container item justifyContent="space-between" spacing={1}>

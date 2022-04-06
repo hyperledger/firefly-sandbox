@@ -1,5 +1,5 @@
-import { Grid, Tab, Tabs, Typography } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import { Grid, Typography } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -12,6 +12,7 @@ import {
 } from '../../../theme';
 import { LeftPane } from './LeftPane';
 import * as _ from 'underscore';
+import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 
 const styles = {
   background: FFColors.Pink,
@@ -23,10 +24,12 @@ const styles = {
 
 export const HomeDashboard: () => JSX.Element = () => {
   const { t } = useTranslation();
-  const [displayCodeBlock, setDisplayCodeBlock] = useState<string>('');
+  const { jsonPayload } = useContext(JsonPayloadContext);
+  const [template, setTemplate] = useState<string>('');
+  const [codeBlock, setCodeBlock] = useState<string>('');
 
   useEffect(() => {
-    const fetchCodeBlock = () => {
+    const fetchTemplate = () => {
       return fetch(
         `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/broadcast`,
         {
@@ -40,22 +43,27 @@ export const HomeDashboard: () => JSX.Element = () => {
           return response.json();
         })
         .then((data) => {
-          console.log(data);
-          const compiled = _.template(data);
-          const result = compiled({
-            tag: 'test-tag',
-            topic: 'test-topic',
-            value: 'Hello',
-          });
-          setDisplayCodeBlock(result);
-          console.log(result);
+          setTemplate(data);
+          buildCodeBlock(data);
         })
         .catch(() => {
           return null;
         });
     };
-    fetchCodeBlock();
+    fetchTemplate();
   }, []);
+
+  useEffect(() => {
+    if (template) {
+      buildCodeBlock(template);
+    }
+  }, [template, jsonPayload]);
+
+  const buildCodeBlock = (codeTemplate: string) => {
+    const compiled = _.template(codeTemplate);
+    const result = compiled(jsonPayload);
+    setCodeBlock(result);
+  };
 
   return (
     <>
@@ -95,7 +103,7 @@ export const HomeDashboard: () => JSX.Element = () => {
                     language={'typescript'}
                     style={tomorrowNightBright}
                   >
-                    {displayCodeBlock}
+                    {codeBlock}
                   </SyntaxHighlighter>
                 </Grid>
               </Grid>

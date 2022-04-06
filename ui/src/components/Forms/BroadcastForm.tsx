@@ -1,7 +1,6 @@
 import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NAMESPACE } from '../../App';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
@@ -12,8 +11,7 @@ import {
 } from '../Buttons/MessageTypeGroup';
 import { RunButton } from '../Buttons/RunButton';
 
-export const BroadcastForm: React.FC = (props: any) => {
-  const { setDisplayCodeBlock } = props;
+export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
@@ -23,41 +21,9 @@ export const BroadcastForm: React.FC = (props: any) => {
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    const fetchCodeBlock = () => {
-      return fetch(
-        `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/broadcast`,
-        {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          console.log(data);
-          const compiled = _.template(data);
-          const result = compiled({
-            tag: 'test-tag',
-            topic: 'test-topic',
-            value: 'Hello',
-          });
-          setDisplayCodeBlock(result);
-          console.log(result);
-        })
-        .catch(() => {
-          return null;
-        });
-    };
-    fetchCodeBlock();
-  }, []);
-
-  useEffect(() => {
     setJsonPayload({
       topic: topics,
-      tag: tag,
+      tag,
       value: message,
     });
   }, [message, tag, topics]);

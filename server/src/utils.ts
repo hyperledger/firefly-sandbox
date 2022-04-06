@@ -1,10 +1,10 @@
 import * as http from 'http';
 import { Duplex } from 'stream';
 import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-controllers';
-import { routingControllersToSpec } from 'routing-controllers-openapi';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import stripIndent = require('strip-indent');
+import { schemas } from './interfaces';
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
@@ -13,7 +13,7 @@ export function genOpenAPI(options: RoutingControllersOptions) {
       version: '1.0.0',
     },
     components: {
-      schemas: validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' }),
+      schemas: schemas(),
     },
   });
 }
@@ -38,6 +38,21 @@ export class WebsocketHandler {
     });
     return true;
   }
+}
+
+// Decorator for annotating a request that takes in a body of type multipart/form-data
+export function FormDataSchema(schemaClass: any) {
+  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+    OpenAPI({
+      requestBody: {
+        content: {
+          'multipart/form-data': {
+            schema: { $ref: '#/components/schemas/' + schemaClass.name },
+          },
+        },
+      },
+    })(target, propertyKey, descriptor);
+  };
 }
 
 export function formatTemplate(template: string) {

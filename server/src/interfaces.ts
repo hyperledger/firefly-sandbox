@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsUUID } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
 export class MessageResponse {
@@ -6,7 +6,7 @@ export class MessageResponse {
   id: string;
 }
 
-export class BroadcastValue {
+export class BaseMessageFields {
   @IsString()
   @IsOptional()
   topic?: string;
@@ -14,27 +14,36 @@ export class BroadcastValue {
   @IsString()
   @IsOptional()
   tag?: string;
-
-  @IsString()
-  value: string;
-
-  file?: never;
 }
 
-export class BroadcastBlob {
+export class BroadcastValue extends BaseMessageFields {
   @IsString()
-  @IsOptional()
-  topic?: string;
+  value: string;
+}
 
-  @IsString()
-  @IsOptional()
-  tag?: string;
-
+export class BroadcastBlob extends BaseMessageFields {
   @IsString()
   @JSONSchema({ format: 'binary' })
   file: string;
+}
 
-  value?: never;
+export class SendValue extends BaseMessageFields {
+  @IsString({ each: true })
+  recipients: string[];
+
+  @IsString()
+  value: string;
+}
+
+export class Organization {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  did: string;
+
+  @IsString()
+  name: string;
 }
 
 export function schemas() {

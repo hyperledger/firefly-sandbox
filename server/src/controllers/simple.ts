@@ -13,7 +13,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, WebsocketHandler, quoteAndEscape as q } from '../utils';
+import { formatTemplate, WebsocketHandler, quoteAndEscape as q, FormDataSchema } from '../utils';
 import { BroadcastBlob, BroadcastValue, MessageResponse } from '../interfaces';
 
 @Controller('/simple')
@@ -61,17 +61,9 @@ export class SimpleController {
   @Post('/broadcastblob')
   @ContentType('application/json')
   @HttpCode(202)
+  @FormDataSchema(BroadcastBlob)
   @ResponseSchema(MessageResponse)
-  @OpenAPI({
-    summary: 'Send a FireFly broadcast with a binary blob',
-    requestBody: {
-      content: {
-        'multipart/form-data': {
-          schema: { $ref: '#/components/schemas/BroadcastRequestWithFile' },
-        },
-      },
-    },
-  })
+  @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -98,7 +90,9 @@ export class SimpleController {
 @Controller('/simple/template')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleTemplateController {
-  static init(wsHandler: WebsocketHandler) {}
+  static init() {
+    // do nothing
+  }
 
   @Get('/broadcast')
   @ContentType('application/json')

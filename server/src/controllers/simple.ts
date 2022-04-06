@@ -1,22 +1,13 @@
 import { FireFlySubscriptionBase } from '@photic/firefly-sdk-nodejs';
 import { nanoid } from 'nanoid';
-import {
-  Controller,
-  Post,
-  Get,
-  HttpCode,
-  ContentType,
-  UploadedFile,
-  Req,
-  Body,
-} from 'routing-controllers';
+import { Post, Get, HttpCode, UploadedFile, Req, Body, JsonController } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
 import { formatTemplate, WebsocketHandler, quoteAndEscape as q, FormDataSchema } from '../utils';
 import { BroadcastBlob, BroadcastValue, MessageResponse } from '../interfaces';
 
-@Controller('/simple')
+@JsonController('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleController {
   static init(wsHandler: WebsocketHandler) {
@@ -42,7 +33,6 @@ export class SimpleController {
   }
 
   @Post('/broadcast')
-  @ContentType('application/json')
   @HttpCode(202)
   @ResponseSchema(MessageResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
@@ -59,7 +49,6 @@ export class SimpleController {
   }
 
   @Post('/broadcastblob')
-  @ContentType('application/json')
   @HttpCode(202)
   @FormDataSchema(BroadcastBlob)
   @ResponseSchema(MessageResponse)
@@ -87,7 +76,7 @@ export class SimpleController {
  * Allows the frontend to display representative code snippets for backend operations.
  * For demonstration purposes only.
  */
-@Controller('/simple/template')
+@JsonController('/simple/template')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleTemplateController {
   static init() {
@@ -95,7 +84,6 @@ export class SimpleTemplateController {
   }
 
   @Get('/broadcast')
-  @ContentType('application/json')
   broadcastTemplate() {
     return formatTemplate(`
       const message = await firefly.sendBroadcast({
@@ -109,7 +97,6 @@ export class SimpleTemplateController {
   }
 
   @Get('/broadcastblob')
-  @ContentType('application/json')
   broadcastBlobTemplate() {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);

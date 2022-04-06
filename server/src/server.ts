@@ -18,13 +18,17 @@ app.use(cors(corsOpts));
 
 const controllers = [simpleController];
 const serverOptions: RoutingControllersOptions = { routePrefix: '/api', controllers };
+const api = genOpenAPI(serverOptions);
 const wsHandler = new WebsocketHandler();
 controllers.forEach((c) => c.init(wsHandler));
 
 
 useExpressServer(app, serverOptions);
 app.use('/api', swaggerUi.serve);
-app.get('/api', swaggerUi.setup(genOpenAPI(serverOptions)));
+app.get('/api', swaggerUi.setup(api));
+app.get('/api-json', (req, res) => {
+  res.type('text').send(JSON.stringify(api, null, 2));
+});
 
 const server = new http.Server(app);
 server.on('upgrade', function upgrade(request, socket, head) {

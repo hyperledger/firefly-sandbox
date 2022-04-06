@@ -24,6 +24,10 @@ import {
   PrivateBlob,
   TokenPool,
   TokenPoolInput,
+  TokenMint,
+  TokenTransfer,
+  TokenBurn,
+  Verifier,
 } from '../interfaces';
 import { plainToClassFromExist } from 'class-transformer';
 
@@ -102,6 +106,22 @@ export class SimpleController {
     return orgs.map((o) => ({ id: o.id, did: o.did, name: o.name }));
   }
 
+  @Get('/verifiers')
+  @ResponseSchema(Verifier, { isArray: true })
+  @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
+  async verifiers(): Promise<Verifier[]> {
+    const orgs = await firefly.getOrganizations();
+    const verifiers = await firefly.getVerifiers('ff_system');
+    const result: Verifier[] = [];
+    for (const v of verifiers) {
+      const o = orgs.find((o) => o.id === v.identity);
+      if (o !== undefined) {
+        result.push({ did: o.did, type: v.type, value: v.value });
+      }
+    }
+    return result;
+  }
+
   @Post('/private')
   @HttpCode(202)
   @ResponseSchema(FireFlyResponse)
@@ -166,6 +186,48 @@ export class SimpleController {
       type: body.type,
     });
     return { id: pool.id };
+  }
+
+  @Post('/mint')
+  @HttpCode(202)
+  @ResponseSchema(FireFlyResponse)
+  @OpenAPI({ summary: 'Mint tokens within a token pool' })
+  async mint(@Body() body: TokenMint): Promise<FireFlyResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const transfer = await firefly.mintTokens({
+      pool: body.pool,
+      amount: body.amount,
+    });
+    return { id: transfer.localId };
+  }
+
+  @Post('/burn')
+  @HttpCode(202)
+  @ResponseSchema(FireFlyResponse)
+  @OpenAPI({ summary: 'Burn tokens within a token pool' })
+  async burn(@Body() body: TokenBurn): Promise<FireFlyResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const transfer = await firefly.burnTokens({
+      pool: body.pool,
+      amount: body.amount,
+      tokenIndex: body.tokenIndex,
+    });
+    return { id: transfer.localId };
+  }
+
+  @Post('/transfer')
+  @HttpCode(202)
+  @ResponseSchema(FireFlyResponse)
+  @OpenAPI({ summary: 'Transfer tokens within a token pool' })
+  async transfer(@Body() body: TokenTransfer): Promise<FireFlyResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const transfer = await firefly.transferTokens({
+      pool: body.pool,
+      to: body.to,
+      amount: body.amount,
+      tokenIndex: body.tokenIndex,
+    });
+    return { id: transfer.localId };
   }
 }
 
@@ -248,6 +310,39 @@ export class SimpleTemplateController {
         name: <%= ${q('name')} %>,
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
+      });
+    `);
+  }
+
+  @Get('/mint')
+  mintTemplate() {
+    return formatTemplate(`
+      const transfer = await firefly.mintTokens({
+        pool: <%= ${q('pool')} %>,
+        amount: <%= ${q('amount')} %>,
+      });
+    `);
+  }
+
+  @Get('/burn')
+  burnTemplate() {
+    return formatTemplate(`
+      const transfer = await firefly.burnTokens({
+        pool: <%= ${q('pool')} %>,
+        amount: <%= ${q('amount')} %>,
+        tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
+      });
+    `);
+  }
+
+  @Get('/transfer')
+  transferTemplate() {
+    return formatTemplate(`
+      const transfer = await firefly.transferTokens({
+        pool: <%= ${q('pool')} %>,
+        to: <%= ${q('to')} %>,
+        amount: <%= ${q('amount')} %>,
+        tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
     `);
   }

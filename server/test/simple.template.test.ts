@@ -183,4 +183,76 @@ describe('Templates: Simple Operations', () => {
         );
       });
   });
+
+  test('Mint template', () => {
+    return request(server)
+      .get('/api/simple/template/mint')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 10,
+          }),
+        ).toBe(
+          formatTemplate(`
+            const transfer = await firefly.mintTokens({
+              pool: 'pool1',
+              amount: '10',
+            });
+        `),
+        );
+      });
+  });
+
+  test('Burn template', () => {
+    return request(server)
+      .get('/api/simple/template/burn')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 1,
+            tokenIndex: '1',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const transfer = await firefly.burnTokens({
+              pool: 'pool1',
+              amount: '1',
+              tokenIndex: '1',
+            });
+        `),
+        );
+      });
+  });
+
+  test('Transfer template', () => {
+    return request(server)
+      .get('/api/simple/template/transfer')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 1,
+            tokenIndex: '1',
+            to: '0x111',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const transfer = await firefly.transferTokens({
+              pool: 'pool1',
+              to: '0x111',
+              amount: '1',
+              tokenIndex: '1',
+            });
+        `),
+        );
+      });
+  });
 });

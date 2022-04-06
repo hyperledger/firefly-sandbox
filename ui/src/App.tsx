@@ -49,7 +49,7 @@ function App() {
     new Date().toISOString()
   );
   const [jsonPayload, setJsonPayload] = useState<object>({});
-
+  const [activeForm, setActiveForm] = useState<string>('broadcast');
   // useEffect(() => {
   //   Promise.all([
   //     fetchWithCredentials(FF_Paths.nsPrefix),
@@ -185,7 +185,7 @@ function App() {
             value={{ setMessage, setMessageType, reportFetchError }}
           >
             <JsonPayloadContext.Provider
-              value={{ jsonPayload, setJsonPayload }}
+              value={{ jsonPayload, setJsonPayload, activeForm, setActiveForm }}
             >
               <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>

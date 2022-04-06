@@ -6,13 +6,13 @@ import * as bodyParser from 'body-parser';
 import * as swaggerUi from 'swagger-ui-express';
 import { useExpressServer, RoutingControllersOptions } from 'routing-controllers';
 import { genOpenAPI, WebsocketHandler } from './utils';
-import simpleController from './controllers/simple';
+import { SimpleController, SimpleTemplateController } from './controllers/simple';
 
 const app = express();
 app.use(bodyParser.json());
 app.use(cors({ origin: '*' }));
 
-const controllers = [simpleController];
+const controllers = [SimpleController, SimpleTemplateController];
 const serverOptions: RoutingControllersOptions = { routePrefix: '/api', controllers };
 const api = genOpenAPI(serverOptions);
 const wsHandler = new WebsocketHandler();

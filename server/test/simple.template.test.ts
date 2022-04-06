@@ -4,61 +4,61 @@ import server from '../src/server';
 import { formatTemplate } from '../src/utils';
 
 describe('Templates: Simple Operations', () => {
-  test('Broadcast', () => {
+  test('Broadcast template', () => {
     return request(server)
       .get('/api/simple/template/broadcast')
       .expect(200)
       .expect((resp) => {
         const compiled = _.template(resp.body);
 
-        // All empty values
         expect(
           compiled({
             tag: '',
             topic: '',
             value: '',
-            filename: '',
           }),
         ).toBe(
           formatTemplate(`
-            const data = { value: '' };
             return firefly.sendBroadcast({
               header: {
                 tag: undefined,
                 topics: undefined,
               }
-              data: [data],
+              data: [{ value: '' }],
             });
         `),
         );
 
-        // Inline value
         expect(
           compiled({
             tag: 'test-tag',
             topic: 'test-topic',
             value: "'Hello'",
-            filename: '',
           }),
         ).toBe(
           formatTemplate(`
-            const data = { value: '\\'Hello\\'' };
             return firefly.sendBroadcast({
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
               }
-              data: [data],
+              data: [{ value: '\\'Hello\\'' }],
             });
         `),
         );
+      });
+  });
 
-        // File value
+  test('Broadcast blob template', () => {
+    return request(server)
+      .get('/api/simple/template/broadcastblob')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
         expect(
           compiled({
             tag: 'test-tag',
             topic: 'test-topic',
-            value: '',
             filename: 'document.pdf',
           }),
         ).toBe(
@@ -69,7 +69,7 @@ describe('Templates: Simple Operations', () => {
                 tag: 'test-tag',
                 topics: ['test-topic'],
               }
-              data: [data],
+              data: [{ id: data.id }],
             });
         `),
         );

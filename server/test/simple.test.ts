@@ -41,7 +41,7 @@ describe('Simple Operations', () => {
     mockFireFly.sendBroadcast.mockResolvedValueOnce(msg);
 
     await request(server)
-      .post('/api/simple/broadcast')
+      .post('/api/simple/broadcastblob')
       .field('tag', 'test-tag')
       .attach('file', 'test/data/simple-file.txt')
       .expect(202)

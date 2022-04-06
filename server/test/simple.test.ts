@@ -4,6 +4,7 @@ import FireFly, {
   FireFlyMessage,
   FireFlyOrganization,
   FireFlyStatus,
+  FireFlyTokenBalance,
   FireFlyTokenPool,
   FireFlyTokenPoolType,
   FireFlyTokenTransfer,
@@ -88,9 +89,7 @@ describe('Simple Operations', () => {
   });
 
   test('List organizations without self', async () => {
-    const status = {
-      org: { id: 'org1' },
-    } as FireFlyStatus;
+    const status = { org: { id: 'org1' } } as FireFlyStatus;
     const orgs = [{ id: 'org1' } as FireFlyOrganization, { id: 'org2' } as FireFlyOrganization];
 
     mockFireFly.getStatus.mockResolvedValueOnce(status);
@@ -103,6 +102,16 @@ describe('Simple Operations', () => {
 
     expect(mockFireFly.getStatus).toHaveBeenCalledWith();
     expect(mockFireFly.getOrganizations).toHaveBeenCalledWith();
+  });
+
+  test('Get self', async () => {
+    const status = { org: { id: 'org1' } } as FireFlyStatus;
+
+    mockFireFly.getStatus.mockResolvedValueOnce(status);
+
+    await request(server).get('/api/simple/organizations/self').expect(200).expect({ id: 'org1' });
+
+    expect(mockFireFly.getStatus).toHaveBeenCalledWith();
   });
 
   test('List verifiers', async () => {
@@ -282,6 +291,23 @@ describe('Simple Operations', () => {
       pool: 'my-pool',
       amount: 1,
       to: '0x111',
+    });
+  });
+
+  test('Get balances', async () => {
+    const balances = [{ key: '0x123', balance: '1' } as FireFlyTokenBalance];
+
+    mockFireFly.getTokenBalances.mockResolvedValueOnce(balances);
+
+    await request(server)
+      .get('/api/simple/balances?pool=pool1&key=0x123')
+      .expect(200)
+      .expect([{ key: '0x123', balance: '1' }]);
+
+    expect(mockFireFly.getTokenBalances).toHaveBeenCalledWith({
+      pool: 'pool1',
+      key: '0x123',
+      balance: '>0',
     });
   });
 });

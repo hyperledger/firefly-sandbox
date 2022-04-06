@@ -5,10 +5,12 @@ import {
   UploadFile,
 } from '@mui/icons-material';
 import {
+  Button,
   Grid,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -49,6 +51,9 @@ export const MessageTypeGroup: React.FC<Props> = ({
       case 'json':
         onSetMessage(DEFAULT_MESSAGE_JSON);
         return;
+      case 'file':
+        onSetMessage(DEFAULT_MESSAGE_JSON);
+        return;
       default:
         onSetMessage(DEFAULT_MESSAGE_STRING);
     }
@@ -71,36 +76,52 @@ export const MessageTypeGroup: React.FC<Props> = ({
         <ToggleButton value="string">
           <FormatQuote />
         </ToggleButton>
-        <ToggleButton value="json">
+        <ToggleButton disabled value="json">
           <DataObject />
         </ToggleButton>
-        <ToggleButton disabled value="file">
+        <ToggleButton value="file">
           <UploadFile />
         </ToggleButton>
       </ToggleButtonGroup>
-      <TextField
-        label={t('message')}
-        multiline
-        required
-        fullWidth
-        maxRows={7}
-        value={
-          messageType === 'json'
-            ? JSON.stringify(message, null, 2)
-            : messageType === 'string'
-            ? message
-            : ''
-        }
-        onChange={(e) =>
-          onSetMessage(
-            messageType === 'string'
-              ? e.target.value
-              : messageType === undefined
-              ? undefined
-              : JSON.parse(e.target.value)
-          )
-        }
-      />
+      {
+        <Grid container item xs={12} pt={1}>
+          {messageType !== 'file' ? (
+            <TextField
+              label={t('message')}
+              multiline
+              required
+              fullWidth
+              maxRows={7}
+              value={
+                messageType === 'json'
+                  ? JSON.stringify(message, null, 2)
+                  : messageType === 'string'
+                  ? message
+                  : ''
+              }
+              onChange={(e) =>
+                onSetMessage(
+                  messageType === 'string'
+                    ? e.target.value
+                    : messageType === undefined
+                    ? undefined
+                    : JSON.parse(e.target.value)
+                )
+              }
+            />
+          ) : (
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{ textTransform: 'none', padding: '16px' }}
+              fullWidth
+            >
+              <Typography sx={{ width: '50%' }}>{t('uploadFile')}*</Typography>
+              <input type="file" />
+            </Button>
+          )}
+        </Grid>
+      }
     </Grid>
   );
 };

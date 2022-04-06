@@ -27,11 +27,12 @@ export const HomeDashboard: () => JSX.Element = () => {
   const { jsonPayload } = useContext(JsonPayloadContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
+  const { activeForm } = useContext(JsonPayloadContext);
 
   useEffect(() => {
     const fetchTemplate = () => {
       return fetch(
-        `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/broadcast`,
+        `${window.location.protocol}//${window.location.hostname}:3001/api/simple/template/${activeForm}`,
         {
           method: 'GET',
           headers: {
@@ -51,10 +52,11 @@ export const HomeDashboard: () => JSX.Element = () => {
         });
     };
     fetchTemplate();
-  }, []);
+  }, [activeForm]);
 
   useEffect(() => {
-    if (template) {
+    const payload: any = jsonPayload;
+    if (template && payload && !payload.connector) {
       buildCodeBlock(template);
     }
   }, [template, jsonPayload]);

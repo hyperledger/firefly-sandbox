@@ -1,12 +1,14 @@
 import { Grid, Typography } from '@mui/material';
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FFAccordion } from '../../../components/Accordion/FFAccordion';
 import { TutorialSections } from '../../../constants/TutorialSections';
+import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import { DEFAULT_PADDING } from '../../../theme';
 
-export const LeftPane: () => JSX.Element = () => {
+export const LeftPane = () => {
   const { t } = useTranslation();
+  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
 
   return (
     <Grid container p={DEFAULT_PADDING} sx={{ overflow: 'auto' }}>
@@ -29,6 +31,9 @@ export const LeftPane: () => JSX.Element = () => {
                         title={t(tutorial.title)}
                         infoText={t(tutorial.shortInfo)}
                         form={tutorial.form}
+                        type={tutorial.link}
+                        isOpen={activeForm === tutorial.link}
+                        activeForm={activeForm}
                       ></FFAccordion>
                     </Grid>
                   );

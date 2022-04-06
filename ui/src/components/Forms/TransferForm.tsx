@@ -23,7 +23,8 @@ import {
 import { RunButton } from '../Buttons/RunButton';
 
 export const TransferForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -38,6 +39,7 @@ export const TransferForm: React.FC = () => {
   const [toAddress, setToAddress] = useState<string>();
 
   useEffect(() => {
+    if (activeForm !== 'transfer') return;
     if (!message) {
       setJsonPayload({
         pool: pool,
@@ -61,7 +63,7 @@ export const TransferForm: React.FC = () => {
         ],
       },
     });
-  }, [pool, amount, toAddress, fromAddress, message]);
+  }, [pool, amount, toAddress, fromAddress, message, activeForm]);
 
   useEffect(() => {
     const qParams = `?limit=25`;

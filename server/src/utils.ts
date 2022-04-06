@@ -2,9 +2,9 @@ import * as http from 'http';
 import { Duplex } from 'stream';
 import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-controllers';
 import { routingControllersToSpec } from 'routing-controllers-openapi';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { WebSocketServer } from 'ws';
 import stripIndent = require('strip-indent');
+import { schemas } from './interfaces';
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
@@ -13,7 +13,7 @@ export function genOpenAPI(options: RoutingControllersOptions) {
       version: '1.0.0',
     },
     components: {
-      schemas: validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' }),
+      schemas: schemas(),
     },
   });
 }

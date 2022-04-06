@@ -60,5 +60,5 @@ export function formatTemplate(template: string) {
 }
 
 export function quoteAndEscape(varName: string) {
-  return `"'" + ${varName}.replaceAll("'", "\\\\'") + "'"`;
+  return `"'" + new String(${varName}).replaceAll("'", "\\\\'") + "'"`;
 }

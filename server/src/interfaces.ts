@@ -1,7 +1,7 @@
 import { IsOptional, IsString } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
-export class BroadcastRequest {
+export class BroadcastRequestWithValue {
   @IsString()
   @IsOptional()
   topic?: string;
@@ -11,12 +11,25 @@ export class BroadcastRequest {
   tag?: string;
 
   @IsString()
-  @IsOptional()
-  value?: string;
+  value: string;
 
+  file?: never;
+}
+
+export class BroadcastRequestWithFile {
+  @IsString()
   @IsOptional()
-  @JSONSchema({ type: 'string', format: 'binary' })
-  file?: string;
+  topic?: string;
+
+  @IsString()
+  @IsOptional()
+  tag?: string;
+
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
+
+  value?: never;
 }
 
 export function schemas() {

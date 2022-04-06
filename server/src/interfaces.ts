@@ -1,7 +1,8 @@
-import { ArrayNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
+import { FireFlyTokenPoolType } from '@photic/firefly-sdk-nodejs';
+import { ArrayNotEmpty, IsEnum, IsOptional, IsString, IsUUID } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
-export class MessageResponse {
+export class FireFlyResponse {
   @IsString()
   id: string;
 }
@@ -55,6 +56,22 @@ export class Organization {
 
   @IsString()
   name: string;
+}
+
+export class TokenPoolInput {
+  @IsString()
+  name: string;
+
+  @IsString()
+  symbol: string;
+
+  @IsEnum(FireFlyTokenPoolType)
+  type: FireFlyTokenPoolType;
+}
+
+export class TokenPool extends TokenPoolInput {
+  @IsUUID()
+  id: string;
 }
 
 export function schemas() {

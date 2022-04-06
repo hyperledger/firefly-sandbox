@@ -43,33 +43,6 @@ export const Header: React.FC = () => {
                 <MenuLogo />
               </Typography>
             </Grid>
-            <Grid item container justifyContent={'flex-end'} xs={6}>
-              <Tooltip
-                title={
-                  isWsConnected
-                    ? `${t('connectedToFirefly').toString()}: ${nodeName}`
-                    : t('notConnectedToFirefly').toString()
-                }
-              >
-                <Chip
-                  icon={
-                    <CircleIcon
-                      fontSize="small"
-                      style={{
-                        color: isWsConnected ? FFColors.Green : FFColors.Red,
-                      }}
-                    />
-                  }
-                  label={
-                    isWsConnected
-                      ? `${t('connected')}: ${nodeName}`
-                      : t('notConnected')
-                  }
-                  sx={{ color: FFColors.White }}
-                  variant="outlined"
-                />
-              </Tooltip>
-            </Grid>
           </Grid>
         </Toolbar>
       </Container>

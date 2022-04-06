@@ -1,5 +1,14 @@
 import { FireFlyTokenPoolType } from '@photic/firefly-sdk-nodejs';
-import { ArrayNotEmpty, IsEnum, IsInt, IsOptional, IsString, IsUUID, Min } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsEnum,
+  IsInt,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  IsUUID,
+  Min,
+} from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
 export class FireFlyResponse {
@@ -103,6 +112,20 @@ export class TokenBurn extends TokenMint {
 export class TokenTransfer extends TokenBurn {
   @IsString()
   to: string;
+}
+
+export class TokenBalance {
+  @IsUUID()
+  pool: string;
+
+  @IsString()
+  key: string;
+
+  @IsNumberString()
+  balance: string;
+
+  @IsString()
+  tokenIndex?: string;
 }
 
 export function schemas() {

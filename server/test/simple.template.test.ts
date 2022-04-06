@@ -128,4 +128,35 @@ describe('Templates: Simple Operations', () => {
         );
       });
   });
+
+  test('Private blob template', () => {
+    return request(server)
+      .get('/api/simple/template/privateblob')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            filename: 'document.pdf',
+            recipients: ['alpha', 'beta'],
+          }),
+        ).toBe(
+          formatTemplate(`
+            const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
+            const message = await firefly.sendPrivateMessage({
+              header: {
+                tag: 'test-tag',
+                topics: ['test-topic'],
+              },
+              group: {
+                members: [{identity: 'alpha'}, {identity: 'beta'}],
+              },
+              data: [{ id: data.id }],
+            });
+        `),
+        );
+      });
+  });
 });

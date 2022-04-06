@@ -1,4 +1,4 @@
-import { IsOptional, IsString, IsUUID } from 'class-validator';
+import { ArrayNotEmpty, IsOptional, IsString, IsUUID } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
 export class MessageResponse {
@@ -27,12 +27,23 @@ export class BroadcastBlob extends BaseMessageFields {
   file: string;
 }
 
-export class SendValue extends BaseMessageFields {
+export class PrivateValue extends BaseMessageFields {
   @IsString({ each: true })
+  @ArrayNotEmpty()
   recipients: string[];
 
   @IsString()
   value: string;
+}
+
+export class PrivateBlob extends BaseMessageFields {
+  @IsString({ each: true })
+  @ArrayNotEmpty()
+  recipients: string[];
+
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
 }
 
 export class Organization {

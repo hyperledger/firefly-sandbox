@@ -1,6 +1,15 @@
 import { FireFlySubscriptionBase } from '@photic/firefly-sdk-nodejs';
 import { nanoid } from 'nanoid';
-import { Post, Get, HttpCode, UploadedFile, Req, Body, JsonController } from 'routing-controllers';
+import {
+  Post,
+  Get,
+  HttpCode,
+  UploadedFile,
+  Req,
+  Body,
+  JsonController,
+  BadRequestError,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
@@ -10,8 +19,10 @@ import {
   BroadcastValue,
   Organization,
   MessageResponse,
-  SendValue,
+  PrivateValue,
+  PrivateBlob,
 } from '../interfaces';
+import { plainToClassFromExist } from 'class-transformer';
 
 @JsonController('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
@@ -64,7 +75,7 @@ export class SimpleController {
     @UploadedFile('file') file: Express.Multer.File,
   ): Promise<MessageResponse> {
     // See SimpleTemplateController and keep template code up to date.
-    const body: BroadcastBlob = req.body;
+    const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
     const message = await firefly.sendBroadcast({
       header: {
@@ -88,7 +99,7 @@ export class SimpleController {
   @HttpCode(202)
   @ResponseSchema(MessageResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: SendValue): Promise<MessageResponse> {
+  async send(@Body() body: PrivateValue): Promise<MessageResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage({
       header: {
@@ -99,6 +110,31 @@ export class SimpleController {
         members: body.recipients.map((r) => ({ identity: r })),
       },
       data: [{ value: body.value }],
+    });
+    return { id: message.header.id };
+  }
+
+  @Post('/privateblob')
+  @HttpCode(202)
+  @FormDataSchema(PrivateBlob)
+  @ResponseSchema(MessageResponse)
+  @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
+  async sendblob(
+    @Req() req: Request,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<MessageResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const body = plainToClassFromExist(new PrivateBlob(), req.body);
+    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const message = await firefly.sendPrivateMessage({
+      header: {
+        tag: body.tag || undefined,
+        topics: body.topic ? [body.topic] : undefined,
+      },
+      group: {
+        members: body.recipients.map((r) => ({ identity: r })),
+      },
+      data: [{ id: data.id }],
     });
     return { id: message.header.id };
   }
@@ -144,7 +180,7 @@ export class SimpleTemplateController {
   }
 
   @Get('/private')
-  privateTemplate() {
+  sendTemplate() {
     return formatTemplate(`
       const message = await firefly.sendPrivateMessage({
         header: {
@@ -155,6 +191,23 @@ export class SimpleTemplateController {
           members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
         },
         data: [{ value: <%= ${q('value')} %> }],
+      });
+    `);
+  }
+
+  @Get('/privateblob')
+  sendBlobTemplate() {
+    return formatTemplate(`
+      const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
+      const message = await firefly.sendPrivateMessage({
+        header: {
+          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+        },
+        group: {
+          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+        },
+        data: [{ id: data.id }],
       });
     `);
   }

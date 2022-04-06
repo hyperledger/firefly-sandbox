@@ -10,11 +10,7 @@ import simpleController from './controllers/simple';
 
 const app = express();
 app.use(bodyParser.json());
-const corsOpts = {
-  origin: '*'
-};
-
-app.use(cors(corsOpts));
+app.use(cors({ origin: '*' }));
 
 const controllers = [simpleController];
 const serverOptions: RoutingControllersOptions = { routePrefix: '/api', controllers };
@@ -22,8 +18,8 @@ const api = genOpenAPI(serverOptions);
 const wsHandler = new WebsocketHandler();
 controllers.forEach((c) => c.init(wsHandler));
 
-
 useExpressServer(app, serverOptions);
+
 app.use('/api', swaggerUi.serve);
 app.get('/api', swaggerUi.setup(api));
 app.get('/api-json', (req, res) => {

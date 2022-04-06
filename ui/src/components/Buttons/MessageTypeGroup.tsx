@@ -12,8 +12,9 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 const DEFAULT_MESSAGE_JSON = {
@@ -23,6 +24,7 @@ const DEFAULT_MESSAGE_JSON = {
 interface Props {
   message: string | object | undefined;
   onSetMessage: any;
+  onSetFileName?: any;
   noUndefined?: boolean;
 }
 
@@ -30,11 +32,13 @@ export const MessageTypeGroup: React.FC<Props> = ({
   noUndefined = false,
   message,
   onSetMessage,
+  onSetFileName,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<
     'none' | 'string' | 'json' | 'file'
   >('string');
+  const { setActiveForm } = useContext(JsonPayloadContext);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -44,15 +48,18 @@ export const MessageTypeGroup: React.FC<Props> = ({
     switch (newAlignment) {
       case 'none':
         onSetMessage(undefined);
+        setActiveForm('broadcast');
         return;
       case 'string':
         onSetMessage(DEFAULT_MESSAGE_STRING);
+        setActiveForm('broadcast');
         return;
       case 'json':
         onSetMessage(DEFAULT_MESSAGE_JSON);
         return;
       case 'file':
-        onSetMessage(DEFAULT_MESSAGE_JSON);
+        onSetMessage('');
+        setActiveForm('broadcastblob');
         return;
       default:
         onSetMessage(DEFAULT_MESSAGE_STRING);
@@ -117,7 +124,12 @@ export const MessageTypeGroup: React.FC<Props> = ({
               fullWidth
             >
               <Typography sx={{ width: '50%' }}>{t('uploadFile')}*</Typography>
-              <input type="file" />
+              <input
+                type="file"
+                onChange={(event: any) =>
+                  onSetFileName(event?.target?.files[0]?.name)
+                }
+              />
             </Button>
           )}
         </Grid>

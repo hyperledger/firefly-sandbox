@@ -18,7 +18,8 @@ import { RunButton } from '../Buttons/RunButton';
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
   const { connectors } = useContext(ApplicationContext);
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
 
   const [connector, setConnector] = useState<string>(
     connectors.length > 0 ? connectors[0].name : t('noConnectors')
@@ -28,13 +29,16 @@ export const PoolForm: React.FC = () => {
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
+    if (activeForm !== 'createPool') {
+      return;
+    }
     setJsonPayload({
       connector: connector,
       name: name,
       symbol: symbol,
       type: type,
     });
-  }, [connector, name, symbol, type]);
+  }, [connector, name, symbol, type, activeForm]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {

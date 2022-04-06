@@ -27,12 +27,12 @@
   },
   "homepage": "https://github.com/kaleido-io/firefly-samples-gallery#readme",
   "dependencies": {
-    "@photic/firefly-sdk-nodejs": "^0.0.11",
+    "@photic/firefly-sdk-nodejs": "^0.0.13",
     "body-parser": "^1.20.0",
-    "cors": "^2.8.5",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",
     "class-validator-jsonschema": "^2.2.0",
+    "cors": "^2.8.5",
     "express": "^4.17.3",
     "multer": "^1.4.4",
     "nanoid": "^3.3.2",
@@ -44,8 +44,8 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.12",
     "@types/body-parser": "^1.19.2",
+    "@types/cors": "^2.8.12",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.4.1",
     "@types/multer": "^1.4.7",
@@ -69,4 +69,3 @@
     "underscore": "^1.13.2"
   }
 }
-

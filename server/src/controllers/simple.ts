@@ -28,6 +28,7 @@ import {
   TokenTransfer,
   TokenBurn,
   Verifier,
+  TokenBalance,
 } from '../interfaces';
 import { plainToClassFromExist } from 'class-transformer';
 
@@ -104,6 +105,14 @@ export class SimpleController {
       orgs = orgs.filter((o) => o.id !== status.org.id);
     }
     return orgs.map((o) => ({ id: o.id, did: o.did, name: o.name }));
+  }
+
+  @Get('/organizations/self')
+  @ResponseSchema(Organization)
+  @OpenAPI({ summary: 'Look up local organization' })
+  async self(): Promise<Organization> {
+    const status = await firefly.getStatus();
+    return { id: status.org.id, did: status.org.did, name: status.org.name };
   }
 
   @Get('/verifiers')
@@ -228,6 +237,22 @@ export class SimpleController {
       tokenIndex: body.tokenIndex,
     });
     return { id: transfer.localId };
+  }
+
+  @Get('/balances')
+  @ResponseSchema(TokenBalance, { isArray: true })
+  @OpenAPI({ summary: 'Query token balances' })
+  async balances(
+    @QueryParam('pool') pool: string,
+    @QueryParam('key') key: string,
+  ): Promise<TokenBalance[]> {
+    const balances = await firefly.getTokenBalances({ pool, key, balance: '>0' });
+    return balances.map((b) => ({
+      pool: b.pool,
+      key: b.key,
+      balance: b.balance,
+      tokenIndex: b.tokenIndex,
+    }));
   }
 }
 

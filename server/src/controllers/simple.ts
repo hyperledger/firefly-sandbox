@@ -5,7 +5,13 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
 import { formatTemplate, WebsocketHandler, quoteAndEscape as q, FormDataSchema } from '../utils';
-import { BroadcastBlob, BroadcastValue, MessageResponse } from '../interfaces';
+import {
+  BroadcastBlob,
+  BroadcastValue,
+  Organization,
+  MessageResponse,
+  SendValue,
+} from '../interfaces';
 
 @JsonController('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
@@ -69,6 +75,33 @@ export class SimpleController {
     });
     return { id: message.header.id };
   }
+
+  @Get('/organizations')
+  @ResponseSchema(Organization, { isArray: true })
+  @OpenAPI({ summary: 'List all organizations in network' })
+  async organizations(): Promise<Organization[]> {
+    const orgs = await firefly.getOrganizations();
+    return orgs.map((o) => ({ id: o.id, did: o.did, name: o.name }));
+  }
+
+  @Post('/private')
+  @HttpCode(202)
+  @ResponseSchema(MessageResponse)
+  @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
+  async send(@Body() body: SendValue): Promise<MessageResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const message = await firefly.sendPrivateMessage({
+      header: {
+        tag: body.tag || undefined,
+        topics: body.topic ? [body.topic] : undefined,
+      },
+      group: {
+        members: body.recipients.map((r) => ({ identity: r })),
+      },
+      data: [{ value: body.value }],
+    });
+    return { id: message.header.id };
+  }
 }
 
 /**
@@ -90,7 +123,7 @@ export class SimpleTemplateController {
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-        }
+        },
         data: [{ value: <%= ${q('value')} %> }],
       });
     `);
@@ -104,8 +137,24 @@ export class SimpleTemplateController {
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-        }
+        },
         data: [{ id: data.id }],
+      });
+    `);
+  }
+
+  @Get('/private')
+  privateTemplate() {
+    return formatTemplate(`
+      const message = await firefly.sendPrivateMessage({
+        header: {
+          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+        },
+        group: {
+          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+        },
+        data: [{ value: <%= ${q('value')} %> }],
       });
     `);
   }

@@ -23,7 +23,7 @@ describe('Templates: Simple Operations', () => {
               header: {
                 tag: undefined,
                 topics: undefined,
-              }
+              },
               data: [{ value: '' }],
             });
         `),
@@ -41,7 +41,7 @@ describe('Templates: Simple Operations', () => {
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
-              }
+              },
               data: [{ value: '\\'Hello\\'' }],
             });
         `),
@@ -68,8 +68,61 @@ describe('Templates: Simple Operations', () => {
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
-              }
+              },
               data: [{ id: data.id }],
+            });
+        `),
+        );
+      });
+  });
+
+  test('Private template', () => {
+    return request(server)
+      .get('/api/simple/template/private')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+
+        expect(
+          compiled({
+            tag: '',
+            topic: '',
+            value: '',
+            recipients: [],
+          }),
+        ).toBe(
+          formatTemplate(`
+            const message = await firefly.sendPrivateMessage({
+              header: {
+                tag: undefined,
+                topics: undefined,
+              },
+              group: {
+                members: [],
+              },
+              data: [{ value: '' }],
+            });
+        `),
+        );
+
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: "'Hello'",
+            recipients: ['alpha', 'beta'],
+          }),
+        ).toBe(
+          formatTemplate(`
+            const message = await firefly.sendPrivateMessage({
+              header: {
+                tag: 'test-tag',
+                topics: ['test-topic'],
+              },
+              group: {
+                members: [{identity: 'alpha'}, {identity: 'beta'}],
+              },
+              data: [{ value: '\\'Hello\\'' }],
             });
         `),
         );

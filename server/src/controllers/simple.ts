@@ -10,11 +10,11 @@ import {
   Req,
   Body,
 } from 'routing-controllers';
-import { OpenAPI } from 'routing-controllers-openapi';
+import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { firefly } from '../clients/firefly';
 import { formatTemplate, WebsocketHandler, quoteAndEscape as q } from '../utils';
-import { BroadcastRequestWithFile, BroadcastRequestWithValue } from '../interfaces';
+import { BroadcastBlob, BroadcastValue, MessageResponse } from '../interfaces';
 
 @Controller('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
@@ -44,22 +44,26 @@ export class SimpleController {
   @Post('/broadcast')
   @ContentType('application/json')
   @HttpCode(202)
-  async broadcast(@Body() body: BroadcastRequestWithValue) {
-    // TEMPLATE: See SimpleTemplateController and keep template code up to date.
-    return firefly.sendBroadcast({
+  @ResponseSchema(MessageResponse)
+  @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
+  async broadcast(@Body() body: BroadcastValue): Promise<MessageResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const message = await firefly.sendBroadcast({
       header: {
         tag: body.tag || undefined,
         topics: body.topic ? [body.topic] : undefined,
       },
       data: [{ value: body.value }],
     });
+    return { id: message.header.id };
   }
 
   @Post('/broadcastblob')
   @ContentType('application/json')
   @HttpCode(202)
+  @ResponseSchema(MessageResponse)
   @OpenAPI({
-    summary: 'Send a FireFly broadcast message',
+    summary: 'Send a FireFly broadcast with a binary blob',
     requestBody: {
       content: {
         'multipart/form-data': {
@@ -68,17 +72,21 @@ export class SimpleController {
       },
     },
   })
-  async broadcastblob(@Req() req: Request, @UploadedFile('file') file: Express.Multer.File) {
-    // TEMPLATE: See SimpleTemplateController and keep template code up to date.
-    const body: BroadcastRequestWithFile = req.body;
+  async broadcastblob(
+    @Req() req: Request,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<MessageResponse> {
+    // See SimpleTemplateController and keep template code up to date.
+    const body: BroadcastBlob = req.body;
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
-    return firefly.sendBroadcast({
+    const message = await firefly.sendBroadcast({
       header: {
         tag: body.tag || undefined,
         topics: body.topic ? [body.topic] : undefined,
       },
       data: [{ id: data.id }],
     });
+    return { id: message.header.id };
   }
 }
 
@@ -96,7 +104,7 @@ export class SimpleTemplateController {
   @ContentType('application/json')
   broadcastTemplate() {
     return formatTemplate(`
-      return firefly.sendBroadcast({
+      const message = await firefly.sendBroadcast({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
@@ -111,7 +119,7 @@ export class SimpleTemplateController {
   broadcastBlobTemplate() {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
-      return firefly.sendBroadcast({
+      const message = await firefly.sendBroadcast({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,

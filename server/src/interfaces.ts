@@ -1,7 +1,12 @@
 import { IsOptional, IsString } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
-export class BroadcastRequestWithValue {
+export class MessageResponse {
+  @IsString()
+  id: string;
+}
+
+export class BroadcastValue {
   @IsString()
   @IsOptional()
   topic?: string;
@@ -16,7 +21,7 @@ export class BroadcastRequestWithValue {
   file?: never;
 }
 
-export class BroadcastRequestWithFile {
+export class BroadcastBlob {
   @IsString()
   @IsOptional()
   topic?: string;

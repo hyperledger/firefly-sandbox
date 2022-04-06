@@ -19,7 +19,7 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            return firefly.sendBroadcast({
+            const message = await firefly.sendBroadcast({
               header: {
                 tag: undefined,
                 topics: undefined,
@@ -37,7 +37,7 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            return firefly.sendBroadcast({
+            const message = await firefly.sendBroadcast({
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
@@ -64,7 +64,7 @@ describe('Templates: Simple Operations', () => {
         ).toBe(
           formatTemplate(`
             const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
-            return firefly.sendBroadcast({
+            const message = await firefly.sendBroadcast({
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],

@@ -1,4 +1,4 @@
-import { FormControl, Grid, TextField } from '@mui/material';
+import { Button, FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
@@ -52,7 +52,9 @@ export const BroadcastForm: React.FC = () => {
           <MessageTypeGroup
             noUndefined
             message={message}
-            onSetMessage={(msg: string | object) => setMessage(msg)}
+            onSetMessage={(msg: string | object) => {
+              return null;
+            }}
           />
           <Grid container item justifyContent="space-between" spacing={1}>
             {/* Tag */}

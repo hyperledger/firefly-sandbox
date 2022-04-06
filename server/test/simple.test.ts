@@ -2,14 +2,14 @@ import * as request from 'supertest';
 import FireFly, { FireFlyDataRef, FireFlyMessage } from '@photic/firefly-sdk-nodejs';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
-import { BroadcastRequestWithValue } from '../src/interfaces';
+import { BroadcastValue } from '../src/interfaces';
 
 jest.mock('@photic/firefly-sdk-nodejs');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Simple Operations', () => {
   test('Broadcast with value', async () => {
-    const req: BroadcastRequestWithValue = {
+    const req: BroadcastValue = {
       tag: 'test-tag',
       topic: 'test-topic',
       value: 'Hello',
@@ -20,7 +20,11 @@ describe('Simple Operations', () => {
 
     mockFireFly.sendBroadcast.mockResolvedValueOnce(msg);
 
-    await request(server).post('/api/simple/broadcast').send(req).expect(202).expect(msg);
+    await request(server)
+      .post('/api/simple/broadcast')
+      .send(req)
+      .expect(202)
+      .expect({ id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).not.toHaveBeenCalled();
     expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({
@@ -45,7 +49,7 @@ describe('Simple Operations', () => {
       .field('tag', 'test-tag')
       .attach('file', 'test/data/simple-file.txt')
       .expect(202)
-      .expect(msg);
+      .expect({ id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
     expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({

@@ -26,7 +26,7 @@ export const LeftPane = () => {
                 {ts.tutorials.map((tutorial, idx) => {
                   return (
                     // Form accordion
-                    <Grid key={idx} item pb={1}>
+                    <Grid key={idx} item pb={1} sx={{ width: '100%' }}>
                       <FFAccordion
                         title={t(tutorial.title)}
                         infoText={t(tutorial.shortInfo)}

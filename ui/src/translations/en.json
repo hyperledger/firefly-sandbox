@@ -53,6 +53,7 @@
   "subscription": "Subscription",
   "tag": "Tag",
   "toAddress": "To Address",
+  "tokenIndex": "Token Index",
   "tokenPool": "Token Pool",
   "tokenRecipient": "Token Recipient",
   "topic": "Topic",

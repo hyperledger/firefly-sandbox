@@ -36,7 +36,7 @@ export const TransferForm: React.FC = () => {
   const [amount, setAmount] = useState<number>();
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
-  const [tokenIndex, setTokenIndex] = useState<string>();
+  const [tokenIndex, setTokenIndex] = useState<number | null>();
 
   useEffect(() => {
     if (activeForm !== 'transfer') return;
@@ -68,12 +68,34 @@ export const TransferForm: React.FC = () => {
       });
   }, []);
 
+  useEffect(() => {
+    setTokenIndex(isFungible() ? null : 1);
+    if (!isFungible()) {
+      setAmount(1);
+    }
+  }, [pool]);
+
+  const isFungible = () => {
+    const selectedPool = tokenPools.find((p) => p.name === pool);
+    return selectedPool?.type === 'fungible';
+  };
+
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
       setAmount(undefined);
       return;
     }
     setAmount(parseInt(event.target.value));
+  };
+
+  const handleTokenIndexChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.value.length === 0) {
+      setAmount(undefined);
+      return;
+    }
+    setTokenIndex(parseInt(event.target.value));
   };
 
   const handleRecipientChange = (
@@ -147,6 +169,8 @@ export const TransferForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
+              value={amount}
+              disabled={!isFungible()}
               type="number"
               label={t('amount')}
               placeholder="ex. 10"
@@ -154,6 +178,19 @@ export const TransferForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
+        {tokenIndex && (
+          <Grid item xs={4}>
+            <FormControl fullWidth required>
+              <TextField
+                fullWidth
+                type="number"
+                label={t('tokenIndex')}
+                placeholder="ex. 1"
+                onChange={handleTokenIndexChange}
+              />
+            </FormControl>
+          </Grid>
+        )}
         {/* Message
         <MessageTypeGroup
           message={message}

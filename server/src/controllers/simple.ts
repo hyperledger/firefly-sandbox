@@ -293,6 +293,7 @@ export class SimpleTemplateController {
         },
         data: [{ value: <%= ${q('value')} %> }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -307,6 +308,7 @@ export class SimpleTemplateController {
         },
         data: [{ id: data.id }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -323,6 +325,7 @@ export class SimpleTemplateController {
         },
         data: [{ value: <%= ${q('value')} %> }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -340,6 +343,7 @@ export class SimpleTemplateController {
         },
         data: [{ id: data.id }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -351,6 +355,7 @@ export class SimpleTemplateController {
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
       });
+      return { type: 'message', id: pool.message };
     `);
   }
 
@@ -361,6 +366,7 @@ export class SimpleTemplateController {
         pool: <%= ${q('pool')} %>,
         amount: <%= ${q('amount')} %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 
@@ -372,6 +378,7 @@ export class SimpleTemplateController {
         amount: <%= ${q('amount')} %>,
         tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 
@@ -384,6 +391,7 @@ export class SimpleTemplateController {
         amount: <%= ${q('amount')} %>,
         tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 }

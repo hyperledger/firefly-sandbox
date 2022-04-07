@@ -26,6 +26,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
 
@@ -44,6 +45,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '\\'Hello\\'' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -71,6 +73,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ id: data.id }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -102,6 +105,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
 
@@ -124,6 +128,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '\\'Hello\\'' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -155,6 +160,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ id: data.id }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -179,6 +185,7 @@ describe('Templates: Simple Operations', () => {
               symbol: 'P1',
               type: 'fungible',
             });
+            return { type: 'message', id: pool.message };
         `),
         );
       });
@@ -201,6 +208,7 @@ describe('Templates: Simple Operations', () => {
               pool: 'pool1',
               amount: '10',
             });
+            return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });
@@ -225,6 +233,7 @@ describe('Templates: Simple Operations', () => {
               amount: '1',
               tokenIndex: '1',
             });
+            return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });
@@ -251,6 +260,7 @@ describe('Templates: Simple Operations', () => {
               amount: '1',
               tokenIndex: '1',
             });
+            return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });

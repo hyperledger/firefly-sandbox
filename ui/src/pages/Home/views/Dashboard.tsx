@@ -28,6 +28,7 @@ export const HomeDashboard: () => JSX.Element = () => {
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
   const { activeForm } = useContext(JsonPayloadContext);
+  const [templateName, setTemplateName] = useState<string>('broadcast');
 
   useEffect(() => {
     const fetchTemplate = () => {
@@ -42,6 +43,7 @@ export const HomeDashboard: () => JSX.Element = () => {
         })
         .then((data) => {
           setTemplate(data);
+          setTemplateName(activeForm);
           buildCodeBlock(data);
         })
         .catch(() => {
@@ -53,15 +55,18 @@ export const HomeDashboard: () => JSX.Element = () => {
 
   useEffect(() => {
     const payload: any = jsonPayload;
-    if (template && payload && !payload.connector) {
-      console.log(template);
+    if (
+      template &&
+      templateName === activeForm &&
+      payload &&
+      !payload.connector
+    ) {
       buildCodeBlock(template);
     }
-  }, [template, jsonPayload]);
+  }, [template, templateName, jsonPayload]);
 
   const buildCodeBlock = (codeTemplate: string) => {
     const compiled = _.template(codeTemplate);
-    console.log(jsonPayload);
     const result = compiled(jsonPayload);
     setCodeBlock(result);
   };

@@ -62,7 +62,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   };
 
   const buildFormData = (payload: any, blobEndpoint: string) => {
-    console.log(endpoint);
     const data = new FormData();
     const file: any = document.querySelector('input[type="file"]');
     data.append('file', file.files[0]);

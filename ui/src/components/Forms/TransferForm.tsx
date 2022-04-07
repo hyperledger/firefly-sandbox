@@ -2,8 +2,11 @@ import {
   FormControl,
   Grid,
   InputLabel,
+  ListItemText,
   MenuItem,
+  OutlinedInput,
   Select,
+  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
@@ -13,7 +16,7 @@ import { SELECTED_NAMESPACE } from '../../App';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { ITokenPool } from '../../interfaces/api';
+import { ITokenPool, IVerifiers } from '../../interfaces/api';
 import { DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import {
@@ -29,49 +32,36 @@ export const TransferForm: React.FC = () => {
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
-  const [message, setMessage] = useState<string | object | undefined>(
-    DEFAULT_MESSAGE_STRING
-  );
-
   const [pool, setPool] = useState<string>();
-  const [amount, setAmount] = useState<string>();
-  const [fromAddress, setFromAddress] = useState<string>();
-  const [toAddress, setToAddress] = useState<string>();
+  const [amount, setAmount] = useState<number>();
+  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
+  const [recipient, setRecipient] = useState<string>('');
+  const [tokenIndex, setTokenIndex] = useState<string>();
 
   useEffect(() => {
     if (activeForm !== 'transfer') return;
-    if (!message) {
-      setJsonPayload({
-        pool: pool,
-        amount: amount,
-        from: fromAddress,
-        to: toAddress,
-      });
-      return;
-    }
-
     setJsonPayload({
-      pool: pool,
-      amount: amount,
-      from: fromAddress,
-      to: toAddress,
-      message: {
-        data: [
-          {
-            value: message,
-          },
-        ],
-      },
+      pool,
+      amount,
+      tokenIndex,
+      to: recipient,
     });
-  }, [pool, amount, toAddress, fromAddress, message, activeForm]);
+    return;
+  }, [pool, amount, recipient, activeForm]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
-    fetchCatcher(
-      `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.tokenPools}${qParams}`
-    )
+    fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
+
+    fetchCatcher(`${FF_Paths.tokenVerifiers}`)
+      .then((verifiersRes: IVerifiers[]) => {
+        setTokenVerifiers(verifiersRes);
       })
       .catch((err) => {
         reportFetchError(err);
@@ -83,27 +73,16 @@ export const TransferForm: React.FC = () => {
       setAmount(undefined);
       return;
     }
-    setAmount(event.target.value);
+    setAmount(parseInt(event.target.value));
   };
 
-  const handleFromAddressChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+  const handleRecipientChange = (
+    event: SelectChangeEvent<typeof recipient>
   ) => {
-    if (event.target.value.length === 0) {
-      setFromAddress(undefined);
-      return;
-    }
-    setFromAddress(event.target.value);
-  };
-
-  const handleToAddressChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    if (event.target.value.length === 0) {
-      setToAddress(undefined);
-      return;
-    }
-    setToAddress(event.target.value);
+    const {
+      target: { value },
+    } = event;
+    setRecipient(value);
   };
 
   return (
@@ -128,7 +107,8 @@ export const TransferForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.name}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;-&nbsp;
+                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.type === 'fungible' ? 'FT' : 'NFT'}
                     </Typography>
                     <Typography color="text.disabled" fontSize="small">
                       {tp.standard}
@@ -139,47 +119,49 @@ export const TransferForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container item justifyContent="space-between" spacing={1}>
-          <Grid item xs={4}>
-            <FormControl fullWidth required>
-              <TextField
-                fullWidth
-                label={t('fromAddress')}
-                placeholder={t('exampleAddress')}
-                onChange={handleFromAddressChange}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth required>
-              <TextField
-                fullWidth
-                label={t('toAddress')}
-                placeholder={t('exampleFromAddress')}
-                onChange={handleToAddressChange}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={4}>
-            <FormControl fullWidth required>
-              <TextField
-                fullWidth
-                type="number"
-                label={t('amount')}
-                placeholder="ex. 10"
-                onChange={handleAmountChange}
-              />
-            </FormControl>
-          </Grid>
+
+        <Grid container item>
+          {/* Recipient Select box */}
+          <FormControl fullWidth required>
+            <InputLabel>{t('tokenRecipient')}</InputLabel>
+            <Select
+              value={recipient}
+              onChange={handleRecipientChange}
+              input={<OutlinedInput label={t('tokenRecipient')} />}
+              renderValue={(selected) => {
+                const verifier = tokenVerifiers.find(
+                  (v) => v.value === selected
+                );
+                return `${verifier?.did}`;
+              }}
+            >
+              {tokenVerifiers.map((identity, idx) => (
+                <MenuItem key={idx} value={identity.value}>
+                  <ListItemText primary={identity.did} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Grid>
-        {/* Message */}
+        <Grid item xs={4}>
+          <FormControl fullWidth required>
+            <TextField
+              fullWidth
+              type="number"
+              label={t('amount')}
+              placeholder="ex. 10"
+              onChange={handleAmountChange}
+            />
+          </FormControl>
+        </Grid>
+        {/* Message
         <MessageTypeGroup
           message={message}
           onSetMessage={(msg: string | object) => setMessage(msg)}
-        />
+        /> */}
         <Grid container item justifyContent="flex-end">
           <RunButton
-            endpoint={`${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.tokenTransfers}`}
+            endpoint={`${FF_Paths.tokenTransfers}`}
             payload={jsonPayload}
           />
         </Grid>

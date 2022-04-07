@@ -52,24 +52,24 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'mintShortInfo',
         title: 'mintTitle',
       },
-      // {
-      //   docsURL:
-      //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
-      //   endpoint: FF_Paths.tokenTransfers,
-      //   form: <TransferForm />,
-      //   link: 'transfer',
-      //   shortInfo: 'transferShortInfo',
-      //   title: 'transferTitle',
-      // },
-      // {
-      //   docsURL:
-      //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
-      //   endpoint: FF_Paths.tokenBurn,
-      //   form: <BurnForm />,
-      //   link: 'burn',
-      //   shortInfo: 'burnShortInfo',
-      //   title: 'burnTitle',
-      // },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
+        endpoint: FF_Paths.tokenTransfers,
+        form: <TransferForm />,
+        link: 'transfer',
+        shortInfo: 'transferShortInfo',
+        title: 'transferTitle',
+      },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
+        endpoint: FF_Paths.tokenBurn,
+        form: <BurnForm />,
+        link: 'burn',
+        shortInfo: 'burnShortInfo',
+        title: 'burnTitle',
+      },
     ],
   },
 ];

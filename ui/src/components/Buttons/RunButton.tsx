@@ -26,17 +26,17 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   const handlePost = () => {
     const blobUpload = activeForm.includes('blob');
-    if (!blobUpload) {
-      delete payload['filename'];
-    }
-    fetch(`${endpoint}${activeForm.includes('blob') ? 'blob' : ''}`, {
+    const fullEndpoint = managePayloadAndEndpoint();
+    const reqDetails: any = {
       method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': blobUpload ? 'multipart/form-data' : 'application/json',
-      },
-      body: blobUpload ? buildFormData(payload) : JSON.stringify(payload),
-    })
+      body: blobUpload
+        ? buildFormData(payload, fullEndpoint)
+        : JSON.stringify(payload),
+    };
+    if (!blobUpload) {
+      reqDetails.headers = { 'Content-Type': 'application/json' };
+    }
+    fetch(fullEndpoint, reqDetails)
       .then((response) => response.json())
       .then(() => {
         setShowSnackbar(true);
@@ -46,12 +46,33 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       });
   };
 
-  const buildFormData = (payload: any) => {
+  const managePayloadAndEndpoint = () => {
+    const blobUpload = activeForm.includes('blob');
+    if (!blobUpload) {
+      delete payload['filename'];
+    }
+    const tokenOperations = ['mint', 'burn', 'transfer'];
+    if (tokenOperations.includes(activeForm)) {
+      delete payload['message'];
+    }
+    const fullEndpoint = `${endpoint}${
+      activeForm.includes('blob') ? 'blob' : ''
+    }`;
+    return fullEndpoint;
+  };
+
+  const buildFormData = (payload: any, blobEndpoint: string) => {
+    console.log(endpoint);
     const data = new FormData();
     const file: any = document.querySelector('input[type="file"]');
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
+    if (blobEndpoint.includes('privateblob')) {
+      for (const r of payload.recipients) {
+        data.append('recipients[]', r);
+      }
+    }
     return data;
   };
 

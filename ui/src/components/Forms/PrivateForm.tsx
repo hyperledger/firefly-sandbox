@@ -41,7 +41,7 @@ export const PrivateForm: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');
 
   const [tag, setTag] = useState<string>();
-  const [topics, setTopics] = useState<string[]>();
+  const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
     fetch(`/api/simple/organizations?exclude_self=false`, {
@@ -96,7 +96,7 @@ export const PrivateForm: React.FC = () => {
       setTopics(undefined);
       return;
     }
-    setTopics([event.target.value]);
+    setTopics(event.target.value);
   };
 
   return (
@@ -155,6 +155,7 @@ export const PrivateForm: React.FC = () => {
           <RunButton
             endpoint={`${FF_Paths.messagesPrivate}`}
             payload={jsonPayload}
+            disabled={recipients.length === 0}
           />
         </Grid>
       </Grid>

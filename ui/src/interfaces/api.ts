@@ -184,6 +184,12 @@ export interface ITokenConnector {
   name: string;
 }
 
+export interface IVerifiers {
+  did: string;
+  type: string;
+  value: string;
+}
+
 export interface ITokenPool {
   id: string;
   type: string;

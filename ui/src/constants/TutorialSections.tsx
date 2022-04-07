@@ -43,15 +43,15 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
       },
-      // {
-      //   docsURL:
-      //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
-      //   endpoint: FF_Paths.tokenMint,
-      //   form: <MintForm />,
-      //   link: 'mint',
-      //   shortInfo: 'mintShortInfo',
-      //   title: 'mintTitle',
-      // },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
+        endpoint: FF_Paths.tokenMint,
+        form: <MintForm />,
+        link: 'mint',
+        shortInfo: 'mintShortInfo',
+        title: 'mintTitle',
+      },
       // {
       //   docsURL:
       //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',

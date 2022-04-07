@@ -28,8 +28,7 @@ import {
   TokenBurn,
   Verifier,
   TokenBalance,
-  FireFlyMessageResponse,
-  FireFlyTransactionResponse,
+  FireFlyResponse,
 } from '../interfaces';
 
 @JsonController('/simple')
@@ -59,9 +58,9 @@ export class SimpleController {
 
   @Post('/broadcast')
   @HttpCode(202)
-  @ResponseSchema(FireFlyMessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
-  async broadcast(@Body() body: BroadcastValue): Promise<FireFlyMessageResponse> {
+  async broadcast(@Body() body: BroadcastValue): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendBroadcast({
       header: {
@@ -70,18 +69,18 @@ export class SimpleController {
       },
       data: [{ value: body.value }],
     });
-    return { messageId: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Post('/broadcastblob')
   @HttpCode(202)
   @FormDataSchema(BroadcastBlob)
-  @ResponseSchema(FireFlyMessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyMessageResponse> {
+  ): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -92,7 +91,7 @@ export class SimpleController {
       },
       data: [{ id: data.id }],
     });
-    return { messageId: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Get('/organizations')
@@ -133,9 +132,9 @@ export class SimpleController {
 
   @Post('/private')
   @HttpCode(202)
-  @ResponseSchema(FireFlyMessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: PrivateValue): Promise<FireFlyMessageResponse> {
+  async send(@Body() body: PrivateValue): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage({
       header: {
@@ -147,18 +146,18 @@ export class SimpleController {
       },
       data: [{ value: body.value }],
     });
-    return { messageId: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Post('/privateblob')
   @HttpCode(202)
   @FormDataSchema(PrivateBlob)
-  @ResponseSchema(FireFlyMessageResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyMessageResponse> {
+  ): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -172,7 +171,7 @@ export class SimpleController {
       },
       data: [{ id: data.id }],
     });
-    return { messageId: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Get('/tokenpools')
@@ -185,50 +184,50 @@ export class SimpleController {
 
   @Post('/tokenpools')
   @HttpCode(202)
-  @ResponseSchema(FireFlyTransactionResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Create a token pool' })
-  async createtokenpool(@Body() body: TokenPoolInput): Promise<FireFlyTransactionResponse> {
+  async createtokenpool(@Body() body: TokenPoolInput): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const pool = await firefly.createTokenPool({
       name: body.name,
       symbol: body.symbol,
       type: body.type,
     });
-    return { transactionId: pool.tx.id };
+    return { type: 'message', id: pool.message };
   }
 
   @Post('/mint')
   @HttpCode(202)
-  @ResponseSchema(FireFlyTransactionResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMint): Promise<FireFlyTransactionResponse> {
+  async mint(@Body() body: TokenMint): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.mintTokens({
       pool: body.pool,
       amount: body.amount,
     });
-    return { transactionId: transfer.tx.id };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Post('/burn')
   @HttpCode(202)
-  @ResponseSchema(FireFlyTransactionResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenBurn): Promise<FireFlyTransactionResponse> {
+  async burn(@Body() body: TokenBurn): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.burnTokens({
       pool: body.pool,
       amount: body.amount,
       tokenIndex: body.tokenIndex,
     });
-    return { transactionId: transfer.tx.id };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Post('/transfer')
   @HttpCode(202)
-  @ResponseSchema(FireFlyTransactionResponse)
+  @ResponseSchema(FireFlyResponse)
   @OpenAPI({ summary: 'Transfer tokens within a token pool' })
-  async transfer(@Body() body: TokenTransfer): Promise<FireFlyTransactionResponse> {
+  async transfer(@Body() body: TokenTransfer): Promise<FireFlyResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.transferTokens({
       pool: body.pool,
@@ -236,7 +235,7 @@ export class SimpleController {
       amount: body.amount,
       tokenIndex: body.tokenIndex,
     });
-    return { transactionId: transfer.tx.id };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Get('/balances')

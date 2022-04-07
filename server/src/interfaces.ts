@@ -11,14 +11,12 @@ import {
 } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
-export class FireFlyMessageResponse {
+export class FireFlyResponse {
   @IsString()
-  messageId: string;
-}
+  type: string;
 
-export class FireFlyTransactionResponse {
   @IsString()
-  transactionId: string;
+  id: string;
 }
 
 export class BaseMessageFields {

@@ -300,7 +300,10 @@ export class SimpleTemplateController {
   @Get('/broadcastblob')
   broadcastblobTemplate() {
     return formatTemplate(`
-      const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
+      const data = await firefly.uploadDataBlob(
+        file.buffer,
+        <%= ${q('filename')} %>,
+      );
       const message = await firefly.sendBroadcast({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -332,7 +335,10 @@ export class SimpleTemplateController {
   @Get('/privateblob')
   sendblobTemplate() {
     return formatTemplate(`
-      const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
+      const data = await firefly.uploadDataBlob(
+        file.buffer,
+        <%= ${q('filename')} %>,
+      );
       const message = await firefly.sendPrivateMessage({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,

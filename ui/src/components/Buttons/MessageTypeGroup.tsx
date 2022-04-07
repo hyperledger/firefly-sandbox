@@ -59,6 +59,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         return;
       case 'file':
         onSetMessage('');
+        onSetFileName('');
         setActiveForm(
           activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
         );

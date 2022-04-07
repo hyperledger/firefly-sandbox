@@ -48,10 +48,18 @@ export class SimpleController {
           events: url.searchParams.get('filter.events') ?? undefined,
         },
       };
-      const ffSocket = firefly.listen(sub, (socket, event) => {
+
+      const ffSocket = firefly.listen(sub, async (socket, event) => {
+        if (event.type === 'transaction_submitted' && event.transaction?.type === 'batch_pin') {
+          // Enrich batch_pin transaction events with details on the batch
+          const batches = await firefly.getBatches({ 'tx.id': event.tx });
+          event['batch'] = batches[0];
+        }
+
         // Forward the event to the client
         client.send(JSON.stringify(event));
       });
+
       client.on('close', () => {
         this.logger.log(`Disconnecting websocket client ${id}`);
         ffSocket.close();

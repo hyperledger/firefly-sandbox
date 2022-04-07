@@ -24,14 +24,13 @@ export const BroadcastForm: React.FC = () => {
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    if (activeForm.includes('broadcast')) {
-      setJsonPayload({
-        topic: topics,
-        tag,
-        value: message,
-        filename: fileName,
-      });
-    }
+    if (!activeForm.includes('broadcast')) return;
+    setJsonPayload({
+      topic: topics,
+      tag,
+      value: message,
+      filename: fileName,
+    });
   }, [message, tag, topics, fileName, activeForm]);
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -22,16 +22,14 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload }) => {
   };
 
   const handlePost = () => {
-    fetch(
-      `${window.location.protocol}//${window.location.hostname}:3001${endpoint}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    )
+    const data = new FormData();
+    fetch(`${endpoint}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
       .then((response) => response.json())
       .then(() => {
         setShowSnackbar(true);

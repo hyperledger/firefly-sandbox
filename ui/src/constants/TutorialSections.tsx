@@ -39,7 +39,7 @@ export const TutorialSections: ITutorialSection[] = [
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
         endpoint: FF_Paths.tokenPools,
         form: <PoolForm />,
-        link: 'createPool',
+        link: 'tokenpools',
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
       },

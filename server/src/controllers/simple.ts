@@ -36,19 +36,19 @@ import { plainToClassFromExist } from 'class-transformer';
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleController {
   static init(wsHandler: WebsocketHandler) {
-    const wss = wsHandler.addWebsocket('/api/simple/ws');
-    wss.on('connection', (client, request) => {
+    wsHandler.addWebsocket('/api/simple/ws').on('connection', (client, request) => {
+      // Each time a client connects to this server, open a corresponding connection to FireFly
       const id = nanoid();
       console.log(`Connecting websocket client ${id}`);
-
       const url = new URL(request.url ?? '', `http://${request.headers.host}`);
       const sub: FireFlySubscriptionBase = {
         filter: {
           events: url.searchParams.get('filter.events') ?? undefined,
         },
       };
-      const ffSocket = firefly.listen(sub, (socket, data) => {
-        client.send(JSON.stringify(data));
+      const ffSocket = firefly.listen(sub, (socket, event) => {
+        // Forward the event to the client
+        client.send(JSON.stringify(event));
       });
       client.on('close', () => {
         console.log(`Disconnecting websocket client ${id}`);

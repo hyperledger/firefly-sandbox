@@ -31,7 +31,6 @@ export const MintForm: React.FC = () => {
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
-  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
 
   const [message, setMessage] = useState<string | object | undefined>(
@@ -72,14 +71,6 @@ export const MintForm: React.FC = () => {
     fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-
-    fetchCatcher(`${FF_Paths.tokenVerifiers}`)
-      .then((verifiersRes: IVerifiers[]) => {
-        setTokenVerifiers(verifiersRes);
       })
       .catch((err) => {
         reportFetchError(err);
@@ -137,30 +128,7 @@ export const MintForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid container item>
-          {/* Recipient Select box */}
-          <FormControl fullWidth required>
-            <InputLabel>{t('tokenRecipient')}</InputLabel>
-            <Select
-              value={recipient}
-              onChange={handleRecipientChange}
-              input={<OutlinedInput label={t('tokenRecipient')} />}
-              renderValue={(selected) => {
-                const verifier = tokenVerifiers.find(
-                  (v) => v.value === selected
-                );
-                return `${verifier?.did}`;
-              }}
-            >
-              {tokenVerifiers.map((identity, idx) => (
-                <MenuItem key={idx} value={identity.value}>
-                  <ListItemText primary={identity.did} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={4}>
           <FormControl fullWidth required>
             <TextField
               fullWidth

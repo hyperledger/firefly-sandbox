@@ -28,7 +28,7 @@ import {
   TokenBurn,
   Verifier,
   TokenBalance,
-  FireFlyResponse,
+  AsyncResponse,
 } from '../interfaces';
 import Logger from '../logger';
 
@@ -78,9 +78,9 @@ export class SimpleWebSocket {
 export class SimpleController {
   @Post('/broadcast')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
-  async broadcast(@Body() body: BroadcastValue): Promise<FireFlyResponse> {
+  async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendBroadcast({
       header: {
@@ -95,12 +95,12 @@ export class SimpleController {
   @Post('/broadcastblob')
   @HttpCode(202)
   @FormDataSchema(BroadcastBlob)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyResponse> {
+  ): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -152,9 +152,9 @@ export class SimpleController {
 
   @Post('/private')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: PrivateValue): Promise<FireFlyResponse> {
+  async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage({
       header: {
@@ -172,12 +172,12 @@ export class SimpleController {
   @Post('/privateblob')
   @HttpCode(202)
   @FormDataSchema(PrivateBlob)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyResponse> {
+  ): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -204,9 +204,9 @@ export class SimpleController {
 
   @Post('/tokenpools')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Create a token pool' })
-  async createtokenpool(@Body() body: TokenPoolInput): Promise<FireFlyResponse> {
+  async createtokenpool(@Body() body: TokenPoolInput): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const pool = await firefly.createTokenPool({
       name: body.name,
@@ -218,9 +218,9 @@ export class SimpleController {
 
   @Post('/mint')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMint): Promise<FireFlyResponse> {
+  async mint(@Body() body: TokenMint): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.mintTokens({
       pool: body.pool,
@@ -231,9 +231,9 @@ export class SimpleController {
 
   @Post('/burn')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenBurn): Promise<FireFlyResponse> {
+  async burn(@Body() body: TokenBurn): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.burnTokens({
       pool: body.pool,
@@ -245,9 +245,9 @@ export class SimpleController {
 
   @Post('/transfer')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Transfer tokens within a token pool' })
-  async transfer(@Body() body: TokenTransfer): Promise<FireFlyResponse> {
+  async transfer(@Body() body: TokenTransfer): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.transferTokens({
       pool: body.pool,

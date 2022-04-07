@@ -11,7 +11,7 @@
     "start": "node .",
     "start:dev": "tsnd --respawn ./src/index.ts",
     "test": "jest --verbose --silent",
-    "lint": "eslint \"src/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"test/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "swagger": "swagger-jsdoc -d swagger-def.json -o swagger.json src/routers/*"

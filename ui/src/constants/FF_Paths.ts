@@ -61,7 +61,7 @@ export const FF_Paths = {
   // Messages
   messages: '/messages',
   messagesBroadcast: '/api/simple/broadcast',
-  messagesPrivate: '/messages/private',
+  messagesPrivate: '/api/simple/private',
   messagesReqReply: '/messages/requestreply',
   messagesById: (msgId: string) => `/messages/${msgId}`,
   messageDataById: (msgId: string) => `/messages/${msgId}/data`,

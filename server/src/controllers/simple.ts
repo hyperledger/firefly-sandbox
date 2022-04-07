@@ -324,7 +324,7 @@ export class SimpleTemplateController {
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
         group: {
-          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
         data: [{ value: <%= ${q('value')} %> }],
       });
@@ -345,7 +345,7 @@ export class SimpleTemplateController {
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
         group: {
-          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
         data: [{ id: data.id }],
       });
@@ -398,6 +398,23 @@ export class SimpleTemplateController {
         tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
       return { type: 'token_transfer', id: transfer.localId };
+    `);
+  }
+
+  @Get('/balances')
+  balancesTemplate() {
+    return formatTemplate(`
+      const balances = await firefly.getTokenBalances({
+        pool: <%= pool ? ${q('pool')} : 'undefined' %>,
+        key: <%= key ? ${q('key')} : 'undefined' %>,
+        balance: '>0',
+      });
+      return balances.map((b) => ({
+        pool: b.pool,
+        key: b.key,
+        balance: b.balance,
+        tokenIndex: b.tokenIndex,
+      }));
     `);
   }
 }

@@ -82,7 +82,7 @@ export const FF_Paths = {
   tokenBurn: '/tokens/burn',
   tokenConnectors: '/tokens/connectors',
   tokenMint: '/tokens/mint',
-  tokenPools: '/tokens/pools',
+  tokenPools: '/api/simple/tokenpools',
   tokenPoolsById: (nameOrId: string) => `/tokens/pools/${nameOrId}`,
   tokenTransfers: '/tokens/transfers',
   tokenTransferById: (transferId: string) => `/tokens/transfers/${transferId}`,

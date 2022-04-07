@@ -12,7 +12,7 @@ import {
 import { RunButton } from '../Buttons/RunButton';
 
 export const BroadcastForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm, setActiveForm } =
+  const { jsonPayload, setJsonPayload, activeForm } =
     useContext(JsonPayloadContext);
 
   const { t } = useTranslation();

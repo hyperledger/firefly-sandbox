@@ -97,23 +97,6 @@ export const PoolForm: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-          {/* Connector */}
-          <Grid item xs={6}>
-            <FormControl fullWidth required>
-              <InputLabel>{t('connector')}</InputLabel>
-              <Select
-                value={connector}
-                label={t('connector')}
-                onChange={(e) => setConnector(e.target.value as string)}
-              >
-                {connectors.map((c, idx) => (
-                  <MenuItem key={idx} value={c.name}>
-                    {c.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
         </Grid>
         <Grid container item justifyContent="flex-end">
           <RunButton

@@ -32,13 +32,15 @@ import {
 } from '../interfaces';
 import Logger from '../logger';
 
-@JsonController('/simple')
-@OpenAPI({ tags: ['Simple Operations'] })
-export class SimpleController {
-  static logger = new Logger(SimpleController.name);
+/**
+ * Simple Operations - WebSocket Server
+ */
+export class SimpleWebSocket {
+  logger = new Logger(SimpleWebSocket.name);
+  path = '/simple/ws';
 
-  static init(wsHandler: WebsocketHandler) {
-    wsHandler.addWebsocket('/api/simple/ws').on('connection', (client, request) => {
+  init(prefix: string, wsHandler: WebsocketHandler) {
+    wsHandler.addWebsocket(prefix + this.path).on('connection', (client, request) => {
       // Each time a client connects to this server, open a corresponding connection to FireFly
       const id = nanoid();
       this.logger.log(`Connecting websocket client ${id}`);
@@ -66,7 +68,14 @@ export class SimpleController {
       });
     });
   }
+}
 
+/**
+ * Simple Operations - API Server
+ */
+@JsonController('/simple')
+@OpenAPI({ tags: ['Simple Operations'] })
+export class SimpleController {
   @Post('/broadcast')
   @HttpCode(202)
   @ResponseSchema(FireFlyResponse)
@@ -267,17 +276,13 @@ export class SimpleController {
 }
 
 /**
- * Code Templates
+ * Simple Operations - Code Templates
  * Allows the frontend to display representative code snippets for backend operations.
  * For demonstration purposes only.
  */
 @JsonController('/simple/template')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleTemplateController {
-  static init() {
-    // do nothing
-  }
-
   @Get('/broadcast')
   broadcastTemplate() {
     return formatTemplate(`

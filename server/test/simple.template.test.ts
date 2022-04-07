@@ -65,7 +65,10 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
+            const data = await firefly.uploadDataBlob(
+              file.buffer,
+              'document.pdf',
+            );
             const message = await firefly.sendBroadcast({
               header: {
                 tag: 'test-tag',
@@ -149,7 +152,10 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
+            const data = await firefly.uploadDataBlob(
+              file.buffer,
+              'document.pdf',
+            );
             const message = await firefly.sendPrivateMessage({
               header: {
                 tag: 'test-tag',

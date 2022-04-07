@@ -44,6 +44,9 @@ export const MessageTypeGroup: React.FC<Props> = ({
     _: React.MouseEvent<HTMLElement>,
     newAlignment: 'none' | 'string' | 'json' | 'file'
   ) => {
+    if (!newAlignment) {
+      return;
+    }
     setMessageType(newAlignment);
     switch (newAlignment) {
       case 'none':

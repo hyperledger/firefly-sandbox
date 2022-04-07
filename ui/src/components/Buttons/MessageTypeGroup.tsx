@@ -38,7 +38,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<
     'none' | 'string' | 'json' | 'file'
   >('string');
-  const { setActiveForm } = useContext(JsonPayloadContext);
+  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -48,18 +48,20 @@ export const MessageTypeGroup: React.FC<Props> = ({
     switch (newAlignment) {
       case 'none':
         onSetMessage(undefined);
-        setActiveForm('broadcast');
+        setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'string':
         onSetMessage(DEFAULT_MESSAGE_STRING);
-        setActiveForm('broadcast');
+        setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'json':
         onSetMessage(DEFAULT_MESSAGE_JSON);
         return;
       case 'file':
         onSetMessage('');
-        setActiveForm('broadcastblob');
+        setActiveForm(
+          activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
+        );
         return;
       default:
         onSetMessage(DEFAULT_MESSAGE_STRING);

@@ -30,15 +30,18 @@ import {
   TokenBalance,
   FireFlyResponse,
 } from '../interfaces';
+import Logger from '../logger';
 
 @JsonController('/simple')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleController {
+  static logger = new Logger(SimpleController.name);
+
   static init(wsHandler: WebsocketHandler) {
     wsHandler.addWebsocket('/api/simple/ws').on('connection', (client, request) => {
       // Each time a client connects to this server, open a corresponding connection to FireFly
       const id = nanoid();
-      console.log(`Connecting websocket client ${id}`);
+      this.logger.log(`Connecting websocket client ${id}`);
       const url = new URL(request.url ?? '', `http://${request.headers.host}`);
       const sub: FireFlySubscriptionBase = {
         filter: {
@@ -50,7 +53,7 @@ export class SimpleController {
         client.send(JSON.stringify(event));
       });
       client.on('close', () => {
-        console.log(`Disconnecting websocket client ${id}`);
+        this.logger.log(`Disconnecting websocket client ${id}`);
         ffSocket.close();
       });
     });

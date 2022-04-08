@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { gradientDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -113,9 +113,10 @@ export const HomeDashboard: () => JSX.Element = () => {
                   fontSize="12px"
                 >
                   <SyntaxHighlighter
+                    customStyle={{ borderRadius: '5px' }}
                     showLineNumbers
                     language={'typescript'}
-                    style={gradientDark}
+                    style={atomOneDark}
                   >
                     {codeBlock}
                   </SyntaxHighlighter>
@@ -141,9 +142,10 @@ export const HomeDashboard: () => JSX.Element = () => {
                   fontSize="12px"
                 >
                   <SyntaxHighlighter
+                    customStyle={{ borderRadius: '5px' }}
                     showLineNumbers
                     language={'json'}
-                    style={gradientDark}
+                    style={atomOneDark}
                   >
                     {JSON.stringify(apiResponse, null, 1)}
                   </SyntaxHighlighter>

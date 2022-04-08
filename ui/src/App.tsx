@@ -51,6 +51,7 @@ function App() {
   const [jsonPayload, setJsonPayload] = useState<object>({});
   const [activeForm, setActiveForm] = useState<string>('broadcast');
   const [apiResponse, setApiResponse] = useState<object>({});
+  const [logs, setLogs] = useState<string[]>([]);
 
   // useEffect(() => {
   //   Promise.all([
@@ -194,6 +195,8 @@ function App() {
                 setActiveForm,
                 apiResponse,
                 setApiResponse,
+                logs,
+                setLogs,
               }}
             >
               <StyledEngineProvider injectFirst>

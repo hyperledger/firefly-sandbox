@@ -36,7 +36,7 @@ export const TransferForm: React.FC = () => {
   const [amount, setAmount] = useState<number>(1);
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
-  const [tokenIndex, setTokenIndex] = useState<number | null>();
+  const [tokenIndex, setTokenIndex] = useState<string | null>();
 
   useEffect(() => {
     if (activeForm !== 'transfer') return;
@@ -66,10 +66,10 @@ export const TransferForm: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, []);
+  }, [activeForm]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : 1);
+    setTokenIndex(isFungible() ? null : '1');
     if (!isFungible()) {
       setAmount(1);
     }
@@ -87,7 +87,7 @@ export const TransferForm: React.FC = () => {
   const handleTokenIndexChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setTokenIndex(parseInt(event.target.value));
+    setTokenIndex(event.target.value);
   };
 
   const handleRecipientChange = (

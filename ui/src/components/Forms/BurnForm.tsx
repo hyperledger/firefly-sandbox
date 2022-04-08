@@ -46,7 +46,7 @@ export const BurnForm: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, []);
+  }, [activeForm]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {

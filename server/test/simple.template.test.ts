@@ -26,6 +26,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
 
@@ -44,6 +45,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '\\'Hello\\'' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -63,7 +65,10 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
+            const data = await firefly.uploadDataBlob(
+              file.buffer,
+              'document.pdf',
+            );
             const message = await firefly.sendBroadcast({
               header: {
                 tag: 'test-tag',
@@ -71,6 +76,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ id: data.id }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -102,6 +108,7 @@ describe('Templates: Simple Operations', () => {
               },
               data: [{ value: '' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
 
@@ -120,10 +127,11 @@ describe('Templates: Simple Operations', () => {
                 topics: ['test-topic'],
               },
               group: {
-                members: [{identity: 'alpha'}, {identity: 'beta'}],
+                members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
               data: [{ value: '\\'Hello\\'' }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -144,17 +152,21 @@ describe('Templates: Simple Operations', () => {
           }),
         ).toBe(
           formatTemplate(`
-            const data = await firefly.uploadDataBlob(file.buffer, 'document.pdf');
+            const data = await firefly.uploadDataBlob(
+              file.buffer,
+              'document.pdf',
+            );
             const message = await firefly.sendPrivateMessage({
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
               },
               group: {
-                members: [{identity: 'alpha'}, {identity: 'beta'}],
+                members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
               data: [{ id: data.id }],
             });
+            return { type: 'message', id: message.header.id };
         `),
         );
       });
@@ -179,6 +191,7 @@ describe('Templates: Simple Operations', () => {
               symbol: 'P1',
               type: 'fungible',
             });
+            return { type: 'message', id: pool.message };
         `),
         );
       });
@@ -201,6 +214,7 @@ describe('Templates: Simple Operations', () => {
               pool: 'pool1',
               amount: '10',
             });
+            return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });
@@ -225,6 +239,7 @@ describe('Templates: Simple Operations', () => {
               amount: '1',
               tokenIndex: '1',
             });
+            return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });
@@ -251,6 +266,36 @@ describe('Templates: Simple Operations', () => {
               amount: '1',
               tokenIndex: '1',
             });
+            return { type: 'token_transfer', id: transfer.localId };
+        `),
+        );
+      });
+  });
+
+  test('Balances template', () => {
+    return request(server)
+      .get('/api/simple/template/balances')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            key: '0x111',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const balances = await firefly.getTokenBalances({
+              pool: 'pool1',
+              key: '0x111',
+              balance: '>0',
+            });
+            return balances.map((b) => ({
+              pool: b.pool,
+              key: b.key,
+              balance: b.balance,
+              tokenIndex: b.tokenIndex,
+            }));
         `),
         );
       });

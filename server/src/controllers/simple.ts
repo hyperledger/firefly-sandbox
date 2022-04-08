@@ -8,18 +8,17 @@ import {
   Req,
   Body,
   JsonController,
-  BadRequestError,
   QueryParam,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
+import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
 import { formatTemplate, WebsocketHandler, quoteAndEscape as q, FormDataSchema } from '../utils';
 import {
   BroadcastBlob,
   BroadcastValue,
   Organization,
-  FireFlyResponse,
   PrivateValue,
   PrivateBlob,
   TokenPool,
@@ -29,39 +28,59 @@ import {
   TokenBurn,
   Verifier,
   TokenBalance,
+  AsyncResponse,
 } from '../interfaces';
-import { plainToClassFromExist } from 'class-transformer';
+import Logger from '../logger';
 
-@JsonController('/simple')
-@OpenAPI({ tags: ['Simple Operations'] })
-export class SimpleController {
-  static init(wsHandler: WebsocketHandler) {
-    const wss = wsHandler.addWebsocket('/api/simple/ws');
-    wss.on('connection', (client, request) => {
+/**
+ * Simple Operations - WebSocket Server
+ */
+export class SimpleWebSocket {
+  logger = new Logger(SimpleWebSocket.name);
+  path = '/simple/ws';
+
+  init(prefix: string, wsHandler: WebsocketHandler) {
+    wsHandler.addWebsocket(prefix + this.path).on('connection', (client, request) => {
+      // Each time a client connects to this server, open a corresponding connection to FireFly
       const id = nanoid();
-      console.log(`Connecting websocket client ${id}`);
-
+      this.logger.log(`Connecting websocket client ${id}`);
       const url = new URL(request.url ?? '', `http://${request.headers.host}`);
       const sub: FireFlySubscriptionBase = {
         filter: {
           events: url.searchParams.get('filter.events') ?? undefined,
         },
       };
-      const ffSocket = firefly.listen(sub, (socket, data) => {
-        client.send(JSON.stringify(data));
+
+      const ffSocket = firefly.listen(sub, async (socket, event) => {
+        if (event.type === 'transaction_submitted' && event.transaction?.type === 'batch_pin') {
+          // Enrich batch_pin transaction events with details on the batch
+          const batches = await firefly.getBatches({ 'tx.id': event.tx });
+          event['batch'] = batches[0];
+        }
+
+        // Forward the event to the client
+        client.send(JSON.stringify(event));
       });
+
       client.on('close', () => {
-        console.log(`Disconnecting websocket client ${id}`);
+        this.logger.log(`Disconnecting websocket client ${id}`);
         ffSocket.close();
       });
     });
   }
+}
 
+/**
+ * Simple Operations - API Server
+ */
+@JsonController('/simple')
+@OpenAPI({ tags: ['Simple Operations'] })
+export class SimpleController {
   @Post('/broadcast')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
-  async broadcast(@Body() body: BroadcastValue): Promise<FireFlyResponse> {
+  async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendBroadcast({
       header: {
@@ -70,18 +89,18 @@ export class SimpleController {
       },
       data: [{ value: body.value }],
     });
-    return { id: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Post('/broadcastblob')
   @HttpCode(202)
   @FormDataSchema(BroadcastBlob)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyResponse> {
+  ): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -92,7 +111,7 @@ export class SimpleController {
       },
       data: [{ id: data.id }],
     });
-    return { id: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Get('/organizations')
@@ -133,9 +152,9 @@ export class SimpleController {
 
   @Post('/private')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: PrivateValue): Promise<FireFlyResponse> {
+  async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage({
       header: {
@@ -147,18 +166,18 @@ export class SimpleController {
       },
       data: [{ value: body.value }],
     });
-    return { id: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Post('/privateblob')
   @HttpCode(202)
   @FormDataSchema(PrivateBlob)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
-  ): Promise<FireFlyResponse> {
+  ): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
@@ -172,7 +191,7 @@ export class SimpleController {
       },
       data: [{ id: data.id }],
     });
-    return { id: message.header.id };
+    return { type: 'message', id: message.header.id };
   }
 
   @Get('/tokenpools')
@@ -185,50 +204,50 @@ export class SimpleController {
 
   @Post('/tokenpools')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Create a token pool' })
-  async createtokenpool(@Body() body: TokenPoolInput): Promise<FireFlyResponse> {
+  async createtokenpool(@Body() body: TokenPoolInput): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const pool = await firefly.createTokenPool({
       name: body.name,
       symbol: body.symbol,
       type: body.type,
     });
-    return { id: pool.id };
+    return { type: 'message', id: pool.message };
   }
 
   @Post('/mint')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMint): Promise<FireFlyResponse> {
+  async mint(@Body() body: TokenMint): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.mintTokens({
       pool: body.pool,
       amount: body.amount,
     });
-    return { id: transfer.localId };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Post('/burn')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenBurn): Promise<FireFlyResponse> {
+  async burn(@Body() body: TokenBurn): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.burnTokens({
       pool: body.pool,
       amount: body.amount,
       tokenIndex: body.tokenIndex,
     });
-    return { id: transfer.localId };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Post('/transfer')
   @HttpCode(202)
-  @ResponseSchema(FireFlyResponse)
+  @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Transfer tokens within a token pool' })
-  async transfer(@Body() body: TokenTransfer): Promise<FireFlyResponse> {
+  async transfer(@Body() body: TokenTransfer): Promise<AsyncResponse> {
     // See SimpleTemplateController and keep template code up to date.
     const transfer = await firefly.transferTokens({
       pool: body.pool,
@@ -236,7 +255,7 @@ export class SimpleController {
       amount: body.amount,
       tokenIndex: body.tokenIndex,
     });
-    return { id: transfer.localId };
+    return { type: 'token_transfer', id: transfer.localId };
   }
 
   @Get('/balances')
@@ -257,17 +276,13 @@ export class SimpleController {
 }
 
 /**
- * Code Templates
+ * Simple Operations - Code Templates
  * Allows the frontend to display representative code snippets for backend operations.
  * For demonstration purposes only.
  */
 @JsonController('/simple/template')
 @OpenAPI({ tags: ['Simple Operations'] })
 export class SimpleTemplateController {
-  static init() {
-    // do nothing
-  }
-
   @Get('/broadcast')
   broadcastTemplate() {
     return formatTemplate(`
@@ -278,13 +293,17 @@ export class SimpleTemplateController {
         },
         data: [{ value: <%= ${q('value')} %> }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
   @Get('/broadcastblob')
   broadcastblobTemplate() {
     return formatTemplate(`
-      const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
+      const data = await firefly.uploadDataBlob(
+        file.buffer,
+        <%= ${q('filename')} %>,
+      );
       const message = await firefly.sendBroadcast({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -292,6 +311,7 @@ export class SimpleTemplateController {
         },
         data: [{ id: data.id }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -304,27 +324,32 @@ export class SimpleTemplateController {
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
         group: {
-          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
         data: [{ value: <%= ${q('value')} %> }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
   @Get('/privateblob')
   sendblobTemplate() {
     return formatTemplate(`
-      const data = await firefly.uploadDataBlob(file.buffer, <%= ${q('filename')} %>);
+      const data = await firefly.uploadDataBlob(
+        file.buffer,
+        <%= ${q('filename')} %>,
+      );
       const message = await firefly.sendPrivateMessage({
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
         group: {
-          members: [<%= recipients.map((r) => '{identity: ' + ${q('r')} + '}').join(', ') %>],
+          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
         data: [{ id: data.id }],
       });
+      return { type: 'message', id: message.header.id };
     `);
   }
 
@@ -336,6 +361,7 @@ export class SimpleTemplateController {
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
       });
+      return { type: 'message', id: pool.message };
     `);
   }
 
@@ -346,6 +372,7 @@ export class SimpleTemplateController {
         pool: <%= ${q('pool')} %>,
         amount: <%= ${q('amount')} %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 
@@ -357,6 +384,7 @@ export class SimpleTemplateController {
         amount: <%= ${q('amount')} %>,
         tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 
@@ -369,6 +397,24 @@ export class SimpleTemplateController {
         amount: <%= ${q('amount')} %>,
         tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
       });
+      return { type: 'token_transfer', id: transfer.localId };
+    `);
+  }
+
+  @Get('/balances')
+  balancesTemplate() {
+    return formatTemplate(`
+      const balances = await firefly.getTokenBalances({
+        pool: <%= pool ? ${q('pool')} : 'undefined' %>,
+        key: <%= key ? ${q('key')} : 'undefined' %>,
+        balance: '>0',
+      });
+      return balances.map((b) => ({
+        pool: b.pool,
+        key: b.key,
+        balance: b.balance,
+        tokenIndex: b.tokenIndex,
+      }));
     `);
   }
 }

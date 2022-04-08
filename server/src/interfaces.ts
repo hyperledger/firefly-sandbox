@@ -11,7 +11,10 @@ import {
 } from 'class-validator';
 import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
 
-export class FireFlyResponse {
+export class AsyncResponse {
+  @IsString()
+  type: string;
+
   @IsString()
   id: string;
 }

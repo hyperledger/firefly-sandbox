@@ -41,7 +41,7 @@ describe('Simple Operations', () => {
       .post('/api/simple/broadcast')
       .send(req)
       .expect(202)
-      .expect({ id: 'msg1' });
+      .expect({ type: 'message', id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).not.toHaveBeenCalled();
     expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({
@@ -66,7 +66,7 @@ describe('Simple Operations', () => {
       .field('tag', 'test-tag')
       .attach('file', 'test/data/simple-file.txt')
       .expect(202)
-      .expect({ id: 'msg1' });
+      .expect({ type: 'message', id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
     expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({
@@ -143,7 +143,11 @@ describe('Simple Operations', () => {
 
     mockFireFly.sendPrivateMessage.mockResolvedValueOnce(msg);
 
-    await request(server).post('/api/simple/private').send(req).expect(202).expect({ id: 'msg1' });
+    await request(server)
+      .post('/api/simple/private')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'message', id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).not.toHaveBeenCalled();
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
@@ -173,7 +177,7 @@ describe('Simple Operations', () => {
       .field('recipients[]', 'beta')
       .attach('file', 'test/data/simple-file.txt')
       .expect(202)
-      .expect({ id: 'msg1' });
+      .expect({ type: 'message', id: 'msg1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
@@ -206,6 +210,8 @@ describe('Simple Operations', () => {
     };
     const pool = {
       id: 'pool1',
+      message: 'msg1',
+      tx: { id: 'tx1' },
     } as FireFlyTokenPool;
 
     mockFireFly.createTokenPool.mockResolvedValueOnce(pool);
@@ -214,7 +220,7 @@ describe('Simple Operations', () => {
       .post('/api/simple/tokenpools')
       .send(req)
       .expect(202)
-      .expect({ id: 'pool1' });
+      .expect({ type: 'message', id: 'msg1' });
 
     expect(mockFireFly.createTokenPool).toHaveBeenCalledWith({
       name: 'my-pool',
@@ -230,6 +236,7 @@ describe('Simple Operations', () => {
     };
     const transfer = {
       localId: 'transfer1',
+      tx: { id: 'tx1' },
     } as FireFlyTokenTransfer;
 
     mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
@@ -238,7 +245,7 @@ describe('Simple Operations', () => {
       .post('/api/simple/mint')
       .send(req)
       .expect(202)
-      .expect({ id: 'transfer1' });
+      .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
@@ -253,6 +260,7 @@ describe('Simple Operations', () => {
     };
     const transfer = {
       localId: 'transfer1',
+      tx: { id: 'tx1' },
     } as FireFlyTokenTransfer;
 
     mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
@@ -261,7 +269,7 @@ describe('Simple Operations', () => {
       .post('/api/simple/burn')
       .send(req)
       .expect(202)
-      .expect({ id: 'transfer1' });
+      .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
@@ -277,6 +285,7 @@ describe('Simple Operations', () => {
     };
     const transfer = {
       localId: 'transfer1',
+      tx: { id: 'tx1' },
     } as FireFlyTokenTransfer;
 
     mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
@@ -285,7 +294,7 @@ describe('Simple Operations', () => {
       .post('/api/simple/transfer')
       .send(req)
       .expect(202)
-      .expect({ id: 'transfer1' });
+      .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
@@ -309,11 +318,5 @@ describe('Simple Operations', () => {
       key: '0x123',
       balance: '>0',
     });
-  });
-});
-
-describe('Misc', () => {
-  test('Swagger UI', () => {
-    return request(server).get('/api').redirects(1).expect(200);
   });
 });

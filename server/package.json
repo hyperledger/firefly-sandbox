@@ -11,7 +11,7 @@
     "start": "node .",
     "start:dev": "tsnd --respawn ./src/index.ts",
     "test": "jest --verbose --silent",
-    "lint": "eslint \"src/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"test/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "swagger": "swagger-jsdoc -d swagger-def.json -o swagger.json src/routers/*"
@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/kaleido-io/firefly-samples-gallery#readme",
   "dependencies": {
-    "@photic/firefly-sdk-nodejs": "^0.0.14",
+    "@photic/firefly-sdk-nodejs": "^0.0.16",
     "body-parser": "^1.20.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",

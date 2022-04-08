@@ -117,7 +117,9 @@ export const MintForm: React.FC = () => {
                   <MenuItem key={idx} value={tp.name}>
                     <Typography color="primary">
                       {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
-                      {tp.type === 'fungible' ? 'FT' : 'NFT'}
+                      {tp.type === 'fungible'
+                        ? t('fungible')
+                        : t('nonfungible')}
                     </Typography>
                     <Typography color="text.disabled" fontSize="small">
                       {tp.standard}

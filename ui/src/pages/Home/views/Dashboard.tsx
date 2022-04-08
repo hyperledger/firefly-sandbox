@@ -1,15 +1,11 @@
-import { Grid, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
-import {
-  DEFAULT_BORDER_RADIUS,
-  DEFAULT_PADDING,
-  FFColors,
-} from '../../../theme';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING } from '../../../theme';
 import { LeftPane } from './LeftPane';
 import * as _ from 'underscore';
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
@@ -20,7 +16,7 @@ const styles = {
   background: '#cccccc',
   width: '2px',
   cursor: 'col-resize',
-  margin: '0 5px',
+  margin: '0',
   height: 'auto',
 };
 
@@ -98,58 +94,73 @@ export const HomeDashboard: () => JSX.Element = () => {
               resizerStyle={styles}
             >
               <Grid container p={DEFAULT_PADDING}>
-                <Grid item>
+                <Grid item pb={DEFAULT_PADDING}>
                   <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                    {t('typescriptSDK')}
+                    {t('code')}
                   </Typography>
                 </Grid>
-                <Grid
-                  pt={2}
-                  container
-                  item
-                  wrap="nowrap"
-                  direction="column"
-                  sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                  fontSize="12px"
-                >
-                  <SyntaxHighlighter
-                    customStyle={{ borderRadius: '5px' }}
-                    showLineNumbers
-                    language={'typescript'}
-                    style={atomOneDark}
+                <Paper sx={{ width: '100%', padding: DEFAULT_PADDING }}>
+                  <Grid item>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {t('typescriptSDK')}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    pt={2}
+                    container
+                    item
+                    wrap="nowrap"
+                    direction="column"
+                    sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                    fontSize="12px"
                   >
-                    {codeBlock}
-                  </SyntaxHighlighter>
-                </Grid>
-                <Grid container item justifyContent="flex-end">
-                  <RunButton
-                    endpoint={endpoints[activeForm]}
-                    payload={jsonPayload}
-                  />
-                </Grid>
-                <Grid item>
-                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                    {t('apiResponse')}
-                  </Typography>
-                </Grid>
-                <Grid
-                  pt={2}
-                  container
-                  item
-                  wrap="nowrap"
-                  direction="column"
-                  sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                  fontSize="12px"
+                    <SyntaxHighlighter
+                      customStyle={{ borderRadius: '5px' }}
+                      showLineNumbers
+                      language={'typescript'}
+                      style={tomorrowNightBright}
+                    >
+                      {codeBlock}
+                    </SyntaxHighlighter>
+                  </Grid>
+                  <Grid container item justifyContent="flex-end">
+                    <RunButton
+                      endpoint={endpoints[activeForm]}
+                      payload={jsonPayload}
+                    />
+                  </Grid>
+                </Paper>
+                <Paper
+                  sx={{
+                    width: '100%',
+                    marginTop: DEFAULT_PADDING,
+                    padding: DEFAULT_PADDING,
+                  }}
                 >
-                  <SyntaxHighlighter
-                    customStyle={{ borderRadius: '5px' }}
-                    showLineNumbers
-                    language={'json'}
-                    style={atomOneDark}
+                  <Grid item>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {t('apiResponse')}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    pt={2}
+                    container
+                    item
+                    wrap="nowrap"
+                    direction="column"
+                    sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                    fontSize="12px"
                   >
-                    {JSON.stringify(apiResponse, null, 1)}
-                  </SyntaxHighlighter>
-                </Grid>
+                    <SyntaxHighlighter
+                      customStyle={{ borderRadius: '5px' }}
+                      showLineNumbers
+                      language={'json'}
+                      style={tomorrowNightBright}
+                    >
+                      {JSON.stringify(apiResponse, null, 1)}
+                    </SyntaxHighlighter>
+                  </Grid>
+                </Paper>
               </Grid>
               <Grid pb={DEFAULT_PADDING}>
                 <EventSubscription />

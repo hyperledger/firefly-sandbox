@@ -51,8 +51,11 @@ export const themeOptions: ThemeOptions = {
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
+        contained: {
           backgroundColor: '#462DE0',
+          ':hover': {
+            backgroundColor: '#231770',
+          },
         },
       },
     },

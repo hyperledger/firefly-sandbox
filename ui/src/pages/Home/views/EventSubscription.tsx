@@ -176,7 +176,6 @@ export const EventSubscription: React.FC = () => {
                           />
                         }
                         label={wsConnected ? t('connected') : t('notConnected')}
-                        sx={{ color: FFColors.Purple }}
                         variant="outlined"
                       />
                     </Grid>

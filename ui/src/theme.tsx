@@ -25,11 +25,10 @@ export const themeOptions: ThemeOptions = {
       paper: '#FFFFFF',
     },
     primary: {
-      main: '#462DE0',
+      main: '#000',
     },
     secondary: {
-      main: '#A73DD5',
-      dark: '#252C32',
+      main: '#444',
     },
     info: {
       main: FFColors.Pink,
@@ -44,12 +43,19 @@ export const themeOptions: ThemeOptions = {
       main: FFColors.Red,
     },
     text: {
-      primary: '#251A7B',
-      secondary: '#462DE0',
+      primary: '#000',
+      secondary: '#444',
       disabled: '#51565a',
     },
   },
   components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: '#462DE0',
+        },
+      },
+    },
     MuiAccordion: {
       styleOverrides: {
         root: {

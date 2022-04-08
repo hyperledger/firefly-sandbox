@@ -17,8 +17,8 @@ import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
 
 const styles = {
-  background: FFColors.Pink,
-  width: '4px',
+  background: '#cccccc',
+  width: '2px',
   cursor: 'col-resize',
   margin: '0 5px',
   height: 'auto',
@@ -125,6 +125,11 @@ export const HomeDashboard: () => JSX.Element = () => {
                     endpoint={endpoints[activeForm]}
                     payload={jsonPayload}
                   />
+                </Grid>
+                <Grid item>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    {t('typescriptSDK')}
+                  </Typography>
                 </Grid>
               </Grid>
               <Grid pb={DEFAULT_PADDING}>

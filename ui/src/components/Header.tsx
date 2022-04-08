@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const { isWsConnected, nodeName } = useContext(ApplicationContext);
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" sx={{ backgroundColor: '#462DE0' }}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Grid container direction="row" alignItems={'center'}>

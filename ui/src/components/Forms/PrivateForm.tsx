@@ -151,13 +151,6 @@ export const PrivateForm: React.FC = () => {
             </Select>
           </FormControl>
         </Grid>
-        <Grid container item justifyContent="flex-end">
-          <RunButton
-            endpoint={`${FF_Paths.private}`}
-            payload={jsonPayload}
-            disabled={recipients.length === 0}
-          />
-        </Grid>
       </Grid>
     </Grid>
   );

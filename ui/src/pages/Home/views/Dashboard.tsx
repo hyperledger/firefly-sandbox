@@ -17,7 +17,7 @@ const styles = {
   width: '2px',
   cursor: 'col-resize',
   margin: '0',
-  height: 'auto',
+  height: '100%',
 };
 
 export const HomeDashboard: () => JSX.Element = () => {
@@ -78,7 +78,7 @@ export const HomeDashboard: () => JSX.Element = () => {
   return (
     <>
       <div style={{ height: '100vh', width: '100vw' }}>
-        <Grid container px={DEFAULT_PADDING} height="100%">
+        <Grid container height="100%">
           <SplitPane
             split="vertical"
             minSize={100}
@@ -92,77 +92,96 @@ export const HomeDashboard: () => JSX.Element = () => {
               minSize={100}
               defaultSize={'50%'}
               resizerStyle={styles}
+              style={{ height: '100%' }}
             >
-              <Grid container p={DEFAULT_PADDING}>
-                <Grid item pb={DEFAULT_PADDING}>
-                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              <div
+                style={{ width: '100%', height: '100%', overflow: 'scroll' }}
+              >
+                <Grid>
+                  <Typography
+                    variant="h5"
+                    p={DEFAULT_PADDING}
+                    pb={0}
+                    sx={{ fontWeight: 600 }}
+                  >
                     {t('code')}
                   </Typography>
+                  <Grid container item p={DEFAULT_PADDING}>
+                    <Paper
+                      sx={{
+                        width: '100%',
+                        minHeight: '400px',
+                        padding: DEFAULT_PADDING,
+                      }}
+                    >
+                      <Grid item>
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                          {t('typescriptSDK')}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        container
+                        item
+                        wrap="nowrap"
+                        direction="column"
+                        sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                        fontSize="12px"
+                      >
+                        <SyntaxHighlighter
+                          customStyle={{ borderRadius: '5px' }}
+                          showLineNumbers
+                          language={'typescript'}
+                          style={tomorrowNightBright}
+                        >
+                          {codeBlock}
+                        </SyntaxHighlighter>
+                      </Grid>
+                      <Grid container item justifyContent="flex-end">
+                        <RunButton
+                          endpoint={endpoints[activeForm]}
+                          payload={jsonPayload}
+                        />
+                      </Grid>
+                    </Paper>
+                    <Paper
+                      sx={{
+                        width: '100%',
+                        marginTop: DEFAULT_PADDING,
+                        padding: DEFAULT_PADDING,
+                      }}
+                    >
+                      <Grid item>
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                          {t('apiResponse')}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        pt={2}
+                        container
+                        item
+                        wrap="nowrap"
+                        direction="column"
+                        sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                        fontSize="12px"
+                      >
+                        <SyntaxHighlighter
+                          customStyle={{ borderRadius: '5px' }}
+                          showLineNumbers
+                          language={'json'}
+                          style={tomorrowNightBright}
+                        >
+                          {JSON.stringify(apiResponse, null, 1)}
+                        </SyntaxHighlighter>
+                      </Grid>
+                    </Paper>
+                  </Grid>
                 </Grid>
-                <Paper sx={{ width: '100%', padding: DEFAULT_PADDING }}>
-                  <Grid item>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      {t('typescriptSDK')}
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    pt={2}
-                    container
-                    item
-                    wrap="nowrap"
-                    direction="column"
-                    sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                    fontSize="12px"
-                  >
-                    <SyntaxHighlighter
-                      customStyle={{ borderRadius: '5px' }}
-                      showLineNumbers
-                      language={'typescript'}
-                      style={tomorrowNightBright}
-                    >
-                      {codeBlock}
-                    </SyntaxHighlighter>
-                  </Grid>
-                  <Grid container item justifyContent="flex-end">
-                    <RunButton
-                      endpoint={endpoints[activeForm]}
-                      payload={jsonPayload}
-                    />
-                  </Grid>
-                </Paper>
-                <Paper
-                  sx={{
-                    width: '100%',
-                    marginTop: DEFAULT_PADDING,
-                    padding: DEFAULT_PADDING,
-                  }}
-                >
-                  <Grid item>
-                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                      {t('apiResponse')}
-                    </Typography>
-                  </Grid>
-                  <Grid
-                    pt={2}
-                    container
-                    item
-                    wrap="nowrap"
-                    direction="column"
-                    sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                    fontSize="12px"
-                  >
-                    <SyntaxHighlighter
-                      customStyle={{ borderRadius: '5px' }}
-                      showLineNumbers
-                      language={'json'}
-                      style={tomorrowNightBright}
-                    >
-                      {JSON.stringify(apiResponse, null, 1)}
-                    </SyntaxHighlighter>
-                  </Grid>
-                </Paper>
-              </Grid>
-              <Grid pb={DEFAULT_PADDING}>
+              </div>
+
+              <Grid
+                pb={DEFAULT_PADDING}
+                sx={{ height: '100%', overflow: 'scroll' }}
+              >
                 <EventSubscription />
               </Grid>
             </SplitPane>

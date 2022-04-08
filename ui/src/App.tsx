@@ -58,7 +58,7 @@ function App() {
   //       `${FF_Paths.apiPrefix}${FF_Paths.networkIdentities}`
   //     ),
   //     fetchWithCredentials(
-  //       `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.tokenConnectors}`
+  //       `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.Connectors}`
   //     ),
   //   ])
   //     .then(

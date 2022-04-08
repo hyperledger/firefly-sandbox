@@ -39,7 +39,7 @@ export const BurnForm: React.FC = () => {
 
   useEffect(() => {
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
+    fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
       })
@@ -107,9 +107,6 @@ export const BurnForm: React.FC = () => {
               />
             </FormControl>
           </Grid>
-        </Grid>
-        <Grid container item justifyContent="flex-end">
-          <RunButton endpoint={`${FF_Paths.tokenBurn}`} payload={jsonPayload} />
         </Grid>
       </Grid>
     </Grid>

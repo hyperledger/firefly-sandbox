@@ -21,6 +21,8 @@ export interface IJsonPayloadContext {
   setActiveForm: Dispatch<SetStateAction<string>>;
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;
+  apiResponse: object;
+  setApiResponse: Dispatch<SetStateAction<object>>;
 }
 
 export const JsonPayloadContext = createContext({} as IJsonPayloadContext);

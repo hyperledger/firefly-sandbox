@@ -3,7 +3,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import { gradientDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -26,7 +26,7 @@ const styles = {
 
 export const HomeDashboard: () => JSX.Element = () => {
   const { t } = useTranslation();
-  const { jsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, apiResponse } = useContext(JsonPayloadContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
   const { activeForm } = useContext(JsonPayloadContext);
@@ -115,7 +115,7 @@ export const HomeDashboard: () => JSX.Element = () => {
                   <SyntaxHighlighter
                     showLineNumbers
                     language={'typescript'}
-                    style={tomorrowNightBright}
+                    style={gradientDark}
                   >
                     {codeBlock}
                   </SyntaxHighlighter>
@@ -128,8 +128,25 @@ export const HomeDashboard: () => JSX.Element = () => {
                 </Grid>
                 <Grid item>
                   <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                    {t('typescriptSDK')}
+                    {t('apiResponse')}
                   </Typography>
+                </Grid>
+                <Grid
+                  pt={2}
+                  container
+                  item
+                  wrap="nowrap"
+                  direction="column"
+                  sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                  fontSize="12px"
+                >
+                  <SyntaxHighlighter
+                    showLineNumbers
+                    language={'json'}
+                    style={gradientDark}
+                  >
+                    {JSON.stringify(apiResponse, null, 1)}
+                  </SyntaxHighlighter>
                 </Grid>
               </Grid>
               <Grid pb={DEFAULT_PADDING}>

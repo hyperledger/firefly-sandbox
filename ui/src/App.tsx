@@ -50,6 +50,8 @@ function App() {
   );
   const [jsonPayload, setJsonPayload] = useState<object>({});
   const [activeForm, setActiveForm] = useState<string>('broadcast');
+  const [apiResponse, setApiResponse] = useState<object>({});
+
   // useEffect(() => {
   //   Promise.all([
   //     fetchWithCredentials(FF_Paths.nsPrefix),
@@ -185,7 +187,14 @@ function App() {
             value={{ setMessage, setMessageType, reportFetchError }}
           >
             <JsonPayloadContext.Provider
-              value={{ jsonPayload, setJsonPayload, activeForm, setActiveForm }}
+              value={{
+                jsonPayload,
+                setJsonPayload,
+                activeForm,
+                setActiveForm,
+                apiResponse,
+                setApiResponse,
+              }}
             >
               <StyledEngineProvider injectFirst>
                 <ThemeProvider theme={theme}>

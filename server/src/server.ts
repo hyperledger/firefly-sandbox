@@ -10,6 +10,7 @@ import { MessagesController, MessagesTemplateController } from './controllers/me
 import { TokensController, TokensTemplateController } from './controllers/tokens';
 import { CommonController } from './controllers/common';
 import { SimpleWebSocket } from './controllers/websocket';
+import { ContractsController, ContractsTemplateController } from './controllers/contracts';
 
 const app = express();
 app.use(bodyParser.json());
@@ -23,6 +24,8 @@ const serverOptions: RoutingControllersOptions = {
     MessagesTemplateController,
     TokensController,
     TokensTemplateController,
+    ContractsController,
+    ContractsTemplateController,
   ],
 };
 const wsConfig = {

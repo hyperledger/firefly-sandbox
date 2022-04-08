@@ -5,13 +5,16 @@ import {
   UploadFile,
 } from '@mui/icons-material';
 import {
+  Button,
   Grid,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 const DEFAULT_MESSAGE_JSON = {
@@ -21,6 +24,7 @@ const DEFAULT_MESSAGE_JSON = {
 interface Props {
   message: string | object | undefined;
   onSetMessage: any;
+  onSetFileName?: any;
   noUndefined?: boolean;
 }
 
@@ -28,26 +32,46 @@ export const MessageTypeGroup: React.FC<Props> = ({
   noUndefined = false,
   message,
   onSetMessage,
+  onSetFileName,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<
     'none' | 'string' | 'json' | 'file'
   >('string');
+  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
+
+  useEffect(() => {
+    if (activeForm.indexOf('blob') < 0) {
+      setMessageType('string');
+    }
+  }, [activeForm]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
     newAlignment: 'none' | 'string' | 'json' | 'file'
   ) => {
+    if (!newAlignment) {
+      return;
+    }
     setMessageType(newAlignment);
     switch (newAlignment) {
       case 'none':
         onSetMessage(undefined);
+        setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'string':
         onSetMessage(DEFAULT_MESSAGE_STRING);
+        setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'json':
         onSetMessage(DEFAULT_MESSAGE_JSON);
+        return;
+      case 'file':
+        onSetMessage('');
+        onSetFileName('');
+        setActiveForm(
+          activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
+        );
         return;
       default:
         onSetMessage(DEFAULT_MESSAGE_STRING);
@@ -71,36 +95,57 @@ export const MessageTypeGroup: React.FC<Props> = ({
         <ToggleButton value="string">
           <FormatQuote />
         </ToggleButton>
-        <ToggleButton value="json">
+        <ToggleButton disabled value="json">
           <DataObject />
         </ToggleButton>
-        <ToggleButton disabled value="file">
+        <ToggleButton value="file">
           <UploadFile />
         </ToggleButton>
       </ToggleButtonGroup>
-      <TextField
-        label={t('message')}
-        multiline
-        required
-        fullWidth
-        maxRows={7}
-        value={
-          messageType === 'json'
-            ? JSON.stringify(message, null, 2)
-            : messageType === 'string'
-            ? message
-            : ''
-        }
-        onChange={(e) =>
-          onSetMessage(
-            messageType === 'string'
-              ? e.target.value
-              : messageType === undefined
-              ? undefined
-              : JSON.parse(e.target.value)
-          )
-        }
-      />
+      {
+        <Grid container item xs={12} pt={1}>
+          {messageType !== 'file' ? (
+            <TextField
+              label={t('message')}
+              multiline
+              required
+              fullWidth
+              maxRows={7}
+              value={
+                messageType === 'json'
+                  ? JSON.stringify(message, null, 2)
+                  : messageType === 'string'
+                  ? message
+                  : ''
+              }
+              onChange={(e) =>
+                onSetMessage(
+                  messageType === 'string'
+                    ? e.target.value
+                    : messageType === undefined
+                    ? undefined
+                    : JSON.parse(e.target.value)
+                )
+              }
+            />
+          ) : (
+            <Button
+              variant="outlined"
+              component="label"
+              sx={{ textTransform: 'none', padding: '16px' }}
+              fullWidth
+            >
+              <Typography sx={{ width: '50%' }}>{t('uploadFile')}*</Typography>
+              <input
+                type="file"
+                onChange={(event: any) =>
+                  onSetFileName(event?.target?.files[0]?.name)
+                }
+              />
+            </Button>
+          )}
+        </Grid>
+      }
     </Grid>
   );
 };

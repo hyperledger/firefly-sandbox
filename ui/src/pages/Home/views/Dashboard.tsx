@@ -1,17 +1,18 @@
-import { Grid, Tab, Tabs } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import { Grid, Typography } from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
 import { LeftPane } from './LeftPane';
+import * as _ from 'underscore';
+import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
 
 const styles = {
   background: FFColors.Pink,
@@ -24,25 +25,50 @@ const styles = {
 export const HomeDashboard: () => JSX.Element = () => {
   const { t } = useTranslation();
   const { jsonPayload } = useContext(JsonPayloadContext);
+  const [template, setTemplate] = useState<string>('');
+  const [codeBlock, setCodeBlock] = useState<string>('');
+  const { activeForm } = useContext(JsonPayloadContext);
+  const [templateName, setTemplateName] = useState<string>('broadcast');
 
-  const supportedLanguages = [
-    {
-      name: t('payload'),
-      format: 'json',
-    },
-    {
-      name: t('typescriptSDK'),
-      format: 'typescript',
-    },
-  ];
+  useEffect(() => {
+    const fetchTemplate = () => {
+      return fetch(`/api/simple/template/${activeForm}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          return response.json();
+        })
+        .then((data) => {
+          setTemplate(data);
+          setTemplateName(activeForm);
+          buildCodeBlock(data);
+        })
+        .catch(() => {
+          return null;
+        });
+    };
+    fetchTemplate();
+  }, [activeForm]);
 
-  const [selectedTabIdx, setSelectedTabIdx] = useState(0);
+  useEffect(() => {
+    const payload: any = jsonPayload;
+    if (
+      template &&
+      templateName === activeForm &&
+      payload &&
+      !payload.connector
+    ) {
+      buildCodeBlock(template);
+    }
+  }, [template, templateName, jsonPayload]);
 
-  const handleLanguageChange = (
-    event: React.SyntheticEvent,
-    newIdx: number
-  ) => {
-    setSelectedTabIdx(newIdx);
+  const buildCodeBlock = (codeTemplate: string) => {
+    const compiled = _.template(codeTemplate);
+    const result = compiled(jsonPayload);
+    setCodeBlock(result);
   };
 
   return (
@@ -64,7 +90,13 @@ export const HomeDashboard: () => JSX.Element = () => {
               resizerStyle={styles}
             >
               <Grid container p={DEFAULT_PADDING}>
+                <Grid item>
+                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                    {t('typescriptSDK')}
+                  </Typography>
+                </Grid>
                 <Grid
+                  pt={2}
                   container
                   item
                   wrap="nowrap"
@@ -72,22 +104,12 @@ export const HomeDashboard: () => JSX.Element = () => {
                   sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
                   fontSize="12px"
                 >
-                  <Tabs
-                    textColor="secondary"
-                    indicatorColor="secondary"
-                    value={selectedTabIdx}
-                    onChange={handleLanguageChange}
-                  >
-                    {supportedLanguages.map((l, idx) => (
-                      <Tab key={idx} label={l.name} />
-                    ))}
-                  </Tabs>
                   <SyntaxHighlighter
                     showLineNumbers
-                    language={supportedLanguages[selectedTabIdx].format}
+                    language={'typescript'}
                     style={tomorrowNightBright}
                   >
-                    {JSON.stringify(jsonPayload, null, 2)}
+                    {codeBlock}
                   </SyntaxHighlighter>
                 </Grid>
               </Grid>

@@ -25,6 +25,7 @@
   "exampleFromAddress": "ex. 0x987....321",
   "exampleTag": "ex. new_widget",
   "exampleTopic": "ex. widget_123",
+  "filterEventSubscriptions": "Filter Event Subscriptions (Optional)",
   "fromAddress": "From Address",
   "fungible": "Fungible",
   "home": "Home",
@@ -52,11 +53,14 @@
   "subscription": "Subscription",
   "tag": "Tag",
   "toAddress": "To Address",
+  "tokenIndex": "Token Index",
   "tokenPool": "Token Pool",
   "tokenRecipient": "Token Recipient",
   "topic": "Topic",
   "transferShortInfo": "Transfer tokens from one address to another",
   "transferTitle": "Transfer Tokens",
   "type": "Type",
-  "typescriptSDK": "Typescript SDK"
+  "typescriptSDK": "Typescript SDK",
+  "uploadFile": "Upload File",
+  "websocketConnectionFailure" : "Failed to connect to websocket. Please try again."
 }

@@ -23,35 +23,56 @@ import {
 } from '../Buttons/MessageTypeGroup';
 import { RunButton } from '../Buttons/RunButton';
 
+interface NetworkIdentity {
+  did: string;
+  id: string;
+  name: string;
+}
+
 export const PrivateForm: React.FC = () => {
-  const { identities } = useContext(ApplicationContext);
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
     DEFAULT_MESSAGE_STRING
   );
+  const [identities, setIdentities] = useState<NetworkIdentity[]>([]);
   const [recipients, setRecipients] = useState<string[]>([]);
+  const [fileName, setFileName] = useState<string>('');
+
   const [tag, setTag] = useState<string>();
-  const [topics, setTopics] = useState<string[]>();
+  const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    // setJsonPayload({
-    //   header: {
-    //     tag: tag,
-    //     topics: topics,
-    //   },
-    //   data: [
-    //     {
-    //       value: message,
-    //     },
-    //   ],
-    //   group: {
-    //     members: recipients.map((r) => {
-    //       return { identity: r };
-    //     }),
-    //   },
-    // });
-  }, [message, recipients, tag, topics]);
+    fetch(`/api/simple/organizations?exclude_self=false`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((data) => {
+        setIdentities(data);
+      })
+      .catch(() => {
+        return null;
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!activeForm.includes('private')) {
+      return;
+    }
+    setJsonPayload({
+      topic: topics,
+      tag,
+      value: message,
+      filename: fileName,
+      recipients,
+    });
+  }, [message, recipients, tag, topics, fileName, activeForm]);
 
   const handleRecipientChange = (
     event: SelectChangeEvent<typeof recipients>
@@ -75,7 +96,7 @@ export const PrivateForm: React.FC = () => {
       setTopics(undefined);
       return;
     }
-    setTopics([event.target.value]);
+    setTopics(event.target.value);
   };
 
   return (
@@ -86,6 +107,9 @@ export const PrivateForm: React.FC = () => {
           noUndefined
           message={message}
           onSetMessage={(msg: string | object) => setMessage(msg)}
+          onSetFileName={(file: string) => {
+            setFileName(file);
+          }}
         />
         <Grid container item justifyContent="space-between" spacing={1}>
           {/* Tag */}
@@ -129,8 +153,9 @@ export const PrivateForm: React.FC = () => {
         </Grid>
         <Grid container item justifyContent="flex-end">
           <RunButton
-            endpoint={`${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.messagesPrivate}`}
+            endpoint={`${FF_Paths.messagesPrivate}`}
             payload={jsonPayload}
+            disabled={recipients.length === 0}
           />
         </Grid>
       </Grid>

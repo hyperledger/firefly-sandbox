@@ -7,7 +7,8 @@ import { DEFAULT_SPACING } from '../../theme';
 import { RunButton } from '../Buttons/RunButton';
 
 export const DefineDatatypeForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
 
   const [datatype, setDatatype] = useState<object>({
     $id: 'https://example.com/widget.schema.json',
@@ -29,12 +30,14 @@ export const DefineDatatypeForm: React.FC = () => {
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
-    setJsonPayload({
-      name: name,
-      version: version,
-      value: datatype,
-    });
-  }, [datatype, name, version]);
+    if (activeForm === 'defineDatatype') {
+      setJsonPayload({
+        name: name,
+        version: version,
+        value: datatype,
+      });
+    }
+  }, [datatype, name, version, activeForm]);
 
   return (
     <Grid width={'100%'} container>

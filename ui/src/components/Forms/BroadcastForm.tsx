@@ -1,10 +1,10 @@
-import { FormControl, Grid, TextField } from '@mui/material';
+import { Button, FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NAMESPACE } from '../../App';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
+import * as _ from 'underscore';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
@@ -12,21 +12,26 @@ import {
 import { RunButton } from '../Buttons/RunButton';
 
 export const BroadcastForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, setJsonPayload, activeForm } =
+    useContext(JsonPayloadContext);
+
   const { t } = useTranslation();
   const [message, setMessage] = useState<string | object>(
     DEFAULT_MESSAGE_STRING
   );
+  const [fileName, setFileName] = useState<string>('');
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
+    if (!activeForm.includes('broadcast')) return;
     setJsonPayload({
       topic: topics,
-      tag: tag,
+      tag,
       value: message,
+      filename: fileName,
     });
-  }, [message, tag, topics]);
+  }, [message, tag, topics, fileName, activeForm]);
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -52,7 +57,12 @@ export const BroadcastForm: React.FC = () => {
           <MessageTypeGroup
             noUndefined
             message={message}
-            onSetMessage={(msg: string | object) => setMessage(msg)}
+            onSetMessage={(msg: string | object) => {
+              setMessage(msg);
+            }}
+            onSetFileName={(file: string) => {
+              setFileName(file);
+            }}
           />
           <Grid container item justifyContent="space-between" spacing={1}>
             {/* Tag */}

@@ -17,6 +17,8 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 
 export interface IJsonPayloadContext {
+  activeForm: string;
+  setActiveForm: Dispatch<SetStateAction<string>>;
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;
 }

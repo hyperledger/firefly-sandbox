@@ -1,17 +1,20 @@
 import { ArrowForwardIos } from '@mui/icons-material';
 import { Alert, Button, Snackbar, Typography } from '@mui/material';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 
 interface Props {
   endpoint: string;
-  payload: object;
+  payload: any;
+  disabled?: boolean;
 }
 
-export const RunButton: React.FC<Props> = ({ endpoint, payload }) => {
+export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
+  const { activeForm } = useContext(JsonPayloadContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -22,16 +25,18 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload }) => {
   };
 
   const handlePost = () => {
-    fetch(
-      `${window.location.protocol}//${window.location.hostname}:3001${endpoint}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    )
+    const blobUpload = activeForm.includes('blob');
+    const fullEndpoint = managePayloadAndEndpoint();
+    const reqDetails: any = {
+      method: 'POST',
+      body: blobUpload
+        ? buildFormData(payload, fullEndpoint)
+        : JSON.stringify(payload),
+    };
+    if (!blobUpload) {
+      reqDetails.headers = { 'Content-Type': 'application/json' };
+    }
+    fetch(fullEndpoint, reqDetails)
       .then((response) => response.json())
       .then(() => {
         setShowSnackbar(true);
@@ -41,11 +46,41 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload }) => {
       });
   };
 
+  const managePayloadAndEndpoint = () => {
+    const blobUpload = activeForm.includes('blob');
+    if (!blobUpload) {
+      delete payload['filename'];
+    }
+    const tokenOperations = ['mint', 'burn', 'transfer'];
+    if (tokenOperations.includes(activeForm)) {
+      delete payload['message'];
+    }
+    const fullEndpoint = `${endpoint}${
+      activeForm.includes('blob') ? 'blob' : ''
+    }`;
+    return fullEndpoint;
+  };
+
+  const buildFormData = (payload: any, blobEndpoint: string) => {
+    const data = new FormData();
+    const file: any = document.querySelector('input[type="file"]');
+    data.append('file', file.files[0]);
+    data.append('tag', payload.tag);
+    data.append('topic', payload.topic);
+    if (blobEndpoint.includes('privateblob')) {
+      for (const r of payload.recipients) {
+        data.append('recipients[]', r);
+      }
+    }
+    return data;
+  };
+
   return (
     <>
       <Button
         endIcon={<ArrowForwardIos />}
         variant="contained"
+        disabled={disabled}
         sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
         onClick={handlePost}
       >

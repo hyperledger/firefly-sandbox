@@ -24,7 +24,6 @@ export const AppWrapper: React.FC = () => {
   return (
     <RootDiv>
       <Main>
-        <Header></Header>
         <Outlet />
       </Main>
     </RootDiv>

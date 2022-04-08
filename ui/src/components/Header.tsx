@@ -29,22 +29,16 @@ import {
   ListItemText,
   MenuItem,
   OutlinedInput,
-  Paper,
   Popover,
   Select,
   SelectChangeEvent,
-  TextField,
   Theme,
-  ToggleButton,
-  ToggleButtonGroup,
   Toolbar,
-  Tooltip,
   Typography,
   useTheme,
 } from '@mui/material';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApplicationContext } from '../contexts/ApplicationContext';
 import { JsonPayloadContext } from '../contexts/JsonPayloadContext';
 import { getEnrichedEventText } from '../ff_models/eventTypes';
 import {
@@ -100,7 +94,12 @@ export const Header: React.FC = () => {
 
   const webSocket: any = useRef(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
+    // if (connectingStatus === 'reconnect') {
+    //   webSocket.current.close();
+    //   setWsConnected(false);
+    //   setConnectingStatus('connecting');
+    // }
     if (!wsConnected && connectingStatus === 'connecting') {
       webSocket.current = new WebSocket(
         `ws://localhost:3001/api/ws?filter.events=${selectedSubscriptions
@@ -129,6 +128,13 @@ export const Header: React.FC = () => {
       }
     }
   }, [wsConnected, connectingStatus]);
+
+  useEffect(() => {
+    if (wsConnected) {
+      setConnectingStatus('reconnect');
+    }
+  }, [selectedSubscriptions]);
+
   const handleChange = (
     event: SelectChangeEvent<typeof selectedSubscriptions>
   ) => {
@@ -141,9 +147,15 @@ export const Header: React.FC = () => {
   };
 
   const handleConnect = () => {
-    setConnectingStatus(
-      connectingStatus === 'connecting' ? 'disconnecting' : 'connecting'
-    );
+    if (connectingStatus === 'reconnect') {
+      setConnectingStatus('disconnecting');
+      setWsConnected(false);
+      setConnectingStatus('connecting');
+    } else {
+      setConnectingStatus(
+        connectingStatus === 'connecting' ? 'disconnecting' : 'connecting'
+      );
+    }
   };
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -267,7 +279,11 @@ export const Header: React.FC = () => {
                           onClick={handleConnect}
                         >
                           <Typography>
-                            {wsConnected ? t('disconnect') : t('connect')}
+                            {wsConnected
+                              ? connectingStatus === 'reconnect'
+                                ? t('refreshConnection')
+                                : t('disconnect')
+                              : t('connect')}
                           </Typography>
                         </Button>
                       </Grid>

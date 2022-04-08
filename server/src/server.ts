@@ -6,7 +6,10 @@ import * as bodyParser from 'body-parser';
 import * as swaggerUi from 'swagger-ui-express';
 import { useExpressServer, RoutingControllersOptions } from 'routing-controllers';
 import { genOpenAPI, WebsocketHandler } from './utils';
-import { SimpleController, SimpleTemplateController, SimpleWebSocket } from './controllers/simple';
+import { MessagesController, MessagesTemplateController } from './controllers/messages';
+import { TokensController, TokensTemplateController } from './controllers/tokens';
+import { CommonController } from './controllers/common';
+import { SimpleWebSocket } from './controllers/websocket';
 
 const app = express();
 app.use(bodyParser.json());
@@ -14,7 +17,13 @@ app.use(cors({ origin: '*' }));
 
 const serverOptions: RoutingControllersOptions = {
   routePrefix: '/api',
-  controllers: [SimpleController, SimpleTemplateController],
+  controllers: [
+    CommonController,
+    MessagesController,
+    MessagesTemplateController,
+    TokensController,
+    TokensTemplateController,
+  ],
 };
 const wsConfig = {
   prefix: '/api',

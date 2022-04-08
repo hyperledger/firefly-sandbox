@@ -77,7 +77,7 @@ export const EventSubscription: React.FC = () => {
   React.useEffect(() => {
     if (!wsConnected && connectingStatus === 'connecting') {
       webSocket.current = new WebSocket(
-        `ws://localhost:3001/api/simple/ws?filter.events=${selectedSubscriptions
+        `ws://localhost:3001/api/ws?filter.events=${selectedSubscriptions
           .toString()
           .replaceAll(',', '|')}`
       );

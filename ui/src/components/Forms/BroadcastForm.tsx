@@ -84,12 +84,6 @@ export const BroadcastForm: React.FC = () => {
               />
             </Grid>
           </Grid>
-          <Grid container item justifyContent="flex-end">
-            <RunButton
-              endpoint={`${FF_Paths.messagesBroadcast}`}
-              payload={jsonPayload}
-            />
-          </Grid>
         </Grid>
       </FormControl>
     </Grid>

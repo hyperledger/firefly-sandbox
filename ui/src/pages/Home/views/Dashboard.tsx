@@ -13,6 +13,8 @@ import {
 import { LeftPane } from './LeftPane';
 import * as _ from 'underscore';
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { RunButton } from '../../../components/Buttons/RunButton';
+import { FF_Paths } from '../../../constants/FF_Paths';
 
 const styles = {
   background: FFColors.Pink,
@@ -30,9 +32,15 @@ export const HomeDashboard: () => JSX.Element = () => {
   const { activeForm } = useContext(JsonPayloadContext);
   const [templateName, setTemplateName] = useState<string>('broadcast');
 
+  const endpoints = FF_Paths as any;
+
   useEffect(() => {
     const fetchTemplate = () => {
-      return fetch(`/api/simple/template/${activeForm}`, {
+      const templateCategory =
+        activeForm.includes('private') || activeForm.includes('broadcast')
+          ? 'messages'
+          : 'tokens';
+      return fetch(`/api/${templateCategory}/template/${activeForm}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -111,6 +119,12 @@ export const HomeDashboard: () => JSX.Element = () => {
                   >
                     {codeBlock}
                   </SyntaxHighlighter>
+                </Grid>
+                <Grid container item justifyContent="flex-end">
+                  <RunButton
+                    endpoint={endpoints[activeForm]}
+                    payload={jsonPayload}
+                  />
                 </Grid>
               </Grid>
               <Grid pb={DEFAULT_PADDING}>

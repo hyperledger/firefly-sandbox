@@ -60,12 +60,16 @@ export function formatTemplate(template: string) {
 }
 
 export interface QuoteOptions {
-  noQuote?: boolean;
+  isObject?: boolean;
   truncate?: boolean;
 }
 
 export function quoteAndEscape(varName: string, options?: QuoteOptions) {
-  varName = `new String(${varName})`;
+  if (options?.isObject) {
+    varName = `JSON.stringify(${varName})`;
+  } else {
+    varName = `new String(${varName})`;
+  }
   if (options?.truncate) {
     const maxLength = 20;
     const halfLength = maxLength / 2;
@@ -73,7 +77,7 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
       ? ${varName}.substring(0, ${halfLength}) + ' ... ' + ${varName}.substring(${varName}.length - ${halfLength})
       : ${varName})`;
   }
-  if (!options?.noQuote) {
+  if (!options?.isObject) {
     varName = `"'" + ${varName}.replaceAll("'", "\\\\'") + "'"`;
   }
   return varName;

@@ -16,14 +16,14 @@ describe('Templates: Smart Contracts', () => {
             format: 'abi',
             name: 'simple-storage',
             version: '1.0',
-            schema: '[{ "name": "method1" }]',
+            schema: [{ name: 'method1' }, { name: 'event1' }],
           }),
         ).toBe(
           formatTemplate(`
             const ffi = await firefly.generateContractInterface({
               name: 'simple-storage',
               version: '1.0',
-              input: [{ "name": ... ethod1" }],
+              input: [{"name":" ... "event1"}],
             });
             const result = await firefly.createContractInterface(ffi);
             return { type: 'message', id: result.message };
@@ -33,11 +33,11 @@ describe('Templates: Smart Contracts', () => {
         expect(
           compiled({
             format: 'ffi',
-            schema: '{ "methods": [{ "name": "method1" }] }',
+            schema: { methods: [{ name: 'method1' }] },
           }),
         ).toBe(
           formatTemplate(`
-            const ffi = { "methods ... hod1" }] };
+            const ffi = {"methods" ... ethod1"}]};
             const result = await firefly.createContractInterface(ffi);
             return { type: 'message', id: result.message };
         `),

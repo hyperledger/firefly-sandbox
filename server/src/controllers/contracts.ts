@@ -96,8 +96,8 @@ export class ContractsTemplateController {
       \`await firefly.generateContractInterface({
         name: \` + ${q('name')} + \`,
         version: \` + ${q('version')} + \`,
-        input: \` + ${q('schema', { noQuote: true, truncate: true })} + \`,
-      })\` : ${q('schema', { noQuote: true, truncate: true })} %>;
+        input: \` + ${q('schema', { isObject: true, truncate: true })} + \`,
+      })\` : ${q('schema', { isObject: true, truncate: true })} %>;
       const result = await firefly.createContractInterface(ffi);
       return { type: 'message', id: result.message };
     `);

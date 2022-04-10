@@ -1,7 +1,9 @@
 import { FireFlyTokenPoolType } from '@photic/firefly-sdk-nodejs';
 import {
   ArrayNotEmpty,
+  IsDefined,
   IsEnum,
+  IsInstance,
   IsInt,
   IsNumberString,
   IsOptional,
@@ -9,7 +11,7 @@ import {
   IsUUID,
   Min,
 } from 'class-validator';
-import { JSONSchema, validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { JSONSchema } from 'class-validator-jsonschema';
 
 export class AsyncResponse {
   @IsString()
@@ -131,6 +133,53 @@ export class TokenBalance {
   tokenIndex?: string;
 }
 
-export function schemas() {
-  return validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' });
+export enum ContractInterfaceFormat {
+  FFI = 'ffi',
+  ABI = 'abi',
+}
+
+export class ContractInterface {
+  @IsEnum(ContractInterfaceFormat)
+  format: ContractInterfaceFormat;
+
+  @IsString()
+  @IsOptional()
+  name?: string;
+
+  @IsString()
+  @IsOptional()
+  version?: string;
+
+  @IsDefined()
+  schema: any;
+}
+
+export class ContractAPI {
+  @IsString()
+  name: string;
+
+  @IsString()
+  interfaceName: string;
+
+  @IsString()
+  interfaceVersion: string;
+
+  @IsString()
+  address: string;
+}
+
+export class ContractAPIURLs {
+  @IsString()
+  openapi: string;
+
+  @IsString()
+  ui: string;
+}
+
+export class ContractAPILookup {
+  @IsString()
+  name: string;
+
+  @IsInstance(ContractAPIURLs)
+  urls: ContractAPIURLs;
 }

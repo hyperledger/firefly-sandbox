@@ -3,8 +3,8 @@ import { Duplex } from 'stream';
 import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-controllers';
 import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
+import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import stripIndent = require('strip-indent');
-import { schemas } from './interfaces';
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
@@ -13,7 +13,7 @@ export function genOpenAPI(options: RoutingControllersOptions) {
       version: '1.0.0',
     },
     components: {
-      schemas: schemas(),
+      schemas: validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' }),
     },
   });
 }
@@ -59,6 +59,26 @@ export function formatTemplate(template: string) {
   return stripIndent(template).trim();
 }
 
-export function quoteAndEscape(varName: string) {
-  return `"'" + new String(${varName}).replaceAll("'", "\\\\'") + "'"`;
+export interface QuoteOptions {
+  isObject?: boolean;
+  truncate?: boolean;
+}
+
+export function quoteAndEscape(varName: string, options?: QuoteOptions) {
+  if (options?.isObject) {
+    varName = `JSON.stringify(${varName})`;
+  } else {
+    varName = `new String(${varName})`;
+  }
+  if (options?.truncate) {
+    const maxLength = 20;
+    const halfLength = maxLength / 2;
+    varName = `(${varName}.length > ${maxLength}
+      ? ${varName}.substring(0, ${halfLength}) + ' ... ' + ${varName}.substring(${varName}.length - ${halfLength})
+      : ${varName})`;
+  }
+  if (!options?.isObject) {
+    varName = `"'" + ${varName}.replaceAll("'", "\\\\'") + "'"`;
+  }
+  return varName;
 }

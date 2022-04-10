@@ -20,7 +20,7 @@
   "docs": "Docs",
   "durable": "Durable",
   "ephemeral": "Ephemeral",
-  "eventLogs": "Event Logs",
+  "events": "Events",
   "eventSubscription": "Event Subscription",
   "exampleAddress": "ex. 0x123....789",
   "exampleAmount": "ex. 10",

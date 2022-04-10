@@ -98,15 +98,23 @@ export const HomeDashboard: () => JSX.Element = () => {
                 style={{ width: '100%', height: '100%', overflow: 'scroll' }}
               >
                 <Grid>
-                  <Typography
-                    variant="h5"
+                  <Grid
+                    container
+                    item
                     p={DEFAULT_PADDING}
-                    pb={0}
-                    sx={{ fontWeight: 600 }}
+                    sx={{
+                      background: '#12171d',
+                      height: 'auto',
+                      position: 'sticky',
+                      top: '0',
+                      zIndex: '1000001',
+                    }}
                   >
-                    {t('code')}
-                  </Typography>
-                  <Grid container item p={DEFAULT_PADDING}>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {t('code')}
+                    </Typography>
+                  </Grid>
+                  <Grid container item p={DEFAULT_PADDING} pt={0}>
                     <Paper
                       sx={{
                         width: '100%',

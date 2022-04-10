@@ -12,12 +12,22 @@ export const EventSubscription: React.FC = () => {
   return (
     <div style={{ width: '100%' }}>
       <Grid pb={DEFAULT_PADDING}>
-        <Grid item pt={DEFAULT_PADDING} pl={DEFAULT_PADDING}>
+        <Grid
+          item
+          p={DEFAULT_PADDING}
+          sx={{
+            background: '#12171d',
+            height: 'auto',
+            position: 'sticky',
+            top: '0',
+            zIndex: '1000001',
+          }}
+        >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
-            {t('eventLogs')}
+            {t('events')}
           </Typography>
         </Grid>
-        <Grid container item p={DEFAULT_PADDING}>
+        <Grid container item p={DEFAULT_PADDING} pt={0}>
           <Paper
             sx={{
               width: '100%',

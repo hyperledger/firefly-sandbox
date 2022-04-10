@@ -44,7 +44,7 @@ export const PrivateForm: React.FC = () => {
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    fetch(`/api/simple/organizations?exclude_self=false`, {
+    fetch(`/api/common/organizations?exclude_self=false`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -150,13 +150,6 @@ export const PrivateForm: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid container item justifyContent="flex-end">
-          <RunButton
-            endpoint={`${FF_Paths.messagesPrivate}`}
-            payload={jsonPayload}
-            disabled={recipients.length === 0}
-          />
         </Grid>
       </Grid>
     </Grid>

@@ -14,7 +14,7 @@ interface Props {
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const { activeForm } = useContext(JsonPayloadContext);
+  const { activeForm, setApiResponse } = useContext(JsonPayloadContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -26,27 +26,29 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   const handlePost = () => {
     const blobUpload = activeForm.includes('blob');
-    const fullEndpoint = managePayloadAndEndpoint();
+    managePayload();
     const reqDetails: any = {
       method: 'POST',
       body: blobUpload
-        ? buildFormData(payload, fullEndpoint)
+        ? buildFormData(payload, endpoint)
         : JSON.stringify(payload),
     };
     if (!blobUpload) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(fullEndpoint, reqDetails)
+    fetch(endpoint, reqDetails)
       .then((response) => response.json())
-      .then(() => {
+      .then((data) => {
         setShowSnackbar(true);
+        setApiResponse(data);
       })
-      .catch(() => {
+      .catch((err) => {
         setShowSnackbar(true);
+        setApiResponse(err);
       });
   };
 
-  const managePayloadAndEndpoint = () => {
+  const managePayload = () => {
     const blobUpload = activeForm.includes('blob');
     if (!blobUpload) {
       delete payload['filename'];
@@ -55,10 +57,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     if (tokenOperations.includes(activeForm)) {
       delete payload['message'];
     }
-    const fullEndpoint = `${endpoint}${
-      activeForm.includes('blob') ? 'blob' : ''
-    }`;
-    return fullEndpoint;
   };
 
   const buildFormData = (payload: any, blobEndpoint: string) => {

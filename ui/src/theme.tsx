@@ -19,16 +19,16 @@ export enum FFColors {
 
 export const themeOptions: ThemeOptions = {
   palette: {
-    mode: 'light',
+    mode: 'dark',
     background: {
-      default: '#E2E2E2',
-      paper: '#FFFFFF',
+      default: '#12171d',
+      paper: '#1e242a',
     },
     primary: {
-      main: '#462DE0',
+      main: '#FFFFFF',
     },
     secondary: {
-      main: '#A73DD5',
+      main: '#9BA7B0',
       dark: '#252C32',
     },
     info: {
@@ -44,8 +44,8 @@ export const themeOptions: ThemeOptions = {
       main: FFColors.Red,
     },
     text: {
-      primary: '#251A7B',
-      secondary: '#462DE0',
+      primary: '#FFFFFF',
+      secondary: '#9BA7B0',
       disabled: '#51565a',
     },
   },
@@ -53,9 +53,9 @@ export const themeOptions: ThemeOptions = {
     MuiAccordion: {
       styleOverrides: {
         root: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: '#12171d',
           width: '100%',
-          borderRadius: '8px',
+          borderRadius: DEFAULT_BORDER_RADIUS,
           '&:before': {
             display: 'none',
           },
@@ -67,6 +67,17 @@ export const themeOptions: ThemeOptions = {
         root: {
           borderRadius: '16px',
           fontSize: '12px',
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        contained: {
+          backgroundColor: '#462DE0',
+          color: '#fff',
+          ':hover': {
+            backgroundColor: '#231770',
+          },
         },
       },
     },

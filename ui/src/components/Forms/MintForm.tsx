@@ -68,7 +68,7 @@ export const MintForm: React.FC = () => {
   useEffect(() => {
     if (activeForm !== 'mint') return;
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
+    fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
       })
@@ -146,9 +146,6 @@ export const MintForm: React.FC = () => {
           message={message}
           onSetMessage={(msg: string | object) => setMessage(msg)}
         /> */}
-        <Grid container item justifyContent="flex-end">
-          <RunButton endpoint={`${FF_Paths.tokenMint}`} payload={jsonPayload} />
-        </Grid>
       </Grid>
     </Grid>
   );

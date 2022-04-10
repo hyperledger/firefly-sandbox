@@ -33,10 +33,10 @@ export const TransferForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<string>();
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(1);
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
-  const [tokenIndex, setTokenIndex] = useState<number | null>();
+  const [tokenIndex, setTokenIndex] = useState<string | null>();
 
   useEffect(() => {
     if (activeForm !== 'transfer') return;
@@ -51,7 +51,7 @@ export const TransferForm: React.FC = () => {
 
   useEffect(() => {
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
+    fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
       })
@@ -59,21 +59,21 @@ export const TransferForm: React.FC = () => {
         reportFetchError(err);
       });
 
-    fetchCatcher(`${FF_Paths.tokenVerifiers}`)
+    fetchCatcher(`${FF_Paths.verifiers}`)
       .then((verifiersRes: IVerifiers[]) => {
         setTokenVerifiers(verifiersRes);
       })
       .catch((err) => {
         reportFetchError(err);
       });
-  }, []);
+  }, [activeForm]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : 1);
+    setTokenIndex(isFungible() ? null : '1');
     if (!isFungible()) {
       setAmount(1);
     }
-  }, [pool]);
+  }, [pool, amount]);
 
   const isFungible = () => {
     const selectedPool = tokenPools.find((p) => p.name === pool);
@@ -81,21 +81,13 @@ export const TransferForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
-    }
     setAmount(parseInt(event.target.value));
   };
 
   const handleTokenIndexChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
-    }
-    setTokenIndex(parseInt(event.target.value));
+    setTokenIndex(event.target.value);
   };
 
   const handleRecipientChange = (
@@ -198,12 +190,6 @@ export const TransferForm: React.FC = () => {
           message={message}
           onSetMessage={(msg: string | object) => setMessage(msg)}
         /> */}
-        <Grid container item justifyContent="flex-end">
-          <RunButton
-            endpoint={`${FF_Paths.tokenTransfers}`}
-            payload={jsonPayload}
-          />
-        </Grid>
       </Grid>
     </Grid>
   );

@@ -72,12 +72,6 @@ export const DefineDatatypeForm: React.FC = () => {
               />
             </Grid>
           </Grid>
-          <Grid container item justifyContent="flex-end">
-            <RunButton
-              endpoint={`${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.datatypes}`}
-              payload={jsonPayload}
-            />
-          </Grid>
         </Grid>
       </FormControl>
     </Grid>

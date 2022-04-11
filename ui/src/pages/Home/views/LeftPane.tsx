@@ -82,7 +82,7 @@ export const LeftPane = () => {
             aria-label="basic tabs example"
           >
             {TUTORIAL_CATEGORIES.map((c, idx) => {
-              return <Tab label={c} {...a11yProps(idx)} />;
+              return <Tab label={c} key={idx} {...a11yProps(idx)} />;
             })}
           </Tabs>
         </Box>

@@ -84,7 +84,8 @@ export const Header: React.FC = () => {
     null
   );
 
-  const [connectingStatus, setConnectingStatus] = useState<string>('');
+  const [connectingStatus, setConnectingStatus] =
+    useState<string>('connecting');
   const [errorMessage, setErrorMessage] = useState<string>('');
   const [wsConnected, setWsConnected] = useState<boolean>(false);
 

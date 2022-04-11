@@ -29,6 +29,7 @@ export const BroadcastForm: React.FC = () => {
       topic: topics,
       tag,
       value: message,
+      jsonValue: null,
       filename: fileName,
     });
   }, [message, tag, topics, fileName, activeForm]);

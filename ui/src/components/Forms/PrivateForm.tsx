@@ -69,6 +69,7 @@ export const PrivateForm: React.FC = () => {
       topic: topics,
       tag,
       value: message,
+      jsonValue: null,
       filename: fileName,
       recipients,
     });

@@ -9,7 +9,6 @@ import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
@@ -84,12 +83,6 @@ export const BroadcastForm: React.FC = () => {
                 onChange={handleTopicsChange}
               />
             </Grid>
-          </Grid>
-          <Grid container item justifyContent="flex-end">
-            <RunButton
-              endpoint={`${FF_Paths.messagesBroadcast}`}
-              payload={jsonPayload}
-            />
           </Grid>
         </Grid>
       </FormControl>

@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
-import { RunButton } from '../Buttons/RunButton';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
@@ -23,7 +22,7 @@ export const PoolForm: React.FC = () => {
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
-    if (activeForm !== 'tokenpools') {
+    if (activeForm !== 'pools') {
       return;
     }
     setJsonPayload({
@@ -90,12 +89,6 @@ export const PoolForm: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-        </Grid>
-        <Grid container item justifyContent="flex-end">
-          <RunButton
-            endpoint={`${FF_Paths.tokenPools}`}
-            payload={jsonPayload}
-          />
         </Grid>
       </Grid>
     </Grid>

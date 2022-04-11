@@ -15,12 +15,18 @@
 // limitations under the License.
 
 import { createContext, Dispatch, SetStateAction } from 'react';
+import { ISelfIdentity } from '../interfaces/api';
 
 export interface IJsonPayloadContext {
+  selfIdentity: ISelfIdentity | undefined;
   activeForm: string;
   setActiveForm: Dispatch<SetStateAction<string>>;
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;
+  apiResponse: object;
+  setApiResponse: Dispatch<SetStateAction<object>>;
+  logs: string[];
+  setLogs: Dispatch<SetStateAction<string[]>>;
 }
 
 export const JsonPayloadContext = createContext({} as IJsonPayloadContext);

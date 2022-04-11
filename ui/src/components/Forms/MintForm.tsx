@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -12,33 +13,35 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenPool, IVerifiers } from '../../interfaces/api';
-import { DEFAULT_SPACING } from '../../theme';
+import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import {
   DEFAULT_MESSAGE_STRING,
   // MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
 
 export const MintForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
     useContext(JsonPayloadContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
+  const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [recipient, setRecipient] = useState<string>('');
 
   const [message, setMessage] = useState<string | object | undefined>(
     DEFAULT_MESSAGE_STRING
   );
 
-  const [pool, setPool] = useState<string>();
+  const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<number>();
+  const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== 'mint') {
@@ -46,14 +49,13 @@ export const MintForm: React.FC = () => {
     }
     if (!message) {
       setJsonPayload({
-        pool: pool,
+        pool: pool?.name,
         amount: amount,
       });
       return;
     }
-
     setJsonPayload({
-      pool: pool,
+      pool: pool?.name,
       amount: amount,
       message: {
         data: [
@@ -68,14 +70,39 @@ export const MintForm: React.FC = () => {
   useEffect(() => {
     if (activeForm !== 'mint') return;
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.tokenPools}${qParams}`)
+    fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
+        if (poolRes.length > 0) {
+          setPool(poolRes[0]);
+        }
       })
       .catch((err) => {
         reportFetchError(err);
       });
   }, [activeForm]);
+
+  useEffect(() => {
+    if (!pool?.id) return;
+    const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
+    fetchCatcher(`${FF_Paths.tokenBalances}${qParams}`)
+      .then((balanceRes: any) => {
+        if (pool.type === 'nonfungible') {
+          setTokenBalance(balanceRes.length);
+        } else {
+          setTokenBalance(
+            balanceRes.length > 0
+              ? balanceRes.find(
+                  (b: any) => b.key === selfIdentity?.ethereum_address
+                ).balance
+              : 0
+          );
+        }
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
+  }, [pool, refresh]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -109,12 +136,14 @@ export const MintForm: React.FC = () => {
               </InputLabel>
               <Select
                 fullWidth
-                value={pool ?? ''}
+                value={pool?.id ?? ''}
                 label={tokenPools.length ? t('tokenPool') : t('noTokenPools')}
-                onChange={(e) => setPool(e.target.value as string)}
+                onChange={(e) =>
+                  setPool(tokenPools.find((t) => t.id === e.target.value))
+                }
               >
                 {tokenPools.map((tp, idx) => (
-                  <MenuItem key={idx} value={tp.name}>
+                  <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
                       {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
                       {tp.type === 'fungible'
@@ -129,6 +158,21 @@ export const MintForm: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
+        </Grid>
+        <Grid item xs={12} justifyContent={'space-between'}>
+          {t('tokenBalance')}: {tokenBalance}
+          <Button
+            sx={{ marginLeft: DEFAULT_PADDING }}
+            onClick={() => {
+              setRefresh(refresh + 1);
+            }}
+          >
+            <RefreshIcon
+              sx={{
+                cursor: 'pointer',
+              }}
+            ></RefreshIcon>
+          </Button>
         </Grid>
         <Grid item xs={4}>
           <FormControl fullWidth required>
@@ -146,9 +190,6 @@ export const MintForm: React.FC = () => {
           message={message}
           onSetMessage={(msg: string | object) => setMessage(msg)}
         /> */}
-        <Grid container item justifyContent="flex-end">
-          <RunButton endpoint={`${FF_Paths.tokenMint}`} payload={jsonPayload} />
-        </Grid>
       </Grid>
     </Grid>
   );

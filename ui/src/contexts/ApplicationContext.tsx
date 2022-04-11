@@ -15,28 +15,24 @@
 // limitations under the License.
 
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { FF_EVENTS } from '../ff_models/eventTypes';
-import {
-  INamespace,
-  INetworkIdentity,
-  ITokenConnector,
-} from '../interfaces/api';
+import { ISelfIdentity } from '../interfaces/api';
 
+export interface IApiStatus {
+  status: number;
+  statusText: string;
+}
 export interface IApplicationContext {
-  identity: string;
-  identities: INetworkIdentity[];
-  isWsConnected: boolean;
-  orgID: string;
-  orgName: string;
-  nodeID: string;
-  nodeName: string;
-  selectedNamespace: string;
-  setSelectedNamespace: Dispatch<SetStateAction<string>>;
-  namespaces: INamespace[];
-  newEvents: FF_EVENTS[];
-  connectors: ITokenConnector[];
-  clearNewEvents: () => void;
-  lastRefreshTime: string;
+  selfIdentity: ISelfIdentity | undefined;
+  activeForm: string;
+  setActiveForm: Dispatch<SetStateAction<string>>;
+  jsonPayload: object;
+  setJsonPayload: Dispatch<SetStateAction<object>>;
+  apiResponse: object;
+  setApiResponse: Dispatch<SetStateAction<object>>;
+  apiStatus: IApiStatus | undefined;
+  setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
+  logs: string[];
+  setLogs: Dispatch<SetStateAction<string[]>>;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

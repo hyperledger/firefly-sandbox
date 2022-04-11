@@ -8,7 +8,7 @@ import {
   useState,
 } from 'react';
 import { StringIfPlural } from 'react-i18next';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { FFAccordionHeader } from './FFAccordionHeader';
 import { FFAccordionText } from './FFAccordionText';
@@ -31,7 +31,7 @@ export const FFAccordion: React.FC<Props> = ({
   activeForm,
 }) => {
   const [expanded, setExpanded] = useState<boolean>(isOpen);
-  const { setActiveForm } = useContext(JsonPayloadContext);
+  const { setActiveForm } = useContext(ApplicationContext);
   useEffect(() => {
     if (type + 'blob' !== activeForm && type !== activeForm) {
       setExpanded(false);

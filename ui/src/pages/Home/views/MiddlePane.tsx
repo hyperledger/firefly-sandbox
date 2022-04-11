@@ -1,4 +1,4 @@
-import { Grid, Paper, Typography } from '@mui/material';
+import { Chip, Grid, Paper, Typography } from '@mui/material';
 import { t } from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -6,12 +6,16 @@ import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hl
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
 import * as _ from 'underscore';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
-import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING } from '../../../theme';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import {
+  DEFAULT_BORDER_RADIUS,
+  DEFAULT_PADDING,
+  FFColors,
+} from '../../../theme';
 
 export const MiddlePane = () => {
-  const { jsonPayload, apiResponse, activeForm } =
-    useContext(JsonPayloadContext);
+  const { jsonPayload, apiResponse, apiStatus, activeForm } =
+    useContext(ApplicationContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
   const [templateName, setTemplateName] = useState<string>('broadcast');
@@ -62,6 +66,24 @@ export const MiddlePane = () => {
     const result = compiled(jsonPayload);
     setCodeBlock(result);
   };
+
+  const isSuccessfulResponse = (statusCode: number) => {
+    if (statusCode >= 200 && statusCode < 299) {
+      return true;
+    } else if (statusCode >= 400 && statusCode < 600) {
+      return false;
+    }
+    return false;
+  };
+
+  const getApiStatusColor = () => {
+    return apiStatus?.status
+      ? isSuccessfulResponse(apiStatus?.status)
+        ? FFColors.Green
+        : FFColors.Red
+      : FFColors.White;
+  };
+
   return (
     <Grid>
       <Grid
@@ -119,10 +141,26 @@ export const MiddlePane = () => {
             padding: DEFAULT_PADDING,
           }}
         >
-          <Grid item>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
-              {t('apiResponse')}
-            </Typography>
+          <Grid item container xs={12}>
+            <Grid item xs={6}>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                {t('apiResponse')}
+              </Typography>
+            </Grid>
+            <Grid item container xs={6} justifyContent="flex-end">
+              <Chip
+                variant="outlined"
+                sx={{
+                  borderColor: getApiStatusColor(),
+                  color: getApiStatusColor(),
+                }}
+                label={
+                  apiStatus?.status
+                    ? `${apiStatus?.status} ${apiStatus?.statusText}`
+                    : `HTTP Code`
+                }
+              />
+            </Grid>
           </Grid>
           <Grid
             pt={2}

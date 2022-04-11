@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FFAccordion } from '../../../components/Accordion/FFAccordion';
 import { Header } from '../../../components/Header';
 import { TutorialSections } from '../../../constants/TutorialSections';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { DEFAULT_PADDING } from '../../../theme';
 
 interface TabPanelProps {
@@ -18,7 +18,7 @@ const TUTORIAL_CATEGORIES = ['messaging', 'tokens', 'contracts'];
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   const { t } = useTranslation();
-  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
+  const { activeForm, setActiveForm } = useContext(ApplicationContext);
   return (
     <Grid container p={DEFAULT_PADDING} sx={{ overflow: 'scroll' }}>
       <Grid container item wrap="nowrap" direction="column">

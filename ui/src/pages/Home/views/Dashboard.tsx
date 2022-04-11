@@ -6,7 +6,7 @@ import { EventSubscription } from './EventSubscription';
 import { DEFAULT_PADDING } from '../../../theme';
 import { LeftPane } from './LeftPane';
 import * as _ from 'underscore';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { MiddlePane } from './MiddlePane';
 
 const styles = {

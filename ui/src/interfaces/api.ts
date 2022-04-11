@@ -109,6 +109,13 @@ export interface INamespace {
   confirmed: string;
 }
 
+export interface ISelfIdentity {
+  id: string;
+  name: string;
+  did: string;
+  ethereum_address: string;
+}
+
 export interface INetworkIdentity {
   id: string;
   did: string;

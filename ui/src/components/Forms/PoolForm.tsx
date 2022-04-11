@@ -11,7 +11,6 @@ import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
-import { RunButton } from '../Buttons/RunButton';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();

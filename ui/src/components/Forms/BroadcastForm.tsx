@@ -9,7 +9,6 @@ import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =

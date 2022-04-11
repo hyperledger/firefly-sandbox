@@ -19,6 +19,7 @@ import { FF_EVENTS } from './ff_models/eventTypes';
 import {
   INamespace,
   INetworkIdentity,
+  ISelfIdentity,
   IStatus,
   ITokenConnector,
 } from './interfaces/api';
@@ -48,90 +49,50 @@ function App() {
   const [lastRefreshTime, setLastRefresh] = useState<string>(
     new Date().toISOString()
   );
+
+  const [selfIdentity, setSelfIdentity] = useState<ISelfIdentity>();
   const [jsonPayload, setJsonPayload] = useState<object>({});
   const [activeForm, setActiveForm] = useState<string>('broadcast');
   const [apiResponse, setApiResponse] = useState<object>({});
   const [logs, setLogs] = useState<string[]>([]);
 
-  // useEffect(() => {
-  //   Promise.all([
-  //     fetchWithCredentials(FF_Paths.nsPrefix),
-  //     fetchWithCredentials(`${FF_Paths.apiPrefix}${FF_Paths.status}`),
-  //     fetchWithCredentials(
-  //       `${FF_Paths.apiPrefix}${FF_Paths.networkIdentities}`
-  //     ),
-  //     fetchWithCredentials(
-  //       `${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.Connectors}`
-  //     ),
-  //   ])
-  //     .then(
-  //       async ([
-  //         namespaceResponse,
-  //         statusResponse,
-  //         identitiesResponse,
-  //         connectorsResponse,
-  //       ]) => {
-  //         if (
-  //           namespaceResponse.ok &&
-  //           statusResponse.ok &&
-  //           identitiesResponse.ok &&
-  //           connectorsResponse.ok
-  //         ) {
-  //           const status: IStatus = await statusResponse.json();
-  //           const nodeDID = status.org.did;
-  //           setIdentity(nodeDID);
-  //           setOrgID(status.org.id);
-  //           setOrgName(status.org.name);
-  //           setNodeID(status.node.id);
-  //           setNodeName(status.node.name);
-  //           setSelectedNamespace(status.defaults.namespace);
-  //           const ns: INamespace[] = await namespaceResponse.json();
-  //           setNamespaces(ns);
-  //           const identities: INetworkIdentity[] =
-  //             await identitiesResponse.json();
-  //           setIdentities(identities.filter((id) => id.did !== nodeDID));
-  //           const connectors: ITokenConnector[] =
-  //             await connectorsResponse.json();
-  //           setConnectors(connectors);
-  //         }
-  //       }
-  //     )
-  //     .catch((e) => {
-  //       setInitError(e);
-  //     })
-  //     .finally(() => {
-  //       setInitialized(true);
-  //     });
-  // }, []);
-
-  // useEffect(() => {
-  //   if (selectedNamespace) {
-  //     ws.current = new ReconnectingWebSocket(
-  //       process.env.NODE_ENV === 'development'
-  //         ? `ws://localhost:5000/ws?namespace=${selectedNamespace}&ephemeral&autoack`
-  //         : `${protocol}://${window.location.hostname}:${window.location.port}/ws?namespace=${selectedNamespace}&ephemeral&autoack`
-  //     );
-  //     ws.current.onmessage = (event: any) => {
-  //       const eventData = JSON.parse(event.data);
-  //       const eventType: FF_EVENTS = eventData.type;
-  //       if (Object.values(FF_EVENTS).includes(eventType)) {
-  //         setNewEvents((existing) => [eventType, ...existing]);
-  //       }
-  //     };
-  //     ws.current.onopen = () => {
-  //       setIsWsConnected(true);
-  //     };
-  //     ws.current.onclose = () => {
-  //       setIsWsConnected(false);
-  //     };
-
-  //     return () => {
-  //       if (ws.current) {
-  //         ws.current.close();
-  //       }
-  //     };
-  //   }
-  // }, [selectedNamespace]);
+  useEffect(() => {
+    fetch(`/api/common/organizations/self`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        return response.json();
+      })
+      .then((org) => {
+        fetch(`/api/common/verifiers`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+          .then((response) => {
+            return response.json();
+          })
+          .then((data) => {
+            setSelfIdentity({
+              ...org,
+              ethereum_address: data.find((d: any) => d.did === org.did).value,
+            });
+          })
+          .catch(() => {
+            return null;
+          });
+      })
+      .catch(() => {
+        return null;
+      })
+      .finally(() => {
+        setInitialized(true);
+      });
+  }, []);
 
   // Error snackbar
   const reportFetchError = (err: any) => {
@@ -189,6 +150,7 @@ function App() {
           >
             <JsonPayloadContext.Provider
               value={{
+                selfIdentity,
                 jsonPayload,
                 setJsonPayload,
                 activeForm,

@@ -12,16 +12,12 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NAMESPACE } from '../../App';
-import { FF_Paths } from '../../constants/FF_Paths';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
 
 interface NetworkIdentity {
   did: string;

@@ -16,6 +16,7 @@ describe('Templates: Messages', () => {
             tag: '',
             topic: '',
             value: '',
+            jsonValue: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -35,6 +36,7 @@ describe('Templates: Messages', () => {
             tag: 'test-tag',
             topic: 'test-topic',
             value: "'Hello'",
+            jsonValue: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -47,6 +49,26 @@ describe('Templates: Messages', () => {
             });
             return { type: 'message', id: message.header.id };
         `),
+        );
+
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: '',
+            jsonValue: { val1: 'foo', val2: 'bar' },
+          }),
+        ).toBe(
+          formatTemplate(`
+          const message = await firefly.sendBroadcast({
+            header: {
+              tag: 'test-tag',
+              topics: ['test-topic'],
+            },
+            data: [{"val1":"f ... l2":"bar"}],
+          });
+          return { type: 'message', id: message.header.id };
+      `),
         );
       });
   });
@@ -94,6 +116,7 @@ describe('Templates: Messages', () => {
             tag: '',
             topic: '',
             value: '',
+            jsonValue: '',
             recipients: [],
           }),
         ).toBe(
@@ -117,6 +140,7 @@ describe('Templates: Messages', () => {
             tag: 'test-tag',
             topic: 'test-topic',
             value: "'Hello'",
+            jsonValue: '',
             recipients: ['alpha', 'beta'],
           }),
         ).toBe(
@@ -130,6 +154,30 @@ describe('Templates: Messages', () => {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
               data: [{ value: '\\'Hello\\'' }],
+            });
+            return { type: 'message', id: message.header.id };
+        `),
+        );
+
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: '',
+            jsonValue: { val1: 'foo', val2: 'bar' },
+            recipients: ['alpha', 'beta'],
+          }),
+        ).toBe(
+          formatTemplate(`
+            const message = await firefly.sendPrivateMessage({
+              header: {
+                tag: 'test-tag',
+                topics: ['test-topic'],
+              },
+              group: {
+                members: [{ identity: 'alpha' }, { identity: 'beta' }],
+              },
+              data: [{"val1":"f ... l2":"bar"}],
             });
             return { type: 'message', id: message.header.id };
         `),

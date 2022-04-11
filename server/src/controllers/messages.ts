@@ -29,7 +29,7 @@ export class MessagesController {
         tag: body.tag || undefined,
         topics: body.topic ? [body.topic] : undefined,
       },
-      data: [{ value: body.value }],
+      data: [{ value: body.value || body.jsonValue }],
     });
     return { type: 'message', id: message.header.id };
   }
@@ -70,7 +70,7 @@ export class MessagesController {
       group: {
         members: body.recipients.map((r) => ({ identity: r })),
       },
-      data: [{ value: body.value }],
+      data: [{ value: body.value || body.jsonValue }],
     });
     return { type: 'message', id: message.header.id };
   }
@@ -117,7 +117,10 @@ export class MessagesTemplateController {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
-        data: [{ value: <%= ${q('value')} %> }],
+        data: [<%= jsonValue ? ${q('jsonValue', {
+          isObject: true,
+          truncate: true,
+        })} : '{ value: ' + ${q('value')} + ' }' %>],
       });
       return { type: 'message', id: message.header.id };
     `);
@@ -152,7 +155,10 @@ export class MessagesTemplateController {
         group: {
           members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
-        data: [{ value: <%= ${q('value')} %> }],
+        data: [<%= jsonValue ? ${q('jsonValue', {
+          isObject: true,
+          truncate: true,
+        })} : '{ value: ' + ${q('value')} + ' }' %>],
       });
       return { type: 'message', id: message.header.id };
     `);

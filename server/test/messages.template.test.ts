@@ -25,7 +25,7 @@ describe('Templates: Messages', () => {
                 tag: undefined,
                 topics: undefined,
               },
-              data: [{ value: '' }],
+              data: [{value: ''}],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -45,7 +45,7 @@ describe('Templates: Messages', () => {
                 tag: 'test-tag',
                 topics: ['test-topic'],
               },
-              data: [{ value: '\\'Hello\\'' }],
+              data: [{value: '\\'Hello\\''}],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -65,7 +65,7 @@ describe('Templates: Messages', () => {
               tag: 'test-tag',
               topics: ['test-topic'],
             },
-            data: [{"val1":"f ... l2":"bar"}],
+            data: [{value: {"val1":"f ... l2":"bar"}}],
           });
           return { type: 'message', id: message.header.id };
       `),
@@ -129,7 +129,7 @@ describe('Templates: Messages', () => {
               group: {
                 members: [],
               },
-              data: [{ value: '' }],
+              data: [{value: ''}],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -153,7 +153,7 @@ describe('Templates: Messages', () => {
               group: {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
-              data: [{ value: '\\'Hello\\'' }],
+              data: [{value: '\\'Hello\\''}],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -177,7 +177,7 @@ describe('Templates: Messages', () => {
               group: {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
-              data: [{"val1":"f ... l2":"bar"}],
+              data: [{value: {"val1":"f ... l2":"bar"}}],
             });
             return { type: 'message', id: message.header.id };
         `),

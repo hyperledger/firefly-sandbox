@@ -14,7 +14,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/broadcast_data.html',
-        endpoint: FF_Paths.messagesBroadcast,
+        endpoint: FF_Paths.broadcast,
         form: <BroadcastForm />,
         link: 'broadcast',
         shortInfo: 'broadcastShortInfo',
@@ -23,7 +23,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/private_send.html',
-        endpoint: FF_Paths.messagesPrivate,
+        endpoint: FF_Paths.private,
         form: <PrivateForm />,
         link: 'private',
         shortInfo: 'privateShortInfo',
@@ -37,16 +37,16 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
-        endpoint: FF_Paths.tokenPools,
+        endpoint: FF_Paths.pools,
         form: <PoolForm />,
-        link: 'tokenpools',
+        link: 'pools',
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
       },
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
-        endpoint: FF_Paths.tokenMint,
+        endpoint: FF_Paths.mint,
         form: <MintForm />,
         link: 'mint',
         shortInfo: 'mintShortInfo',
@@ -55,7 +55,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
-        endpoint: FF_Paths.tokenTransfers,
+        endpoint: FF_Paths.transfer,
         form: <TransferForm />,
         link: 'transfer',
         shortInfo: 'transferShortInfo',
@@ -64,7 +64,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
-        endpoint: FF_Paths.tokenBurn,
+        endpoint: FF_Paths.burn,
         form: <BurnForm />,
         link: 'burn',
         shortInfo: 'burnShortInfo',

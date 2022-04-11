@@ -1,10 +1,7 @@
 import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
-import { SELECTED_NAMESPACE } from '../../App';
-import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
-import { RunButton } from '../Buttons/RunButton';
 
 export const DefineDatatypeForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
@@ -71,12 +68,6 @@ export const DefineDatatypeForm: React.FC = () => {
                 onChange={(e) => setVersion(e.target.value)}
               />
             </Grid>
-          </Grid>
-          <Grid container item justifyContent="flex-end">
-            <RunButton
-              endpoint={`${FF_Paths.nsPrefix}/${SELECTED_NAMESPACE}${FF_Paths.datatypes}`}
-              payload={jsonPayload}
-            />
           </Grid>
         </Grid>
       </FormControl>

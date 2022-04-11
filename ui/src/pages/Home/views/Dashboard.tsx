@@ -1,38 +1,42 @@
-import { Grid, Typography } from '@mui/material';
+import { Grid, Paper, Typography } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import SplitPane from 'react-split-pane';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { EventSubscription } from './EventSubscription';
-import {
-  DEFAULT_BORDER_RADIUS,
-  DEFAULT_PADDING,
-  FFColors,
-} from '../../../theme';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING } from '../../../theme';
 import { LeftPane } from './LeftPane';
 import * as _ from 'underscore';
 import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { RunButton } from '../../../components/Buttons/RunButton';
+import { FF_Paths } from '../../../constants/FF_Paths';
 
 const styles = {
-  background: FFColors.Pink,
-  width: '4px',
+  background: '#cccccc',
+  width: '2px',
   cursor: 'col-resize',
-  margin: '0 5px',
-  height: 'auto',
+  margin: '0',
+  height: '100%',
 };
 
 export const HomeDashboard: () => JSX.Element = () => {
   const { t } = useTranslation();
-  const { jsonPayload } = useContext(JsonPayloadContext);
+  const { jsonPayload, apiResponse } = useContext(JsonPayloadContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
   const { activeForm } = useContext(JsonPayloadContext);
   const [templateName, setTemplateName] = useState<string>('broadcast');
 
+  const endpoints = FF_Paths as any;
+
   useEffect(() => {
     const fetchTemplate = () => {
-      return fetch(`/api/simple/template/${activeForm}`, {
+      const templateCategory =
+        activeForm.includes('private') || activeForm.includes('broadcast')
+          ? 'messages'
+          : 'tokens';
+      return fetch(`/api/${templateCategory}/template/${activeForm}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -74,7 +78,7 @@ export const HomeDashboard: () => JSX.Element = () => {
   return (
     <>
       <div style={{ height: '100vh', width: '100vw' }}>
-        <Grid container px={DEFAULT_PADDING} height="100%">
+        <Grid container height="100%">
           <SplitPane
             split="vertical"
             minSize={100}
@@ -88,32 +92,104 @@ export const HomeDashboard: () => JSX.Element = () => {
               minSize={100}
               defaultSize={'50%'}
               resizerStyle={styles}
+              style={{ height: '100%' }}
             >
-              <Grid container p={DEFAULT_PADDING}>
-                <Grid item>
-                  <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                    {t('typescriptSDK')}
-                  </Typography>
-                </Grid>
-                <Grid
-                  pt={2}
-                  container
-                  item
-                  wrap="nowrap"
-                  direction="column"
-                  sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-                  fontSize="12px"
-                >
-                  <SyntaxHighlighter
-                    showLineNumbers
-                    language={'typescript'}
-                    style={tomorrowNightBright}
+              <div
+                style={{ width: '100%', height: '100%', overflow: 'scroll' }}
+              >
+                <Grid>
+                  <Grid
+                    container
+                    item
+                    p={DEFAULT_PADDING}
+                    sx={{
+                      background: '#12171d',
+                      height: 'auto',
+                      position: 'sticky',
+                      top: '0',
+                      zIndex: '1000001',
+                    }}
                   >
-                    {codeBlock}
-                  </SyntaxHighlighter>
+                    <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                      {t('code')}
+                    </Typography>
+                  </Grid>
+                  <Grid container item p={DEFAULT_PADDING} pt={0}>
+                    <Paper
+                      sx={{
+                        width: '100%',
+                        minHeight: '400px',
+                        padding: DEFAULT_PADDING,
+                      }}
+                    >
+                      <Grid item>
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                          {t('typescriptSDK')}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        container
+                        item
+                        wrap="nowrap"
+                        direction="column"
+                        sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                        fontSize="12px"
+                      >
+                        <SyntaxHighlighter
+                          customStyle={{ borderRadius: '5px' }}
+                          showLineNumbers
+                          language={'typescript'}
+                          style={tomorrowNightBright}
+                        >
+                          {codeBlock}
+                        </SyntaxHighlighter>
+                      </Grid>
+                      <Grid container item justifyContent="flex-end">
+                        <RunButton
+                          endpoint={endpoints[activeForm]}
+                          payload={jsonPayload}
+                        />
+                      </Grid>
+                    </Paper>
+                    <Paper
+                      sx={{
+                        width: '100%',
+                        marginTop: DEFAULT_PADDING,
+                        padding: DEFAULT_PADDING,
+                      }}
+                    >
+                      <Grid item>
+                        <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                          {t('apiResponse')}
+                        </Typography>
+                      </Grid>
+                      <Grid
+                        pt={2}
+                        container
+                        item
+                        wrap="nowrap"
+                        direction="column"
+                        sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+                        fontSize="12px"
+                      >
+                        <SyntaxHighlighter
+                          customStyle={{ borderRadius: '5px' }}
+                          showLineNumbers
+                          language={'json'}
+                          style={tomorrowNightBright}
+                        >
+                          {JSON.stringify(apiResponse, null, 1)}
+                        </SyntaxHighlighter>
+                      </Grid>
+                    </Paper>
+                  </Grid>
                 </Grid>
-              </Grid>
-              <Grid pb={DEFAULT_PADDING}>
+              </div>
+
+              <Grid
+                pb={DEFAULT_PADDING}
+                sx={{ height: '100%', overflow: 'scroll' }}
+              >
                 <EventSubscription />
               </Grid>
             </SplitPane>

@@ -12,7 +12,7 @@ export interface IHistMsgTimeMap {
 }
 
 export enum MsgCategoryEnum {
-  BROADCAST = 'Broadcast',
+  BROADCAST = 'broadcast',
   DEFINITON = 'Definition',
   PRIVATE = 'Private',
 }

@@ -12,16 +12,12 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NAMESPACE } from '../../App';
-import { FF_Paths } from '../../constants/FF_Paths';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
 
 interface NetworkIdentity {
   did: string;
@@ -44,7 +40,7 @@ export const PrivateForm: React.FC = () => {
   const [topics, setTopics] = useState<string>();
 
   useEffect(() => {
-    fetch(`/api/simple/organizations?exclude_self=false`, {
+    fetch(`/api/common/organizations?exclude_self=false`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -151,13 +147,6 @@ export const PrivateForm: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-        </Grid>
-        <Grid container item justifyContent="flex-end">
-          <RunButton
-            endpoint={`${FF_Paths.messagesPrivate}`}
-            payload={jsonPayload}
-            disabled={recipients.length === 0}
-          />
         </Grid>
       </Grid>
     </Grid>

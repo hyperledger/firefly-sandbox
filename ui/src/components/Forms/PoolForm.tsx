@@ -9,13 +9,13 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
   const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
 
   const [name, setName] = useState<string>();
   const [symbol, setSymbol] = useState<string>();

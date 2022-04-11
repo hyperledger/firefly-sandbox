@@ -19,7 +19,6 @@ import { NavItem } from './NavItem';
 export const NAV_WIDTH = 225;
 
 export const Navigation: React.FC = () => {
-  const { orgName } = useContext(ApplicationContext);
   const { t } = useTranslation();
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -61,11 +60,7 @@ export const Navigation: React.FC = () => {
         <MenuLogo />
         <List>
           <ListItem>
-            <ListItemText>
-              <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
-                {orgName}
-              </Typography>
-            </ListItemText>
+            <ListItemText></ListItemText>
           </ListItem>
           {makeDrawerContents}
         </List>

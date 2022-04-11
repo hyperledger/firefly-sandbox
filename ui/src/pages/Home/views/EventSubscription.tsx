@@ -3,14 +3,14 @@ import { Box, Grid, Paper, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_PADDING } from '../../../theme';
 import * as React from 'react';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
 
 export const EventSubscription: React.FC = () => {
   const { t } = useTranslation();
-  const { logs } = React.useContext(JsonPayloadContext);
+  const { logs } = React.useContext(ApplicationContext);
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', overflow: 'scroll', height: '100%' }}>
       <Grid pb={DEFAULT_PADDING}>
         <Grid
           item
@@ -20,7 +20,6 @@ export const EventSubscription: React.FC = () => {
             height: 'auto',
             position: 'sticky',
             top: '0',
-            zIndex: '1000001',
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>

@@ -2,7 +2,7 @@ import { Button, FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
 import * as _ from 'underscore';
 import {
@@ -13,7 +13,7 @@ import { isJsonString } from '../../utils/strings';
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
 
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);

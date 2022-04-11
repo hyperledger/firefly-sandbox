@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { BrowserRouter, RouteObject, useRoutes } from 'react-router-dom';
 import { AppWrapper } from '../AppWrapper';
 import { HomeRoutes } from '../pages/Home/Routes';
+import { Header } from './Header';
 
 const queryClient = new QueryClient({
   defaultOptions: {

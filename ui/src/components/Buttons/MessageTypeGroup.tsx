@@ -12,9 +12,9 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -42,7 +42,13 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<
     'none' | 'string' | 'json' | 'file'
   >('string');
-  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
+  const { activeForm, setActiveForm } = useContext(ApplicationContext);
+
+  useEffect(() => {
+    if (activeForm.indexOf('blob') < 0) {
+      setMessageType(message ? 'string' : 'json');
+    }
+  }, [activeForm]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,

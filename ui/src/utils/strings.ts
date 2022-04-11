@@ -7,3 +7,13 @@ export const jsNumberForAddress = (address: string): number => {
   const seed = parseInt(addr, 16);
   return seed;
 };
+
+export const isJsonString = (str: string) => {
+  if (!str) return false;
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};

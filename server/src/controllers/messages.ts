@@ -29,7 +29,7 @@ export class MessagesController {
         tag: body.tag || undefined,
         topics: body.topic ? [body.topic] : undefined,
       },
-      data: [body.jsonValue || { value: body.value }],
+      data: [{ value: body.value || body.jsonValue }],
     });
     return { type: 'message', id: message.header.id };
   }
@@ -70,7 +70,7 @@ export class MessagesController {
       group: {
         members: body.recipients.map((r) => ({ identity: r })),
       },
-      data: [body.jsonValue || { value: body.value }],
+      data: [{ value: body.value || body.jsonValue }],
     });
     return { type: 'message', id: message.header.id };
   }

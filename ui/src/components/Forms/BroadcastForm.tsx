@@ -9,28 +9,43 @@ import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
+import { isJsonString } from '../../utils/strings';
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
     useContext(JsonPayloadContext);
 
   const { t } = useTranslation();
-  const [message, setMessage] = useState<string | object>(
-    DEFAULT_MESSAGE_STRING
-  );
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [fileName, setFileName] = useState<string>('');
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
+  const [jsonValue, setJsonValue] = useState<string | undefined>();
 
   useEffect(() => {
     if (!activeForm.includes('broadcast')) return;
+    const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
       tag,
       value: message,
+      jsonValue: jsonValue ? jsonCurValue : null,
       filename: fileName,
     });
   }, [message, tag, topics, fileName, activeForm]);
+
+  useEffect(() => {
+    if (jsonValue && isJsonString(jsonValue)) {
+      setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
+      setJsonPayload({
+        topic: topics,
+        tag,
+        jsonValue: JSON.parse(jsonValue),
+        value: message,
+        filename: fileName,
+      });
+    }
+  }, [jsonValue]);
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -56,11 +71,15 @@ export const BroadcastForm: React.FC = () => {
           <MessageTypeGroup
             noUndefined
             message={message}
-            onSetMessage={(msg: string | object) => {
+            jsonValue={jsonValue}
+            onSetMessage={(msg: string) => {
               setMessage(msg);
             }}
             onSetFileName={(file: string) => {
               setFileName(file);
+            }}
+            onSetJsonValue={(json: string) => {
+              setJsonValue(json);
             }}
           />
           <Grid container item justifyContent="space-between" spacing={1}>

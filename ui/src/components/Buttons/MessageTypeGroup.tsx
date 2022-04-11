@@ -12,39 +12,37 @@ import {
   ToggleButtonGroup,
   Typography,
 } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
-const DEFAULT_MESSAGE_JSON = {
+export const DEFAULT_MESSAGE_JSON = {
   name: 'This is a message',
 };
 
 interface Props {
-  message: string | object | undefined;
+  message: string | undefined;
+  jsonValue: string | undefined;
   onSetMessage: any;
   onSetFileName?: any;
+  onSetJsonValue: any;
   noUndefined?: boolean;
 }
 
 export const MessageTypeGroup: React.FC<Props> = ({
   noUndefined = false,
   message,
+  jsonValue,
   onSetMessage,
   onSetFileName,
+  onSetJsonValue,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<
     'none' | 'string' | 'json' | 'file'
   >('string');
   const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
-
-  useEffect(() => {
-    if (activeForm.indexOf('blob') < 0) {
-      setMessageType('string');
-    }
-  }, [activeForm]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -60,14 +58,18 @@ export const MessageTypeGroup: React.FC<Props> = ({
         setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'string':
+        onSetJsonValue(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'json':
-        onSetMessage(DEFAULT_MESSAGE_JSON);
+        onSetMessage(undefined);
+        onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
+        setActiveForm(activeForm.replace('blob', ''));
         return;
       case 'file':
-        onSetMessage('');
+        onSetMessage(undefined);
+        onSetJsonValue(undefined);
         onSetFileName('');
         setActiveForm(
           activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
@@ -95,7 +97,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         <ToggleButton value="string">
           <FormatQuote />
         </ToggleButton>
-        <ToggleButton disabled value="json">
+        <ToggleButton value="json">
           <DataObject />
         </ToggleButton>
         <ToggleButton value="file">
@@ -112,20 +114,12 @@ export const MessageTypeGroup: React.FC<Props> = ({
               fullWidth
               maxRows={7}
               value={
-                messageType === 'json'
-                  ? JSON.stringify(message, null, 2)
-                  : messageType === 'string'
-                  ? message
-                  : ''
+                messageType === 'string' ? message : jsonValue ? jsonValue : ''
               }
               onChange={(e) =>
-                onSetMessage(
-                  messageType === 'string'
-                    ? e.target.value
-                    : messageType === undefined
-                    ? undefined
-                    : JSON.parse(e.target.value)
-                )
+                messageType === 'string'
+                  ? onSetMessage(e.target.value)
+                  : onSetJsonValue(e.target.value)
               }
             />
           ) : (

@@ -6,6 +6,7 @@ import {
   IsInstance,
   IsInt,
   IsNumberString,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
@@ -33,7 +34,12 @@ export class BaseMessageFields {
 
 export class BroadcastValue extends BaseMessageFields {
   @IsString()
-  value: string;
+  @IsOptional()
+  value?: string;
+
+  @IsObject()
+  @IsOptional()
+  jsonValue?: any;
 }
 
 export class BroadcastBlob extends BaseMessageFields {
@@ -48,7 +54,12 @@ export class PrivateValue extends BaseMessageFields {
   recipients: string[];
 
   @IsString()
-  value: string;
+  @IsOptional()
+  value?: string;
+
+  @IsObject()
+  @IsOptional()
+  jsonValue?: any;
 }
 
 export class PrivateBlob extends BaseMessageFields {

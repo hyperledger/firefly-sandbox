@@ -1,4 +1,5 @@
 import {
+  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -12,48 +13,48 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NAMESPACE } from '../../App';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenPool, IVerifiers } from '../../interfaces/api';
-import { DEFAULT_SPACING } from '../../theme';
+import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
-import {
-  DEFAULT_MESSAGE_STRING,
-  MessageTypeGroup,
-} from '../Buttons/MessageTypeGroup';
-import { RunButton } from '../Buttons/RunButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 export const TransferForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
     useContext(JsonPayloadContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
-  const [pool, setPool] = useState<string>();
+  const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<number>(1);
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>();
+  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== 'transfer') return;
     setJsonPayload({
-      pool,
+      pool: pool?.name,
       amount,
       tokenIndex,
       to: recipient,
     });
     return;
-  }, [pool, amount, recipient, activeForm]);
+  }, [pool, amount, recipient, tokenIndex, activeForm]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
     fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
+        if (poolRes.length > 0) {
+          setPool(poolRes[0]);
+        }
       })
       .catch((err) => {
         reportFetchError(err);
@@ -75,8 +76,30 @@ export const TransferForm: React.FC = () => {
     }
   }, [pool, amount]);
 
+  useEffect(() => {
+    if (!pool?.id) return;
+    const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
+    fetchCatcher(`${FF_Paths.tokenBalances}${qParams}`)
+      .then((balanceRes: any) => {
+        if (pool.type === 'nonfungible') {
+          setTokenBalance(balanceRes.length);
+        } else {
+          setTokenBalance(
+            balanceRes.length > 0
+              ? balanceRes.find(
+                  (b: any) => b.key === selfIdentity?.ethereum_address
+                ).balance
+              : 0
+          );
+        }
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
+  }, [pool, refresh]);
+
   const isFungible = () => {
-    const selectedPool = tokenPools.find((p) => p.name === pool);
+    const selectedPool = tokenPools.find((p) => p.name === pool?.name);
     return selectedPool?.type === 'fungible';
   };
 
@@ -114,12 +137,14 @@ export const TransferForm: React.FC = () => {
               </InputLabel>
               <Select
                 fullWidth
-                value={pool ?? ''}
+                value={pool?.id ?? ''}
                 label={tokenPools.length ? t('tokenPool') : t('noTokenPools')}
-                onChange={(e) => setPool(e.target.value as string)}
+                onChange={(e) =>
+                  setPool(tokenPools.find((t) => t.id === e.target.value))
+                }
               >
                 {tokenPools.map((tp, idx) => (
-                  <MenuItem key={idx} value={tp.name}>
+                  <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
                       {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
                       {tp.type === 'fungible'
@@ -159,6 +184,21 @@ export const TransferForm: React.FC = () => {
             </Select>
           </FormControl>
         </Grid>
+        <Grid item xs={12}>
+          {t('tokenBalance')}: {tokenBalance}
+          <Button
+            sx={{ marginLeft: DEFAULT_PADDING }}
+            onClick={() => {
+              setRefresh(refresh + 1);
+            }}
+          >
+            <RefreshIcon
+              sx={{
+                cursor: 'pointer',
+              }}
+            ></RefreshIcon>
+          </Button>
+        </Grid>
         <Grid item xs={4}>
           <FormControl fullWidth required>
             <TextField
@@ -172,7 +212,7 @@ export const TransferForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        {tokenIndex && (
+        {tokenIndex ? (
           <Grid item xs={4}>
             <FormControl fullWidth required>
               <TextField
@@ -184,6 +224,8 @@ export const TransferForm: React.FC = () => {
               />
             </FormControl>
           </Grid>
+        ) : (
+          <></>
         )}
         {/* Message
         <MessageTypeGroup

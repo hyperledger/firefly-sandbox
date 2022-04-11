@@ -13,7 +13,7 @@ interface TabPanelProps {
   value: number;
 }
 
-const TUTORIAL_CATEGORIES = ['messaging', 'tokens'];
+const TUTORIAL_CATEGORIES = ['messaging', 'tokens', 'contracts'];
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
@@ -81,8 +81,9 @@ export const LeftPane = () => {
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="Messaging" {...a11yProps(0)} />
-            <Tab label="Tokens" {...a11yProps(1)} />
+            {TUTORIAL_CATEGORIES.map((c, idx) => {
+              return <Tab label={c} {...a11yProps(idx)} />;
+            })}
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}></TabPanel>

@@ -39,7 +39,7 @@ import {
 } from '@mui/material';
 import React, { useContext, useRef, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JsonPayloadContext } from '../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../contexts/ApplicationContext';
 import { getEnrichedEventText } from '../ff_models/eventTypes';
 import {
   DEFAULT_BORDER_RADIUS,
@@ -78,7 +78,7 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
 
-  const { logs, setLogs } = useContext(JsonPayloadContext);
+  const { logs, setLogs } = useContext(ApplicationContext);
 
   const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(
     null

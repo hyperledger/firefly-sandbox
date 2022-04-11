@@ -2,7 +2,7 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import { Alert, Button, Snackbar, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 
 interface Props {
@@ -14,7 +14,8 @@ interface Props {
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const { activeForm, setApiResponse } = useContext(JsonPayloadContext);
+  const { activeForm, setApiStatus, setApiResponse } =
+    useContext(ApplicationContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -25,6 +26,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   };
 
   const handlePost = () => {
+    console.log(activeForm);
     const blobUpload = activeForm.includes('blob');
     managePayload();
     const reqDetails: any = {
@@ -37,9 +39,17 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
     fetch(endpoint, reqDetails)
-      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+        setApiStatus({
+          status: response.status,
+          statusText: response.statusText,
+        });
+        return response.json();
+      })
       .then((data) => {
         setShowSnackbar(true);
+        console.log(data);
         setApiResponse(data);
       })
       .catch((err) => {

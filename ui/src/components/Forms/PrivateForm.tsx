@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
 import { isJsonString } from '../../utils/strings';
 import {
@@ -28,7 +28,7 @@ interface NetworkIdentity {
 
 export const PrivateForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [identities, setIdentities] = useState<NetworkIdentity[]>([]);

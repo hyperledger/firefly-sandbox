@@ -17,7 +17,11 @@
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { ISelfIdentity } from '../interfaces/api';
 
-export interface IJsonPayloadContext {
+export interface IApiStatus {
+  status: number;
+  statusText: string;
+}
+export interface IApplicationContext {
   selfIdentity: ISelfIdentity | undefined;
   activeForm: string;
   setActiveForm: Dispatch<SetStateAction<string>>;
@@ -25,8 +29,10 @@ export interface IJsonPayloadContext {
   setJsonPayload: Dispatch<SetStateAction<object>>;
   apiResponse: object;
   setApiResponse: Dispatch<SetStateAction<object>>;
+  apiStatus: IApiStatus | undefined;
+  setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
   logs: string[];
   setLogs: Dispatch<SetStateAction<string[]>>;
 }
 
-export const JsonPayloadContext = createContext({} as IJsonPayloadContext);
+export const ApplicationContext = createContext({} as IApplicationContext);

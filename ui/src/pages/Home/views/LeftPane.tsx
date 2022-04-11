@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FFAccordion } from '../../../components/Accordion/FFAccordion';
 import { Header } from '../../../components/Header';
 import { TutorialSections } from '../../../constants/TutorialSections';
-import { JsonPayloadContext } from '../../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { DEFAULT_PADDING } from '../../../theme';
 
 interface TabPanelProps {
@@ -13,12 +13,12 @@ interface TabPanelProps {
   value: number;
 }
 
-const TUTORIAL_CATEGORIES = ['messaging', 'tokens'];
+const TUTORIAL_CATEGORIES = ['messaging', 'tokens', 'contracts'];
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
   const { t } = useTranslation();
-  const { activeForm, setActiveForm } = useContext(JsonPayloadContext);
+  const { activeForm, setActiveForm } = useContext(ApplicationContext);
   return (
     <Grid container p={DEFAULT_PADDING} sx={{ overflow: 'scroll' }}>
       <Grid container item wrap="nowrap" direction="column">
@@ -75,15 +75,15 @@ export const LeftPane = () => {
   return (
     <>
       <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
-        <Header></Header>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={value}
             onChange={handleChange}
             aria-label="basic tabs example"
           >
-            <Tab label="Messaging" {...a11yProps(0)} />
-            <Tab label="Tokens" {...a11yProps(1)} />
+            {TUTORIAL_CATEGORIES.map((c, idx) => {
+              return <Tab label={c} key={idx} {...a11yProps(idx)} />;
+            })}
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}></TabPanel>

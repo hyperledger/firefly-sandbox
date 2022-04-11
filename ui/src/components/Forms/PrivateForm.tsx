@@ -14,6 +14,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
 import { DEFAULT_SPACING } from '../../theme';
+import { isJsonString } from '../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
@@ -29,12 +30,11 @@ export const PrivateForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
     useContext(JsonPayloadContext);
   const { t } = useTranslation();
-  const [message, setMessage] = useState<string | object>(
-    DEFAULT_MESSAGE_STRING
-  );
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [identities, setIdentities] = useState<NetworkIdentity[]>([]);
   const [recipients, setRecipients] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string>('');
+  const [jsonValue, setJsonValue] = useState<string | undefined>();
 
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
@@ -61,15 +61,30 @@ export const PrivateForm: React.FC = () => {
     if (!activeForm.includes('private')) {
       return;
     }
+    const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
       tag,
       value: message,
-      jsonValue: null,
+      jsonValue: jsonValue ? jsonCurValue : null,
       filename: fileName,
       recipients,
     });
   }, [message, recipients, tag, topics, fileName, activeForm]);
+
+  useEffect(() => {
+    if (jsonValue && isJsonString(jsonValue)) {
+      setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
+      setJsonPayload({
+        topic: topics,
+        tag,
+        jsonValue: JSON.parse(jsonValue),
+        value: message,
+        filename: fileName,
+        recipients,
+      });
+    }
+  }, [jsonValue]);
 
   const handleRecipientChange = (
     event: SelectChangeEvent<typeof recipients>
@@ -99,13 +114,16 @@ export const PrivateForm: React.FC = () => {
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
-        {/* Message */}
         <MessageTypeGroup
           noUndefined
           message={message}
-          onSetMessage={(msg: string | object) => setMessage(msg)}
+          jsonValue={jsonValue}
+          onSetMessage={(msg: string) => setMessage(msg)}
           onSetFileName={(file: string) => {
             setFileName(file);
+          }}
+          onSetJsonValue={(json: string) => {
+            setJsonValue(json);
           }}
         />
         <Grid container item justifyContent="space-between" spacing={1}>

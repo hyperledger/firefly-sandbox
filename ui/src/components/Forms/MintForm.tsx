@@ -188,7 +188,7 @@ export const MintForm: React.FC = () => {
         {/* Message */}
         {/* <MessageTypeGroup
           message={message}
-          onSetMessage={(msg: string | object) => setMessage(msg)}
+          onSetMessage={(msg: string) => setMessage(msg)}
         /> */}
       </Grid>
     </Grid>

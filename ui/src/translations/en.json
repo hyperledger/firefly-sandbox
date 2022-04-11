@@ -56,6 +56,7 @@
   "subscription": "Subscription",
   "tag": "Tag",
   "toAddress": "To Address",
+  "tokenBalance": "Token Balance",
   "tokenIndex": "Token Index",
   "tokenPool": "Token Pool",
   "tokenRecipient": "Token Recipient",

@@ -53,6 +53,7 @@ function App() {
   const [selfIdentity, setSelfIdentity] = useState<ISelfIdentity>();
   const [jsonPayload, setJsonPayload] = useState<object>({});
   const [activeForm, setActiveForm] = useState<string>('broadcast');
+  const [apiStatus, setApiStatus] = useState<object>({});
   const [apiResponse, setApiResponse] = useState<object>({});
   const [logs, setLogs] = useState<string[]>([]);
 
@@ -157,6 +158,8 @@ function App() {
                 setActiveForm,
                 apiResponse,
                 setApiResponse,
+                apiStatus,
+                setApiStatus,
                 logs,
                 setLogs,
               }}

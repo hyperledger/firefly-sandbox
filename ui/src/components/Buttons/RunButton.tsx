@@ -2,7 +2,7 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import { Alert, Button, Snackbar, Typography } from '@mui/material';
 import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 
 interface Props {
@@ -15,7 +15,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { activeForm, setApiStatus, setApiResponse } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -41,7 +41,10 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     fetch(endpoint, reqDetails)
       .then((response) => {
         console.log(response);
-        setApiStatus(response);
+        setApiStatus({
+          status: response.status,
+          statusText: response.statusText,
+        });
         return response.json();
       })
       .then((data) => {

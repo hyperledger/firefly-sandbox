@@ -11,17 +11,16 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FF_Paths } from '../../constants/FF_Paths';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { RunButton } from '../Buttons/RunButton';
 
 export const BurnForm: React.FC = () => {
   const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 

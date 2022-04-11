@@ -1,11 +1,11 @@
 import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
-import { JsonPayloadContext } from '../../contexts/JsonPayloadContext';
+import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
 
 export const DefineDatatypeForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(JsonPayloadContext);
+    useContext(ApplicationContext);
 
   const [datatype, setDatatype] = useState<object>({
     $id: 'https://example.com/widget.schema.json',

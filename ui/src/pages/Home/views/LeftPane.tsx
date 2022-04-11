@@ -75,7 +75,6 @@ export const LeftPane = () => {
   return (
     <>
       <div style={{ width: '100%', height: '100%', overflow: 'scroll' }}>
-        <Header></Header>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs
             value={value}

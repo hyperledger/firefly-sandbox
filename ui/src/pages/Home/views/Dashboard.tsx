@@ -107,7 +107,6 @@ export const HomeDashboard: () => JSX.Element = () => {
                       height: 'auto',
                       position: 'sticky',
                       top: '0',
-                      zIndex: '1000001',
                     }}
                   >
                     <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -186,10 +185,7 @@ export const HomeDashboard: () => JSX.Element = () => {
                 </Grid>
               </div>
 
-              <Grid
-                pb={DEFAULT_PADDING}
-                sx={{ height: '100%', overflow: 'scroll' }}
-              >
+              <Grid pb={DEFAULT_PADDING} sx={{ height: '100%' }}>
                 <EventSubscription />
               </Grid>
             </SplitPane>

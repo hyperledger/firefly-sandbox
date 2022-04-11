@@ -10,7 +10,7 @@ export const EventSubscription: React.FC = () => {
   const { logs } = React.useContext(JsonPayloadContext);
 
   return (
-    <div style={{ width: '100%' }}>
+    <div style={{ width: '100%', overflow: 'scroll', height: '100%' }}>
       <Grid pb={DEFAULT_PADDING}>
         <Grid
           item
@@ -20,7 +20,6 @@ export const EventSubscription: React.FC = () => {
             height: 'auto',
             position: 'sticky',
             top: '0',
-            zIndex: '1000001',
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>

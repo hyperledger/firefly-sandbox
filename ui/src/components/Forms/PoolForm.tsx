@@ -8,14 +8,12 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
-  const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
+  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
 
   const [name, setName] = useState<string>();
   const [symbol, setSymbol] = useState<string>();

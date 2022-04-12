@@ -1,23 +1,22 @@
-import { Grid, Paper, Typography } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { Grid } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import SplitPane from 'react-split-pane';
-import { EventSubscription } from './EventSubscription';
 import { DEFAULT_PADDING } from '../../../theme';
 import { LeftPane } from './LeftPane';
-import * as _ from 'underscore';
-import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { MiddlePane } from './MiddlePane';
-
-const styles = {
-  background: '#cccccc',
-  width: '2px',
-  cursor: 'col-resize',
-  margin: '0',
-  height: '100%',
-};
+import { RightPane } from './RightPane';
 
 export const HomeDashboard: () => JSX.Element = () => {
+  const theme = useTheme();
+
+  const styles = {
+    background: theme.palette.background.paper,
+    width: '2px',
+    cursor: 'col-resize',
+    margin: '0',
+    height: '100%',
+  };
+
   return (
     <>
       <div style={{ height: '100vh', width: '100vw' }}>
@@ -44,7 +43,7 @@ export const HomeDashboard: () => JSX.Element = () => {
               </div>
 
               <Grid pb={DEFAULT_PADDING} sx={{ height: '100%' }}>
-                <EventSubscription />
+                <RightPane />
               </Grid>
             </SplitPane>
           </SplitPane>

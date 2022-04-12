@@ -2,16 +2,16 @@ import { Typography } from '@mui/material';
 
 interface Props {
   color: string;
+  isHeader?: boolean;
   padding?: boolean;
   text: string;
-  isHeader?: boolean;
 }
 
 export const FFAccordionText: React.FC<Props> = ({
   color,
+  isHeader = false,
   padding = false,
   text,
-  isHeader = false,
 }) => {
   return (
     <Typography

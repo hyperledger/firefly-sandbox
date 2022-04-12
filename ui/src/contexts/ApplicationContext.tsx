@@ -15,24 +15,29 @@
 // limitations under the License.
 
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { ISelfIdentity } from '../interfaces/api';
+import { IApiStatus, ISelfIdentity } from '../interfaces/api';
+import { IEventHistory } from '../interfaces/events';
 
-export interface IApiStatus {
-  status: number;
-  statusText: string;
-}
 export interface IApplicationContext {
   selfIdentity: ISelfIdentity | undefined;
+  // Active form
   activeForm: string;
   setActiveForm: Dispatch<SetStateAction<string>>;
+  // Json Payload
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;
+  // API Response
   apiResponse: object;
   setApiResponse: Dispatch<SetStateAction<object>>;
+  // API Status
   apiStatus: IApiStatus | undefined;
   setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
+  // Logs
   logs: string[];
   setLogs: Dispatch<SetStateAction<string[]>>;
+  logHistory: IEventHistory;
+  setLogHistory: Dispatch<SetStateAction<IEventHistory>>;
+  addLogToHistory: (event: any) => void;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

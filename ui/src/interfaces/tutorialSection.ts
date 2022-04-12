@@ -7,7 +7,7 @@ export interface ITutorial {
   docsURL: string;
   endpoint: string;
   form: JSX.Element;
-  link: string;
+  id: string;
   shortInfo: string;
   title: string;
 }

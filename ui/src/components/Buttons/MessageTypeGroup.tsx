@@ -15,6 +15,7 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { POST_BODY_TYPE } from '../../enums/enums';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -39,41 +40,41 @@ export const MessageTypeGroup: React.FC<Props> = ({
   onSetJsonValue,
 }) => {
   const { t } = useTranslation();
-  const [messageType, setMessageType] = useState<
-    'none' | 'string' | 'json' | 'file'
-  >('string');
+  const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
+    POST_BODY_TYPE.STRING
+  );
   const { activeForm, setActiveForm } = useContext(ApplicationContext);
 
   useEffect(() => {
     if (activeForm.indexOf('blob') < 0) {
-      setMessageType(message ? 'string' : 'json');
+      setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
     }
   }, [activeForm]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
-    newAlignment: 'none' | 'string' | 'json' | 'file'
+    newAlignment: POST_BODY_TYPE
   ) => {
     if (!newAlignment) {
       return;
     }
     setMessageType(newAlignment);
     switch (newAlignment) {
-      case 'none':
+      case POST_BODY_TYPE.NONE:
         onSetMessage(undefined);
         setActiveForm(activeForm.replace('blob', ''));
         return;
-      case 'string':
+      case POST_BODY_TYPE.STRING:
         onSetJsonValue(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         setActiveForm(activeForm.replace('blob', ''));
         return;
-      case 'json':
+      case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
         onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
         setActiveForm(activeForm.replace('blob', ''));
         return;
-      case 'file':
+      case POST_BODY_TYPE.FILE:
         onSetMessage(undefined);
         onSetJsonValue(undefined);
         onSetFileName('');
@@ -88,6 +89,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   return (
     <Grid container item xs={12} justifyContent="flex-end">
+      {/* Body type selector */}
       <ToggleButtonGroup
         size="small"
         value={messageType}
@@ -96,23 +98,24 @@ export const MessageTypeGroup: React.FC<Props> = ({
         sx={{ paddingBottom: 1 }}
       >
         {!noUndefined && (
-          <ToggleButton value="none">
+          <ToggleButton value={POST_BODY_TYPE.NONE}>
             <Block />
           </ToggleButton>
         )}
-        <ToggleButton value="string">
+        <ToggleButton value={POST_BODY_TYPE.STRING}>
           <FormatQuote />
         </ToggleButton>
-        <ToggleButton value="json">
+        <ToggleButton value={POST_BODY_TYPE.JSON}>
           <DataObject />
         </ToggleButton>
-        <ToggleButton value="file">
+        <ToggleButton value={POST_BODY_TYPE.FILE}>
           <UploadFile />
         </ToggleButton>
       </ToggleButtonGroup>
+      {/* Text input, or file upload button */}
       {
         <Grid container item xs={12} pt={1}>
-          {messageType !== 'file' ? (
+          {messageType !== POST_BODY_TYPE.FILE ? (
             <TextField
               label={t('message')}
               multiline
@@ -120,10 +123,14 @@ export const MessageTypeGroup: React.FC<Props> = ({
               fullWidth
               maxRows={7}
               value={
-                messageType === 'string' ? message : jsonValue ? jsonValue : ''
+                messageType === POST_BODY_TYPE.STRING
+                  ? message
+                  : jsonValue
+                  ? jsonValue
+                  : ''
               }
               onChange={(e) =>
-                messageType === 'string'
+                messageType === POST_BODY_TYPE.STRING
                   ? onSetMessage(e.target.value)
                   : onSetJsonValue(e.target.value)
               }

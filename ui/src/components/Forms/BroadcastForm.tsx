@@ -1,15 +1,13 @@
-import { Button, FormControl, Grid, TextField } from '@mui/material';
+import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../theme';
-import * as _ from 'underscore';
+import { isJsonString } from '../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
-import { isJsonString } from '../../utils/strings';
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, activeForm } =

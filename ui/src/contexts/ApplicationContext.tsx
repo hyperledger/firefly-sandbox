@@ -16,7 +16,7 @@
 
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { IApiStatus, ISelfIdentity } from '../interfaces/api';
-import { IEventHistory } from '../interfaces/events';
+// import { IEventHistory } from '../interfaces/events';
 
 export interface IApplicationContext {
   selfIdentity: ISelfIdentity | undefined;
@@ -35,9 +35,9 @@ export interface IApplicationContext {
   // Logs
   logs: string[];
   setLogs: Dispatch<SetStateAction<string[]>>;
-  logHistory: IEventHistory;
-  setLogHistory: Dispatch<SetStateAction<IEventHistory>>;
-  addLogToHistory: (event: any) => void;
+  // logHistory: IEventHistory;
+  // setLogHistory: Dispatch<SetStateAction<IEventHistory>>;
+  // addLogToHistory: (event: any) => void;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

@@ -7,7 +7,6 @@ import { FFAccordionHeader } from './FFAccordionHeader';
 import { FFAccordionText } from './FFAccordionText';
 
 interface Props {
-  activeForm: string;
   form: JSX.Element;
   infoText: string;
   isOpen?: boolean;
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export const FFAccordion: React.FC<Props> = ({
-  activeForm,
   form,
   infoText,
   isOpen = false,
@@ -24,7 +22,7 @@ export const FFAccordion: React.FC<Props> = ({
   type,
 }) => {
   const [expanded, setExpanded] = useState<boolean>(isOpen);
-  const { setActiveForm } = useContext(ApplicationContext);
+  const { activeForm, setActiveForm } = useContext(ApplicationContext);
   useEffect(() => {
     if (type + 'blob' !== activeForm && type !== activeForm) {
       setExpanded(false);

@@ -9,7 +9,7 @@ import {
 import * as React from 'react';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EventContext } from '../../../contexts/EventContext';
+// import { EventContext } from '../../../contexts/EventContext';
 import {
   FF_EVENTS,
   FF_EVENTS_CATEGORY_MAP,
@@ -19,7 +19,7 @@ import { DEFAULT_PADDING } from '../../../theme';
 export const RightPane: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { logHistory } = useContext(EventContext);
+  // const { logHistory } = useContext(EventContext);
 
   return (
     <div style={{ width: '100%', overflow: 'scroll', height: '100%' }}>
@@ -39,7 +39,7 @@ export const RightPane: React.FC = () => {
           </Typography>
         </Grid>
         <Grid container item p={DEFAULT_PADDING} pt={0}>
-          {Object.keys(logHistory).map((k, idx) => {
+          {/* {Object.keys(logHistory).map((k, idx) => {
             return (
               <Accordion key={idx} defaultExpanded={idx === 0}>
                 <AccordionSummary>{k}</AccordionSummary>
@@ -54,7 +54,7 @@ export const RightPane: React.FC = () => {
                 </AccordionDetails>
               </Accordion>
             );
-          })}
+          })} */}
         </Grid>
       </Grid>
     </div>

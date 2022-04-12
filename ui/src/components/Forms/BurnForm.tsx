@@ -17,6 +17,7 @@ import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const BurnForm: React.FC = () => {
   const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
@@ -32,7 +33,7 @@ export const BurnForm: React.FC = () => {
   const [tokenBalance, setTokenBalance] = useState<number>(0);
 
   useEffect(() => {
-    if (activeForm !== 'burn') return;
+    if (activeForm !== TUTORIALS.BURN) return;
     setJsonPayload({
       pool: pool?.name,
       amount,

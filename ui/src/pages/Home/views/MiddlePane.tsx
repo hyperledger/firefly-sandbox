@@ -25,6 +25,7 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
+    console.log('templatecat', activeForm);
     const templateCategory =
       activeForm.includes('private') || activeForm.includes('broadcast')
         ? 'messages'
@@ -42,26 +43,22 @@ export const MiddlePane = () => {
       .then((data) => {
         setTemplate(data);
         setTemplateName(activeForm);
-        buildCodeBlock(data);
       })
       .catch((e) => {
+        console.log('here');
         reportFetchError(e);
       });
   }, [activeForm]);
 
   useEffect(() => {
     const payload: any = jsonPayload;
-    if (
-      template &&
-      templateName === activeForm &&
-      payload &&
-      !payload.connector
-    ) {
+    if (template && templateName === activeForm && payload) {
       buildCodeBlock(template);
     }
   }, [template, templateName, jsonPayload]);
 
   const buildCodeBlock = (codeTemplate: string) => {
+    if (Object.keys(jsonPayload).length < 1) return;
     const compiled = _.template(codeTemplate);
     const result = compiled(jsonPayload);
     setCodeBlock(result);

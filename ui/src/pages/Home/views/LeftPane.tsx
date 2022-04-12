@@ -27,11 +27,17 @@ const tutorialTabs = [
 
 export const LeftPane = () => {
   const { t } = useTranslation();
-  const { activeForm } = useContext(ApplicationContext);
+  const { activeForm, setActiveForm } = useContext(ApplicationContext);
   const [value, setValue] = useState(0);
 
   const handleChange = (_: React.SyntheticEvent, newValue: number) => {
+    const tutorials = TutorialSections.find(
+      (t) => t.title === tutorialTabs[newValue].title.toLowerCase()
+    )?.tutorials;
     setValue(newValue);
+    if (tutorials && tutorials.length > 0) {
+      setActiveForm(tutorials[0].id);
+    }
   };
 
   return (
@@ -72,7 +78,6 @@ export const LeftPane = () => {
                             form={tutorial.form}
                             type={tutorial.id}
                             isOpen={activeForm === tutorial.id}
-                            activeForm={activeForm}
                           ></FFAccordion>
                         </Grid>
                       );

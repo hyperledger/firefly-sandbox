@@ -13,6 +13,7 @@
   "connectedToFirefly": "Connected to FireFly Node",
   "connectedToWebsocketAt": "Connected to WebSocket at ",
   "connector": "Connector",
+  "contractInterfaceTitle": "Define a Contract Interface",
   "dashboard": "Dashboard",
   "datatypeShortInfo": "Datatypes are broadcasts to the network so everybody refers to the same JSON schema when validating their data",
   "datatypeTitle": "Send a Broadcast Message",

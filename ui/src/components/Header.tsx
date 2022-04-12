@@ -26,7 +26,7 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { EventContext } from '../contexts/EventContext';
+// import { EventContext } from '../contexts/EventContext';
 import { SnackbarContext } from '../contexts/SnackbarContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FFColors } from '../theme';
@@ -37,7 +37,7 @@ const WS_URL = 'ws://localhost:3001/api/ws';
 export const Header: React.FC = () => {
   const { t } = useTranslation();
   const { setMessage } = useContext(SnackbarContext);
-  const { addLogToHistory } = useContext(EventContext);
+  // const { addLogToHistory } = useContext(EventContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<WebSocket | null>(null);
 
@@ -62,7 +62,7 @@ export const Header: React.FC = () => {
         const eventData = JSON.parse(message.data);
         const eventType: FF_EVENTS = eventData.type;
         if (Object.values(FF_EVENTS).includes(eventType)) {
-          addLogToHistory(eventData);
+          // addLogToHistory(eventData);
         }
       };
     } else {

@@ -10,7 +10,7 @@ import { FF_Paths } from './FF_Paths';
 export enum TUTORIALS {
   BROADCAST = 'broadcast',
   PRIVATE = 'private',
-  POOL = 'pool',
+  POOL = 'pools',
   MINT = 'mint',
   TRANSFER = 'transfer',
   BURN = 'burn',
@@ -90,7 +90,7 @@ export const TutorialSections: ITutorialSection[] = [
     ],
   },
   {
-    title: 'Contracts',
+    title: TUTORIAL_CATEGORIES.CONTRACTS,
     tutorials: [
       // {
       //   docsURL:

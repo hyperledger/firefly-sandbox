@@ -20,6 +20,7 @@ import { ITokenPool, IVerifiers } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const TransferForm: React.FC = () => {
   const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
@@ -37,7 +38,7 @@ export const TransferForm: React.FC = () => {
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
-    if (activeForm !== 'transfer') return;
+    if (activeForm !== TUTORIALS.TRANSFER) return;
     setJsonPayload({
       pool: pool?.name,
       amount,

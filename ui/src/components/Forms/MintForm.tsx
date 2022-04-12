@@ -24,6 +24,7 @@ import {
   DEFAULT_MESSAGE_STRING,
   // MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
+import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const MintForm: React.FC = () => {
   const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
@@ -44,7 +45,7 @@ export const MintForm: React.FC = () => {
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
-    if (activeForm !== 'mint') {
+    if (activeForm !== TUTORIALS.MINT) {
       return;
     }
     if (!message) {
@@ -68,7 +69,7 @@ export const MintForm: React.FC = () => {
   }, [pool, amount, message, activeForm]);
 
   useEffect(() => {
-    if (activeForm !== 'mint') return;
+    if (activeForm !== TUTORIALS.MINT) return;
     const qParams = `?limit=25`;
     fetchCatcher(`${FF_Paths.pools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {

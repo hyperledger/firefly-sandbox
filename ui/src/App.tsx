@@ -10,9 +10,9 @@ import {
   MessageSnackbar,
   SnackbarMessageType,
 } from './components/Snackbar/MessageSnackbar';
-import { IApiStatus, ApplicationContext } from './contexts/ApplicationContext';
+import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
-import { ISelfIdentity } from './interfaces/api';
+import { IApiStatus, ISelfIdentity } from './interfaces/api';
 import { themeOptions } from './theme';
 import { fetchWithCredentials, summarizeFetchError } from './utils/fetches';
 

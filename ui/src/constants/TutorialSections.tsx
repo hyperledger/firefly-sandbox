@@ -87,4 +87,45 @@ export const TutorialSections: ITutorialSection[] = [
       },
     ],
   },
+  {
+    title: 'Contracts',
+    tutorials: [
+      // {
+      //   docsURL:
+      //     'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
+      //   endpoint: FF_Paths.contractInterfaces,
+      //   form: <TransferForm />,
+      //   link: 'deploycontract',
+      //   shortInfo: 'deployContractInfo',
+      //   title: 'deployContractTitle',
+      // },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
+        endpoint: FF_Paths.contractInterfaces,
+        form: <PoolForm />,
+        link: 'definecontractinterface',
+        shortInfo: 'defineContractInterfaceInfo',
+        title: 'contractInterfaceTitle',
+      },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
+        endpoint: FF_Paths.contractApis,
+        form: <MintForm />,
+        link: 'registercontractapi',
+        shortInfo: 'registerContractApiInfo',
+        title: 'registerContractApiTitle',
+      },
+      // {
+      //   docsURL:
+      //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
+      //   endpoint: FF_Paths.burn,
+      //   form: <BurnForm />,
+      //   link: 'registercontractapilistener',
+      //   shortInfo: 'registerContractApiListenerInfo',
+      //   title: 'registerApiListenerTitle',
+      // },
+    ],
+  },
 ];

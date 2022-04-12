@@ -17,7 +17,6 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { FF_Paths } from '../../../constants/FF_Paths';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
-import { ITokenPool, IVerifiers } from '../../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 import {
@@ -32,16 +31,11 @@ export const RegisterContractApiForm: React.FC = () => {
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
-  const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
+  const [contractInterfaces, setContractInterfaces] = useState<string[]>([]);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const [recipient, setRecipient] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [blockchainAddress, setBlockchainAddress] = useState<string>('');
 
-  const [message, setMessage] = useState<string | object | undefined>(
-    DEFAULT_MESSAGE_STRING
-  );
-
-  const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>();
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
@@ -56,23 +50,6 @@ export const RegisterContractApiForm: React.FC = () => {
     });
   }, [activeForm]);
 
-  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
-    }
-    setAmount(parseInt(event.target.value));
-  };
-
-  const handleRecipientChange = (
-    event: SelectChangeEvent<typeof recipient>
-  ) => {
-    const {
-      target: { value },
-    } = event;
-    setRecipient(value);
-  };
-
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
@@ -81,29 +58,25 @@ export const RegisterContractApiForm: React.FC = () => {
             <FormControl
               fullWidth
               required
-              disabled={tokenPools.length ? false : true}
+              disabled={contractInterfaces.length ? false : true}
             >
               <InputLabel>
-                {tokenPools.length ? t('tokenPool') : t('noTokenPools')}
+                {contractInterfaces.length ? t('tokenPool') : t('noTokenPools')}
               </InputLabel>
               <Select
                 fullWidth
-                value={pool?.id ?? ''}
-                label={tokenPools.length ? t('tokenPool') : t('noTokenPools')}
-                onChange={(e) =>
-                  setPool(tokenPools.find((t) => t.id === e.target.value))
+                value={''}
+                label={
+                  contractInterfaces.length ? t('tokenPool') : t('noTokenPools')
                 }
+                onChange={(e) => {
+                  return null;
+                }}
               >
-                {tokenPools.map((tp, idx) => (
-                  <MenuItem key={idx} value={tp.id}>
-                    <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
-                      {tp.type === 'fungible'
-                        ? t('fungible')
-                        : t('nonfungible')}
-                    </Typography>
+                {contractInterfaces.map((tp, idx) => (
+                  <MenuItem key={idx} value={tp}>
                     <Typography color="text.disabled" fontSize="small">
-                      {tp.standard}
+                      {tp}
                     </Typography>
                   </MenuItem>
                 ))}
@@ -111,37 +84,25 @@ export const RegisterContractApiForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid item xs={12} justifyContent={'space-between'}>
-          {t('tokenBalance')}: {tokenBalance}
-          <Button
-            sx={{ marginLeft: DEFAULT_PADDING }}
-            onClick={() => {
-              setRefresh(refresh + 1);
-            }}
-          >
-            <RefreshIcon
-              sx={{
-                cursor: 'pointer',
-              }}
-            ></RefreshIcon>
-          </Button>
-        </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={12}>
           <FormControl fullWidth required>
             <TextField
               fullWidth
               type="number"
-              label={t('amount')}
-              placeholder={t('exampleAmount')}
-              onChange={handleAmountChange}
+              label={t('name')}
+              onChange={(e) => setName(e.target.value)}
             />
           </FormControl>
         </Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-            message={message}
-            onSetMessage={(msg: string) => setMessage(msg)}
-          /> */}
+        <Grid item xs={12}>
+          <FormControl fullWidth required>
+            <TextField
+              fullWidth
+              label={t('address')}
+              onChange={(e) => setBlockchainAddress(e.target.value)}
+            />
+          </FormControl>
+        </Grid>
       </Grid>
     </Grid>
   );

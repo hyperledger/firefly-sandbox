@@ -1,6 +1,8 @@
 {
   "abc": "ABC",
   "abcCoin": "ABC Coin",
+  "abi": "ABI JSON",
+  "address": "Address",
   "amount": "Amount",
   "broadcastShortInfo": "Sends a message visible to all parties in the network",
   "broadcastTitle": "Send a Broadcast Message",
@@ -30,10 +32,12 @@
   "exampleFromAddress": "ex. 0x987....321",
   "exampleTag": "ex. new_widget",
   "exampleTopic": "ex. widget_123",
+  "ffi": "FFI",
   "filterEventSubscriptions": "Filter Event Subscriptions (Optional)",
   "fromAddress": "From Address",
   "fungible": "Fungible",
   "home": "Home",
+  "interfaceFormat": "Interface Format",
   "message": "Message",
   "messaging": "Messaging",
   "tokens": "Tokens",
@@ -62,6 +66,7 @@
   "registerContractApiListenerInfo" : "Receive blockchain events happening in realtime.",
   "registerApiListenerTitle": "Register a Contract API LIstener",
   "run": "Run",
+  "schema": "Schema",
   "serverCode": "Server Code",
   "serverResponse": "Server Response",
   "subscribe": "Subscribe",
@@ -78,5 +83,6 @@
   "type": "Type",
   "typescriptSDK": "Typescript SDK",
   "uploadFile": "Upload File",
+  "version": "Version",
   "websocketConnectionFailure": "Failed to connect to websocket. Please try again."
 }

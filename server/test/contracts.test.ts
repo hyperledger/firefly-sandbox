@@ -96,13 +96,22 @@ describe('Smart Contracts', () => {
     const api = {
       name: 'my-api',
       message: 'msg1',
+      interface: {
+        id: 'int1',
+      },
       urls: {
         openapi: 'openapi-url',
         ui: 'ui-url',
       },
     } as FireFlyContractAPI;
+    const int = {
+      name: 'my-contract',
+      version: '1.0',
+      message: 'msg1',
+    } as FireFlyContractInterface;
 
     mockFireFly.getContractAPI.mockResolvedValueOnce(api);
+    mockFireFly.getContractInterface.mockResolvedValueOnce(int);
 
     await request(server)
       .get('/api/contracts/api/my-api')
@@ -116,5 +125,6 @@ describe('Smart Contracts', () => {
       });
 
     expect(mockFireFly.getContractAPI).toHaveBeenCalledWith('my-api');
+    expect(mockFireFly.getContractInterface).toHaveBeenCalledWith('int1', true);
   });
 });

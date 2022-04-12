@@ -26,7 +26,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   };
 
   const handlePost = () => {
-    console.log(activeForm);
     const blobUpload = activeForm.includes('blob');
     managePayload();
     const reqDetails: any = {
@@ -40,7 +39,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     }
     fetch(endpoint, reqDetails)
       .then((response) => {
-        console.log(response);
         setApiStatus({
           status: response.status,
           statusText: response.statusText,
@@ -49,7 +47,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       })
       .then((data) => {
         setShowSnackbar(true);
-        console.log(data);
         setApiResponse(data);
       })
       .catch((err) => {

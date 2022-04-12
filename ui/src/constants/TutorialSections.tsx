@@ -1,6 +1,7 @@
 import { BroadcastForm } from '../components/Forms/BroadcastForm';
 import { BurnForm } from '../components/Forms/BurnForm';
 import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
+import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { MintForm } from '../components/Forms/MintForm';
 import { PoolForm } from '../components/Forms/PoolForm';
@@ -18,6 +19,7 @@ export enum TUTORIALS {
   BURN = 'burn',
   DEFINE_CONTRACT_INTERFACE = 'interface',
   REGISTER_CONTRACT_API = 'api',
+  REGISTER_CONTRACT_API_LISTENER = 'listener',
 }
 
 export enum TUTORIAL_CATEGORIES {
@@ -94,15 +96,15 @@ export const TutorialSections: ITutorialSection[] = [
   {
     title: TUTORIAL_CATEGORIES.CONTRACTS,
     tutorials: [
-      // {
-      //   docsURL:
-      //     'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
-      //   endpoint: FF_Paths.contractInterfaces,
-      //   form: <TransferForm />,
-      //   link: 'deploycontract',
-      //   shortInfo: 'deployContractInfo',
-      //   title: 'deployContractTitle',
-      // },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
+        endpoint: FF_Paths.contractInterfaces,
+        form: <DeployContractForm />,
+        id: 'deploycontract',
+        shortInfo: 'deployContractInfo',
+        title: 'deployContractTitle',
+      },
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
@@ -121,15 +123,15 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'registerContractApiInfo',
         title: 'registerContractApiTitle',
       },
-      // {
-      //   docsURL:
-      //     'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
-      //   endpoint: FF_Paths.burn,
-      //   form: <BurnForm />,
-      //   link: 'registercontractapilistener',
-      //   shortInfo: 'registerContractApiListenerInfo',
-      //   title: 'registerApiListenerTitle',
-      // },
+      {
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
+        endpoint: FF_Paths.burn,
+        form: <BurnForm />,
+        id: TUTORIALS.REGISTER_CONTRACT_API_LISTENER,
+        shortInfo: 'registerContractApiListenerInfo',
+        title: 'registerApiListenerTitle',
+      },
     ],
   },
 ];

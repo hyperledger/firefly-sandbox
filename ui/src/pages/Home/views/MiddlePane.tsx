@@ -6,6 +6,10 @@ import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hl
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
+import {
+  TutorialSections,
+  TUTORIAL_CATEGORIES,
+} from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import {
@@ -25,6 +29,10 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
+    if (activeForm === 'deploycontract') {
+      setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
+      return;
+    }
     const templateCategory = getTemplateCategory();
     fetch(`/api/${templateCategory}/template/${activeForm}`, {
       method: 'GET',
@@ -40,7 +48,6 @@ export const MiddlePane = () => {
         setTemplateName(activeForm);
       })
       .catch((e) => {
-        console.log('here');
         reportFetchError(e);
       });
   }, [activeForm]);
@@ -76,12 +83,25 @@ export const MiddlePane = () => {
       : FFColors.White;
   };
 
+  const getTutorials = (tutorialTitle: string) => {
+    return TutorialSections.find(
+      (t) => t.title === tutorialTitle
+    )?.tutorials.map((tu) => tu.id);
+  };
+
   const getTemplateCategory = () => {
-    return activeForm.includes('private') || activeForm.includes('broadcast')
-      ? 'messages'
-      : activeForm.includes('api') || activeForm.includes('interface')
-      ? 'contracts'
-      : 'tokens';
+    const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
+    if (messagingForms?.includes(activeForm)) {
+      return 'messages';
+    }
+    const tokenForms = getTutorials(TUTORIAL_CATEGORIES.TOKENS);
+    if (tokenForms?.includes(activeForm)) {
+      return 'tokens';
+    }
+    const contractsForms = getTutorials(TUTORIAL_CATEGORIES.CONTRACTS);
+    if (contractsForms?.includes(activeForm)) {
+      return 'contracts';
+    }
   };
 
   return (
@@ -123,7 +143,11 @@ export const MiddlePane = () => {
             </SyntaxHighlighter>
           </Grid>
           <Grid container item justifyContent="flex-end">
-            <RunButton endpoint={endpoints[activeForm]} payload={jsonPayload} />
+            <RunButton
+              disabled={activeForm === 'deploycontract'}
+              endpoint={endpoints[activeForm]}
+              payload={jsonPayload}
+            />
           </Grid>
         </Paper>
 

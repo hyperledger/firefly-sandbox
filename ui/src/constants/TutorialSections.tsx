@@ -1,5 +1,7 @@
 import { BroadcastForm } from '../components/Forms/BroadcastForm';
 import { BurnForm } from '../components/Forms/BurnForm';
+import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
+import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { MintForm } from '../components/Forms/MintForm';
 import { PoolForm } from '../components/Forms/PoolForm';
 import { PrivateForm } from '../components/Forms/PrivateForm';
@@ -14,8 +16,8 @@ export enum TUTORIALS {
   MINT = 'mint',
   TRANSFER = 'transfer',
   BURN = 'burn',
-  DEFINE_CONTRACT_INTERFACE = 'definecontractinterface',
-  REGISTER_CONTRACT_API = 'registercontractapi',
+  DEFINE_CONTRACT_INTERFACE = 'interface',
+  REGISTER_CONTRACT_API = 'api',
 }
 
 export enum TUTORIAL_CATEGORIES {
@@ -105,7 +107,7 @@ export const TutorialSections: ITutorialSection[] = [
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
         endpoint: FF_Paths.contractInterfaces,
-        form: <PoolForm />,
+        form: <DefineInterfaceForm />,
         id: TUTORIALS.DEFINE_CONTRACT_INTERFACE,
         shortInfo: 'defineContractInterfaceInfo',
         title: 'contractInterfaceTitle',
@@ -114,7 +116,7 @@ export const TutorialSections: ITutorialSection[] = [
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
         endpoint: FF_Paths.contractApis,
-        form: <MintForm />,
+        form: <RegisterContractApiForm />,
         id: TUTORIALS.REGISTER_CONTRACT_API,
         shortInfo: 'registerContractApiInfo',
         title: 'registerContractApiTitle',

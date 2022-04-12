@@ -25,11 +25,7 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    const templateCategory =
-      activeForm.includes('private') || activeForm.includes('broadcast')
-        ? 'messages'
-        : 'tokens';
-
+    const templateCategory = getTemplateCategory();
     fetch(`/api/${templateCategory}/template/${activeForm}`, {
       method: 'GET',
       headers: {
@@ -80,12 +76,20 @@ export const MiddlePane = () => {
       : FFColors.White;
   };
 
+  const getTemplateCategory = () => {
+    return activeForm.includes('private') || activeForm.includes('broadcast')
+      ? 'messages'
+      : activeForm.includes('api') || activeForm.includes('interface')
+      ? 'contracts'
+      : 'tokens';
+  };
+
   return (
     <Grid>
       {/* Header */}
       <Grid container item p={DEFAULT_PADDING}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-          {t('code')}
+          {t('serverCode')}
         </Typography>
       </Grid>
       <Grid container item p={DEFAULT_PADDING} pt={0}>
@@ -135,7 +139,7 @@ export const MiddlePane = () => {
           <Grid item container xs={12}>
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                {t('apiResponse')}
+                {t('serverResponse')}
               </Typography>
             </Grid>
             <Grid item container xs={6} justifyContent="flex-end">

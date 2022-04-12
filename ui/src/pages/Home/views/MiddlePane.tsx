@@ -19,8 +19,14 @@ import {
 } from '../../../theme';
 
 export const MiddlePane = () => {
-  const { jsonPayload, apiResponse, apiStatus, activeForm } =
-    useContext(ApplicationContext);
+  const {
+    jsonPayload,
+    apiResponse,
+    apiStatus,
+    activeForm,
+    setApiResponse,
+    setApiStatus,
+  } = useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
@@ -31,6 +37,8 @@ export const MiddlePane = () => {
   useEffect(() => {
     if (activeForm === 'deploycontract') {
       setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
+      setApiResponse({});
+      setApiStatus(undefined);
       return;
     }
     const templateCategory = getTemplateCategory();

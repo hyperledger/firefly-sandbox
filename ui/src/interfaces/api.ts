@@ -221,6 +221,11 @@ export interface IVerifiers {
   value: string;
 }
 
+export interface IContractInterface {
+  name: string;
+  version: string;
+}
+
 export interface ITokenPool {
   id: string;
   type: string;

@@ -16,6 +16,7 @@ import {
   ContractAPILookup,
   ContractInterface,
   ContractInterfaceFormat,
+  ContractInterfaceLookup,
   ContractListener,
   ContractListenerLookup,
 } from '../interfaces';
@@ -66,6 +67,14 @@ export class ContractsController {
       },
     });
     return { type: 'message', id: api.message };
+  }
+
+  @Get('/interface')
+  @ResponseSchema(ContractInterfaceLookup, { isArray: true })
+  @OpenAPI({ summary: 'List contract interfaces' })
+  async getContractInterfaces(): Promise<ContractInterfaceLookup[]> {
+    const interfaces = await firefly.getContractInterfaces();
+    return interfaces
   }
 
   @Get('/api')

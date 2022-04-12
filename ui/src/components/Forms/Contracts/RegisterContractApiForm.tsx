@@ -13,28 +13,25 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import { FF_Paths } from '../../../constants/FF_Paths';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import {
-  DEFAULT_MESSAGE_STRING,
-  // MessageTypeGroup,
-} from '../../Buttons/MessageTypeGroup';
 import { TUTORIALS } from '../../../constants/TutorialSections';
+import { IContractInterface } from '../../../interfaces/api';
 
 export const RegisterContractApiForm: React.FC = () => {
-  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
+  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
-  const [contractInterfaces, setContractInterfaces] = useState<string[]>([]);
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [contractInterfaces, setContractInterfaces] = useState<
+    IContractInterface[]
+  >([]);
+  const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
-  const [blockchainAddress, setBlockchainAddress] = useState<string>('');
+  const [contractAddress, setContractAddress] = useState<string>('');
 
   const [refresh, setRefresh] = useState<number>(0);
 
@@ -43,11 +40,24 @@ export const RegisterContractApiForm: React.FC = () => {
       return;
     }
     setJsonPayload({
-      name: 'string',
-      interfaceName: 'string',
-      interfaceVersion: 'string',
-      address: 'string',
+      name,
+      interfaceName: contractInterfaces[contractInterfaceIdx].name,
+      interfaceVersion: contractInterfaces[contractInterfaceIdx].version,
+      address: contractAddress,
     });
+  }, [name, contractInterfaceIdx, contractAddress, activeForm]);
+
+  useEffect(() => {
+    fetchCatcher(`${FF_Paths.interface}`)
+      .then((interfacesRes: IContractInterface[]) => {
+        setContractInterfaces(interfacesRes);
+        if (interfacesRes.length > 0) {
+          setContractInterfaceIdx(0);
+        }
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
   }, [activeForm]);
 
   return (
@@ -60,23 +70,19 @@ export const RegisterContractApiForm: React.FC = () => {
               required
               disabled={contractInterfaces.length ? false : true}
             >
-              <InputLabel>
-                {contractInterfaces.length ? t('tokenPool') : t('noTokenPools')}
-              </InputLabel>
+              <InputLabel>{t('contractInterface')}</InputLabel>
               <Select
                 fullWidth
-                value={''}
-                label={
-                  contractInterfaces.length ? t('tokenPool') : t('noTokenPools')
-                }
+                value={contractInterfaceIdx}
+                label={t('contractInterface')}
                 onChange={(e) => {
-                  return null;
+                  setContractInterfaceIdx(e.target.value as number);
                 }}
               >
                 {contractInterfaces.map((tp, idx) => (
-                  <MenuItem key={idx} value={tp}>
-                    <Typography color="text.disabled" fontSize="small">
-                      {tp}
+                  <MenuItem key={idx} value={idx}>
+                    <Typography>
+                      {tp.name + ' (v ' + tp.version + ')'}
                     </Typography>
                   </MenuItem>
                 ))}
@@ -88,7 +94,7 @@ export const RegisterContractApiForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
-              type="number"
+              required
               label={t('name')}
               onChange={(e) => setName(e.target.value)}
             />
@@ -98,8 +104,9 @@ export const RegisterContractApiForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
+              required
               label={t('address')}
-              onChange={(e) => setBlockchainAddress(e.target.value)}
+              onChange={(e) => setContractAddress(e.target.value)}
             />
           </FormControl>
         </Grid>

@@ -102,6 +102,7 @@ export const MiddlePane = () => {
     if (contractsForms?.includes(activeForm)) {
       return 'contracts';
     }
+    return 'messages';
   };
 
   return (

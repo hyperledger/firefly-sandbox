@@ -15,10 +15,12 @@
 // limitations under the License.
 
 import { createContext } from 'react';
+import { IEvent } from '../interfaces/api';
+import { IEventHistoryItem } from '../interfaces/events';
 
 export interface IEventContext {
-  logHistory: Map<string, any>;
-  addLogToHistory: (event: any) => void;
+  logHistory: Map<string, IEventHistoryItem>;
+  addLogToHistory: (event: IEvent) => void;
 }
 
 export const EventContext = createContext({} as IEventContext);

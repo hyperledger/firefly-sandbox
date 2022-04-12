@@ -52,7 +52,7 @@ export const RightPane: React.FC = () => {
               .reverse()
               .map(([txID, value], idx) => (
                 <Accordion
-                  key={txID}
+                  key={idx}
                   defaultExpanded={idx === 0}
                   sx={{ paddingBottom: 1 }}
                 >

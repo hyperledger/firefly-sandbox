@@ -295,8 +295,8 @@ export const FF_EVENTS_CATEGORY_MAP: {
         value: event.batch ? (
           <>
             {event.batch.manifest.messages.map(
-              (m: { hash: string; id: string }) => (
-                <HashPopover shortHash address={m.id} />
+              (m: { hash: string; id: string }, idx: number) => (
+                <HashPopover key={idx} shortHash address={m.id} />
               )
             )}
           </>

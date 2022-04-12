@@ -162,7 +162,13 @@ export class ContractInterface {
   version?: string;
 
   @IsDefined()
+  @JSONSchema({ type: 'object' })
   schema: any;
+}
+
+export class ContractInterfaceEvent {
+  @IsString()
+  pathname: string;
 }
 
 export class ContractAPI {
@@ -191,6 +197,44 @@ export class ContractAPILookup {
   @IsString()
   name: string;
 
+  @IsString()
+  address: string;
+
   @IsInstance(ContractAPIURLs)
   urls: ContractAPIURLs;
+
+  @IsInstance(ContractInterfaceEvent, { each: true })
+  events?: ContractInterfaceEvent[];
+}
+
+export class ContractListener {
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsString()
+  topic: string;
+
+  @IsString()
+  apiName: string;
+
+  @IsString()
+  eventPath: string;
+}
+
+export class ContractListenerLookup {
+  @IsString()
+  name?: string;
+
+  @IsString()
+  topic: string;
+
+  @IsString()
+  interfaceName: string;
+
+  @IsString()
+  interfaceVersion: string;
+
+  @IsString()
+  address: string;
 }

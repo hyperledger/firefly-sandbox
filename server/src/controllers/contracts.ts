@@ -16,6 +16,8 @@ import {
   ContractAPILookup,
   ContractInterface,
   ContractInterfaceFormat,
+  ContractListener,
+  ContractListenerLookup,
 } from '../interfaces';
 
 /**
@@ -66,6 +68,18 @@ export class ContractsController {
     return { type: 'message', id: api.message };
   }
 
+  @Get('/api')
+  @ResponseSchema(ContractAPILookup, { isArray: true })
+  @OpenAPI({ summary: 'List contract APIs' })
+  async getAPIs(): Promise<ContractAPILookup[]> {
+    const apis = await firefly.getContractAPIs();
+    return apis.map((api) => ({
+      name: api.name,
+      address: api.location?.address,
+      urls: api.urls,
+    }));
+  }
+
   @Get('/api/:name')
   @ResponseSchema(ContractAPILookup)
   @OpenAPI({ summary: 'Get contract API details' })
@@ -74,9 +88,56 @@ export class ContractsController {
     if (api === undefined) {
       throw new NotFoundError();
     }
+    const ffi = await firefly.getContractInterface(api.interface.id, true);
     return {
       name: api.name,
-      urls: { openapi: api.urls?.openapi, ui: api.urls?.ui },
+      address: api.location?.address,
+      urls: api.urls,
+      events: ffi.events?.map((e) => ({ pathname: e.pathname })),
+    };
+  }
+
+  @Get('/listener')
+  @ResponseSchema(ContractListenerLookup, { isArray: true })
+  @OpenAPI({ summary: 'List contract listeners' })
+  async getListeners(): Promise<ContractListenerLookup[]> {
+    const listeners = await firefly.getContractListeners();
+    const results: ContractListenerLookup[] = [];
+    for (const l of listeners) {
+      const ffi = await firefly.getContractInterface(l.interface.id);
+      results.push({
+        name: l.name,
+        topic: l.topic,
+        interfaceName: ffi.name,
+        interfaceVersion: ffi.version,
+        address: l.location.address,
+      });
+    }
+    return results;
+  }
+
+  @Post('/listener')
+  @ResponseSchema(ContractListenerLookup)
+  @OpenAPI({ summary: 'Create a new contract listener' })
+  async createListener(@Body() body: ContractListener): Promise<ContractListenerLookup> {
+    const api = await firefly.getContractAPI(body.apiName);
+    if (api === undefined) {
+      throw new NotFoundError();
+    }
+    const ffi = await firefly.getContractInterface(api.interface.id);
+    const listener = await firefly.createContractListener({
+      interface: { id: api.interface.id },
+      location: api.location,
+      topic: body.topic,
+      name: body.name,
+      eventPath: body.eventPath,
+    });
+    return {
+      name: listener.name,
+      topic: listener.topic,
+      address: listener.location.address,
+      interfaceName: ffi.name,
+      interfaceVersion: ffi.version,
     };
   }
 }

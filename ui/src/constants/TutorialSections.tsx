@@ -14,6 +14,8 @@ export enum TUTORIALS {
   MINT = 'mint',
   TRANSFER = 'transfer',
   BURN = 'burn',
+  DEFINE_CONTRACT_INTERFACE = 'definecontractinterface',
+  REGISTER_CONTRACT_API = 'registercontractapi',
 }
 
 export enum TUTORIAL_CATEGORIES {
@@ -104,7 +106,7 @@ export const TutorialSections: ITutorialSection[] = [
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
         endpoint: FF_Paths.contractInterfaces,
         form: <PoolForm />,
-        link: 'definecontractinterface',
+        id: TUTORIALS.DEFINE_CONTRACT_INTERFACE,
         shortInfo: 'defineContractInterfaceInfo',
         title: 'contractInterfaceTitle',
       },
@@ -113,7 +115,7 @@ export const TutorialSections: ITutorialSection[] = [
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
         endpoint: FF_Paths.contractApis,
         form: <MintForm />,
-        link: 'registercontractapi',
+        id: TUTORIALS.REGISTER_CONTRACT_API,
         shortInfo: 'registerContractApiInfo',
         title: 'registerContractApiTitle',
       },

@@ -7,66 +7,81 @@ import { TransferForm } from '../components/Forms/TransferForm';
 import { ITutorialSection } from '../interfaces/tutorialSection';
 import { FF_Paths } from './FF_Paths';
 
+export enum TUTORIALS {
+  BROADCAST = 'broadcast',
+  PRIVATE = 'private',
+  POOL = 'pool',
+  MINT = 'mint',
+  TRANSFER = 'transfer',
+  BURN = 'burn',
+}
+
+export enum TUTORIAL_CATEGORIES {
+  MESSAGING = 'messaging',
+  TOKENS = 'tokens',
+  CONTRACTS = 'contracts',
+}
+
 export const TutorialSections: ITutorialSection[] = [
   {
-    title: 'Messaging',
+    title: TUTORIAL_CATEGORIES.MESSAGING,
     tutorials: [
       {
+        id: TUTORIALS.BROADCAST,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/broadcast_data.html',
         endpoint: FF_Paths.broadcast,
         form: <BroadcastForm />,
-        link: 'broadcast',
         shortInfo: 'broadcastShortInfo',
         title: 'broadcastTitle',
       },
       {
+        id: TUTORIALS.PRIVATE,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/private_send.html',
         endpoint: FF_Paths.private,
         form: <PrivateForm />,
-        link: 'private',
         shortInfo: 'privateShortInfo',
         title: 'privateTitle',
       },
     ],
   },
   {
-    title: 'Tokens',
+    title: TUTORIAL_CATEGORIES.TOKENS,
     tutorials: [
       {
+        id: TUTORIALS.POOL,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
         endpoint: FF_Paths.pools,
         form: <PoolForm />,
-        link: 'pools',
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
       },
       {
+        id: TUTORIALS.MINT,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
         endpoint: FF_Paths.mint,
         form: <MintForm />,
-        link: 'mint',
         shortInfo: 'mintShortInfo',
         title: 'mintTitle',
       },
       {
+        id: TUTORIALS.TRANSFER,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
         endpoint: FF_Paths.transfer,
         form: <TransferForm />,
-        link: 'transfer',
         shortInfo: 'transferShortInfo',
         title: 'transferTitle',
       },
       {
+        id: TUTORIALS.BURN,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
         endpoint: FF_Paths.burn,
         form: <BurnForm />,
-        link: 'burn',
         shortInfo: 'burnShortInfo',
         title: 'burnTitle',
       },

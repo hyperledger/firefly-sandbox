@@ -18,9 +18,9 @@ import { Dispatch, SetStateAction, createContext } from 'react';
 import { SnackbarMessageType } from '../components/Snackbar/MessageSnackbar';
 
 export interface ISnackbarContext {
+  reportFetchError: (err: any) => void;
   setMessage: Dispatch<SetStateAction<string>>;
   setMessageType: Dispatch<SetStateAction<SnackbarMessageType>>;
-  reportFetchError: (err: any) => void;
 }
 
 export const SnackbarContext = createContext({} as ISnackbarContext);

@@ -3,10 +3,11 @@ import { t } from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
-import * as _ from 'underscore';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
@@ -16,6 +17,7 @@ import {
 export const MiddlePane = () => {
   const { jsonPayload, apiResponse, apiStatus, activeForm } =
     useContext(ApplicationContext);
+  const { reportFetchError } = useContext(SnackbarContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
   const [templateName, setTemplateName] = useState<string>('broadcast');
@@ -23,30 +25,28 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    const fetchTemplate = () => {
-      const templateCategory =
-        activeForm.includes('private') || activeForm.includes('broadcast')
-          ? 'messages'
-          : 'tokens';
-      return fetch(`/api/${templateCategory}/template/${activeForm}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+    const templateCategory =
+      activeForm.includes('private') || activeForm.includes('broadcast')
+        ? 'messages'
+        : 'tokens';
+
+    fetch(`/api/${templateCategory}/template/${activeForm}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => {
+        return response.json();
       })
-        .then((response) => {
-          return response.json();
-        })
-        .then((data) => {
-          setTemplate(data);
-          setTemplateName(activeForm);
-          buildCodeBlock(data);
-        })
-        .catch(() => {
-          return null;
-        });
-    };
-    fetchTemplate();
+      .then((data) => {
+        setTemplate(data);
+        setTemplateName(activeForm);
+        buildCodeBlock(data);
+      })
+      .catch((e) => {
+        reportFetchError(e);
+      });
   }, [activeForm]);
 
   useEffect(() => {
@@ -86,30 +86,23 @@ export const MiddlePane = () => {
 
   return (
     <Grid>
-      <Grid
-        container
-        item
-        p={DEFAULT_PADDING}
-        sx={{
-          background: '#12171d',
-          height: 'auto',
-          position: 'sticky',
-          top: '0',
-        }}
-      >
+      {/* Header */}
+      <Grid container item p={DEFAULT_PADDING}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {t('code')}
         </Typography>
       </Grid>
       <Grid container item p={DEFAULT_PADDING} pt={0}>
+        {/* SDK Box */}
         <Paper
+          elevation={0}
           sx={{
             width: '100%',
             padding: DEFAULT_PADDING,
           }}
         >
           <Grid item>
-            <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {t('typescriptSDK')}
             </Typography>
           </Grid>
@@ -122,7 +115,6 @@ export const MiddlePane = () => {
             fontSize="12px"
           >
             <SyntaxHighlighter
-              customStyle={{ borderRadius: '5px' }}
               showLineNumbers
               language={'typescript'}
               style={tomorrowNightBright}
@@ -134,7 +126,10 @@ export const MiddlePane = () => {
             <RunButton endpoint={endpoints[activeForm]} payload={jsonPayload} />
           </Grid>
         </Paper>
+
+        {/* API Response Block */}
         <Paper
+          elevation={0}
           sx={{
             width: '100%',
             marginTop: DEFAULT_PADDING,
@@ -143,23 +138,21 @@ export const MiddlePane = () => {
         >
           <Grid item container xs={12}>
             <Grid item xs={6}>
-              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+              <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {t('apiResponse')}
               </Typography>
             </Grid>
             <Grid item container xs={6} justifyContent="flex-end">
-              <Chip
-                variant="outlined"
-                sx={{
-                  borderColor: getApiStatusColor(),
-                  color: getApiStatusColor(),
-                }}
-                label={
-                  apiStatus?.status
-                    ? `${apiStatus?.status} ${apiStatus?.statusText}`
-                    : `HTTP Code`
-                }
-              />
+              {apiStatus?.status && (
+                <Chip
+                  variant="outlined"
+                  sx={{
+                    borderColor: getApiStatusColor(),
+                    color: getApiStatusColor(),
+                  }}
+                  label={`${apiStatus?.status} ${apiStatus?.statusText}`}
+                />
+              )}
             </Grid>
           </Grid>
           <Grid

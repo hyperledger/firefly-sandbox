@@ -17,6 +17,7 @@ import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const BurnForm: React.FC = () => {
   const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
@@ -26,13 +27,13 @@ export const BurnForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [tokenIndex, setTokenIndex] = useState<string | null>();
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
 
   useEffect(() => {
-    if (activeForm !== 'burn') return;
+    if (activeForm !== TUTORIALS.BURN) return;
     setJsonPayload({
       pool: pool?.name,
       amount,
@@ -95,10 +96,6 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
-    }
     setAmount(parseInt(event.target.value));
   };
 
@@ -163,6 +160,8 @@ export const BurnForm: React.FC = () => {
             <FormControl fullWidth required>
               <TextField
                 fullWidth
+                disabled={!isFungible()}
+                value={amount}
                 type="number"
                 label="Amount"
                 placeholder="ex. 10"

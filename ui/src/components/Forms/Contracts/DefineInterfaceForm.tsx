@@ -1,0 +1,113 @@
+import {
+  FormControl,
+  Grid,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+} from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { DEFAULT_SPACING } from '../../../theme';
+import { TUTORIALS } from '../../../constants/TutorialSections';
+
+export const CONTRACT_INTERFACE_FORMATS = ['ffi', 'abi'];
+
+export const DefineInterfaceForm: React.FC = () => {
+  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
+    useContext(ApplicationContext);
+  const { reportFetchError } = useContext(SnackbarContext);
+  const { t } = useTranslation();
+
+  const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
+  const [name, setName] = useState<string>('');
+  const [schema, setSchema] = useState<string>('');
+  const [version, setVersion] = useState<string>('');
+  const [refresh, setRefresh] = useState<number>(0);
+
+  useEffect(() => {
+    if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {
+      return;
+    }
+    setJsonPayload({
+      format: 'ffi',
+      name: 'string',
+      version: 'string',
+      schema: 'string',
+    });
+  }, [activeForm]);
+
+  return (
+    <Grid container>
+      <Grid container spacing={DEFAULT_SPACING}>
+        <Grid container item justifyContent="space-between" spacing={1}>
+          <Grid item width="100%">
+            <FormControl fullWidth required>
+              <InputLabel>{t('interfaceFormat')}</InputLabel>
+              <Select
+                fullWidth
+                value={interfaceFormat}
+                label={t('interfaceFormat')}
+                onChange={(e) => setInterfaceFormat(e.target.value)}
+              >
+                {CONTRACT_INTERFACE_FORMATS.map((f, idx) => (
+                  <MenuItem key={idx} value={f}>
+                    <Typography color="primary">{t(`${f}`)}</Typography>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+
+        {interfaceFormat === 'abi' ? (
+          <>
+            <Grid item xs={6}>
+              <FormControl fullWidth required>
+                <TextField
+                  fullWidth
+                  label={t('name')}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl fullWidth required>
+                <TextField
+                  fullWidth
+                  label={t('version')}
+                  onChange={(e) => {
+                    setVersion(e.target.value);
+                  }}
+                />
+              </FormControl>
+            </Grid>
+          </>
+        ) : (
+          <></>
+        )}
+        <Grid item xs={12}>
+          <TextField
+            label={t('schema')}
+            multiline
+            required
+            fullWidth
+            maxRows={40}
+            value={schema}
+            onChange={(e) => setSchema(e.target.value)}
+          />
+        </Grid>
+        {/* Message */}
+        {/* <MessageTypeGroup
+              message={message}
+              onSetMessage={(msg: string) => setMessage(msg)}
+            /> */}
+      </Grid>
+    </Grid>
+  );
+};

@@ -6,6 +6,10 @@ import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hl
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
+import {
+  TutorialSections,
+  TUTORIAL_CATEGORIES,
+} from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import {
@@ -25,10 +29,11 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    const templateCategory =
-      activeForm.includes('private') || activeForm.includes('broadcast')
-        ? 'messages'
-        : 'tokens';
+    if (activeForm === 'deploycontract') {
+      setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
+      return;
+    }
+    const templateCategory = getTemplateCategory();
 
     fetch(`/api/${templateCategory}/template/${activeForm}`, {
       method: 'GET',
@@ -42,7 +47,6 @@ export const MiddlePane = () => {
       .then((data) => {
         setTemplate(data);
         setTemplateName(activeForm);
-        buildCodeBlock(data);
       })
       .catch((e) => {
         reportFetchError(e);
@@ -51,17 +55,13 @@ export const MiddlePane = () => {
 
   useEffect(() => {
     const payload: any = jsonPayload;
-    if (
-      template &&
-      templateName === activeForm &&
-      payload &&
-      !payload.connector
-    ) {
+    if (template && templateName === activeForm && payload) {
       buildCodeBlock(template);
     }
   }, [template, templateName, jsonPayload]);
 
   const buildCodeBlock = (codeTemplate: string) => {
+    if (Object.keys(jsonPayload).length < 1) return;
     const compiled = _.template(codeTemplate);
     const result = compiled(jsonPayload);
     setCodeBlock(result);
@@ -84,12 +84,33 @@ export const MiddlePane = () => {
       : FFColors.White;
   };
 
+  const getTutorials = (tutorialTitle: string) => {
+    return TutorialSections.find(
+      (t) => t.title === tutorialTitle
+    )?.tutorials.map((tu) => tu.id);
+  };
+
+  const getTemplateCategory = () => {
+    const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
+    if (messagingForms?.includes(activeForm)) {
+      return 'messages';
+    }
+    const tokenForms = getTutorials(TUTORIAL_CATEGORIES.TOKENS);
+    if (tokenForms?.includes(activeForm)) {
+      return 'tokens';
+    }
+    const contractsForms = getTutorials(TUTORIAL_CATEGORIES.CONTRACTS);
+    if (contractsForms?.includes(activeForm)) {
+      return 'contracts';
+    }
+    return 'messages';
+  };
   return (
     <Grid>
       {/* Header */}
       <Grid container item p={DEFAULT_PADDING}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
-          {t('code')}
+          {t('serverCode')}
         </Typography>
       </Grid>
       <Grid container item p={DEFAULT_PADDING} pt={0}>
@@ -123,7 +144,11 @@ export const MiddlePane = () => {
             </SyntaxHighlighter>
           </Grid>
           <Grid container item justifyContent="flex-end">
-            <RunButton endpoint={endpoints[activeForm]} payload={jsonPayload} />
+            <RunButton
+              disabled={activeForm === 'deploycontract'}
+              endpoint={endpoints[activeForm]}
+              payload={jsonPayload}
+            />
           </Grid>
         </Paper>
 
@@ -139,7 +164,7 @@ export const MiddlePane = () => {
           <Grid item container xs={12}>
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                {t('apiResponse')}
+                {t('serverResponse')}
               </Typography>
             </Grid>
             <Grid item container xs={6} justifyContent="flex-end">

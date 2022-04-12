@@ -36,9 +36,12 @@
     "express": "^4.17.3",
     "multer": "^1.4.4",
     "nanoid": "^3.3.2",
+    "npm": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.9.0",
     "routing-controllers-openapi": "^3.1.0",
+    "run": "^1.4.0",
+    "start": "^5.1.0",
     "strip-indent": "^3.0.0",
     "swagger-ui-express": "^4.3.0",
     "ws": "^8.5.0"

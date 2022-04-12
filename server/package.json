@@ -1,6 +1,6 @@
 {
   "name": "firefly-sandbox-server",
-  "version": "1.0.0",
+  "version": "0.1.0-alpha.1",
   "description": "",
   "main": "dist/src/index.js",
   "scripts": {

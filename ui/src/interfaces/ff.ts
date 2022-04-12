@@ -5,3 +5,9 @@ export interface IBlockchainCategory {
   enrichedEventString?: (key: any) => string;
   nicename: string;
 }
+
+export interface IDataListItem {
+  label: string | JSX.Element;
+  value: string | JSX.Element | number | undefined;
+  button?: JSX.Element | undefined;
+}

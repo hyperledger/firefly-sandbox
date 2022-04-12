@@ -4,23 +4,22 @@ import {
   StyledEngineProvider,
   ThemeProvider,
 } from '@mui/material';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FF_Router } from './components/Router';
 import {
   MessageSnackbar,
   SnackbarMessageType,
 } from './components/Snackbar/MessageSnackbar';
-import { IApiStatus, ApplicationContext } from './contexts/ApplicationContext';
+import { ApplicationContext } from './contexts/ApplicationContext';
+import { EventContext } from './contexts/EventContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
-import { ISelfIdentity } from './interfaces/api';
+import { IApiStatus, ISelfIdentity } from './interfaces/api';
+import { IEventHistoryItem } from './interfaces/events';
 import { themeOptions } from './theme';
-import { fetchWithCredentials, summarizeFetchError } from './utils/fetches';
-
-export const SELECTED_NAMESPACE = 'default';
+import { summarizeFetchError } from './utils/fetches';
 
 function App() {
   const [initialized, setInitialized] = useState(true);
-  const [initError, setInitError] = useState<string | undefined>();
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<SnackbarMessageType>('error');
 
@@ -28,8 +27,14 @@ function App() {
   const [jsonPayload, setJsonPayload] = useState<object>({});
   const [activeForm, setActiveForm] = useState<string>('broadcast');
   const [apiStatus, setApiStatus] = useState<IApiStatus>();
-  const [apiResponse, setApiResponse] = useState<object>({});
+  const [apiResponse, setApiResponse] = useState<object>({
+    type: '',
+    id: '',
+  });
   const [logs, setLogs] = useState<string[]>([]);
+  const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
+    new Map()
+  );
 
   useEffect(() => {
     fetch(`/api/common/organizations/self`, {
@@ -82,36 +87,56 @@ function App() {
     return createTheme(themeOptions);
   }, []);
 
-  if (initialized) {
-    if (initError) {
-      // TODO: figure out what to display
-      return (
-        <>
-          <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={theme}>
-              <CssBaseline>Fallback</CssBaseline>
-            </ThemeProvider>
-          </StyledEngineProvider>
-        </>
+  const addLogToHistory = (event: any) => {
+    setLogHistory((logHistory) => {
+      // This is bad practice, and should be optimized in the future
+      const deepCopyMap: Map<string, IEventHistoryItem> = new Map(
+        JSON.parse(JSON.stringify(Array.from(logHistory)))
       );
-    } else {
-      return (
-        <SnackbarContext.Provider
-          value={{ setMessage, setMessageType, reportFetchError }}
+
+      const txMap = deepCopyMap.get(event.tx);
+      if (txMap !== undefined) {
+        return new Map(
+          deepCopyMap.set(event.tx, {
+            events: [...txMap.events, event],
+            created: event.created,
+          })
+        );
+      } else {
+        return new Map(
+          deepCopyMap.set(event.tx, {
+            events: [event],
+            created: event.created,
+          })
+        );
+      }
+    });
+  };
+
+  if (initialized) {
+    return (
+      <SnackbarContext.Provider
+        value={{ setMessage, setMessageType, reportFetchError }}
+      >
+        <ApplicationContext.Provider
+          value={{
+            selfIdentity,
+            jsonPayload,
+            setJsonPayload,
+            activeForm,
+            setActiveForm,
+            apiResponse,
+            setApiResponse,
+            apiStatus,
+            setApiStatus,
+            logs,
+            setLogs,
+          }}
         >
-          <ApplicationContext.Provider
+          <EventContext.Provider
             value={{
-              selfIdentity,
-              jsonPayload,
-              setJsonPayload,
-              activeForm,
-              setActiveForm,
-              apiResponse,
-              setApiResponse,
-              apiStatus,
-              setApiStatus,
-              logs,
-              setLogs,
+              logHistory,
+              addLogToHistory,
             }}
           >
             <StyledEngineProvider injectFirst>
@@ -126,10 +151,10 @@ function App() {
                 </CssBaseline>
               </ThemeProvider>
             </StyledEngineProvider>
-          </ApplicationContext.Provider>
-        </SnackbarContext.Provider>
-      );
-    }
+          </EventContext.Provider>
+        </ApplicationContext.Provider>
+      </SnackbarContext.Provider>
+    );
   } else {
     return <></>;
   }

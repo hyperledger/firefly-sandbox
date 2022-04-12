@@ -11,6 +11,7 @@ import { TokensController, TokensTemplateController } from './controllers/tokens
 import { CommonController } from './controllers/common';
 import { SimpleWebSocket } from './controllers/websocket';
 import { ContractsController, ContractsTemplateController } from './controllers/contracts';
+import * as path from 'path';
 
 const app = express();
 app.use(bodyParser.json());
@@ -38,6 +39,16 @@ useExpressServer(app, serverOptions);
 wsConfig.websockets.forEach((w) => new w().init(wsConfig.prefix, wsConfig.handler));
 
 const api = genOpenAPI(serverOptions);
+
+const UI_PATH = process.env.UI_PATH;
+if (UI_PATH) {
+  console.log(`UI Served from ${UI_PATH}`);
+  app.use(express.static(path.resolve(`${UI_PATH}/`)));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.resolve(`${UI_PATH}/index.html`)) 
+  });
+}
+
 app.use('/api', swaggerUi.serve);
 app.get('/api', swaggerUi.setup(api));
 app.get('/api-json', (req, res) => {

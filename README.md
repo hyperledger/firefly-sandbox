@@ -1,5 +1,6 @@
 # FireFly Sandbox
 
+<<<<<<< HEAD
 [![stability-alpha](https://img.shields.io/badge/stability-alpha-f4d03f.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#alpha)
 [![FireFy Documentation](https://img.shields.io/static/v1?label=FireFly&message=documentation&color=informational)](https://hyperledger.github.io/firefly//)
 
@@ -70,3 +71,8 @@ Please adhere to this project's [Code of Conduct](CODE_OF_CONDUCT.md).
 ## License
 
 Hyperledger Project source code files are made available under the Apache License, Version 2.0 (Apache-2.0), located in the [LICENSE](LICENSE) file.
+=======
+### Dashboard
+
+![Sandbox Dashboard](./ui/src/images/dashboard.png)
+>>>>>>> 3c1a8a03b0cb968cd6c2d510f1af86649a1f207f

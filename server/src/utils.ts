@@ -9,7 +9,7 @@ import stripIndent = require('strip-indent');
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
     info: {
-      title: 'FireFly Samples Gallery - Backend Server',
+      title: 'FireFly Sandbox - Backend Server',
       version: '1.0.0',
     },
     components: {

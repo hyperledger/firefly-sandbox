@@ -3,11 +3,11 @@ import FireFly, {
   FireFlyOrganization,
   FireFlyStatus,
   FireFlyVerifier,
-} from '@photic/firefly-sdk-nodejs';
+} from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 
-jest.mock('@photic/firefly-sdk-nodejs');
+jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Common Operations', () => {

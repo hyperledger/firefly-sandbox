@@ -1,10 +1,10 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyContractAPI, FireFlyContractInterface } from '@photic/firefly-sdk-nodejs';
+import FireFly, { FireFlyContractAPI, FireFlyContractInterface } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { ContractAPI, ContractInterface, ContractInterfaceFormat } from '../src/interfaces';
 
-jest.mock('@photic/firefly-sdk-nodejs');
+jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Smart Contracts', () => {

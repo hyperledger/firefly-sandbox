@@ -1,4 +1,4 @@
-import FireFly from '@photic/firefly-sdk-nodejs';
+import FireFly from '@hyperledger/firefly-sdk';
 
 export const firefly = new FireFly({
   host: 'http://localhost:5000',

@@ -4,12 +4,12 @@ import FireFly, {
   FireFlyTokenPool,
   FireFlyTokenPoolType,
   FireFlyTokenTransfer,
-} from '@photic/firefly-sdk-nodejs';
+} from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { TokenBurn, TokenMint, TokenPoolInput, TokenTransfer } from '../src/interfaces';
 
-jest.mock('@photic/firefly-sdk-nodejs');
+jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Tokens', () => {

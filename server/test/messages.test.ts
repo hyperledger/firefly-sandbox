@@ -1,10 +1,10 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyDataRef, FireFlyMessage } from '@photic/firefly-sdk-nodejs';
+import FireFly, { FireFlyDataRef, FireFlyMessage } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { BroadcastValue, PrivateValue } from '../src/interfaces';
 
-jest.mock('@photic/firefly-sdk-nodejs');
+jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Messages', () => {

@@ -1,4 +1,4 @@
-import { FireFlyTokenPoolType } from '@photic/firefly-sdk-nodejs';
+import { FireFlyTokenPoolType } from '@hyperledger/firefly-sdk';
 import {
   ArrayNotEmpty,
   IsDefined,

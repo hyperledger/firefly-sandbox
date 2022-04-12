@@ -27,7 +27,7 @@ export const BurnForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(0);
   const [tokenIndex, setTokenIndex] = useState<string | null>();
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
@@ -96,10 +96,6 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
-    }
     setAmount(parseInt(event.target.value));
   };
 
@@ -164,6 +160,8 @@ export const BurnForm: React.FC = () => {
             <FormControl fullWidth required>
               <TextField
                 fullWidth
+                disabled={!isFungible()}
+                value={amount}
                 type="number"
                 label="Amount"
                 placeholder="ex. 10"

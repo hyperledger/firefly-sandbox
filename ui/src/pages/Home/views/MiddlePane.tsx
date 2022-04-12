@@ -25,7 +25,6 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    console.log('templatecat', activeForm);
     const templateCategory =
       activeForm.includes('private') || activeForm.includes('broadcast')
         ? 'messages'

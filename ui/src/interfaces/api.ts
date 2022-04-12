@@ -7,6 +7,24 @@ export interface IApiStatus {
   statusText: string;
 }
 
+export interface IBatch {
+  id: string;
+  type: string;
+  namespace: string;
+  node?: string;
+  author: string;
+  key: string;
+  group: null | string;
+  created: string;
+  hash: string;
+  manifest: any;
+  tx?: {
+    type: string;
+    id: string;
+  };
+  confirmed: string | null;
+}
+
 export interface IBlockchainEvent {
   id: string;
   sequence: number;
@@ -52,7 +70,8 @@ export interface IEvent {
   reference: string;
   created: string;
   tx: string;
-  blockchainevent?: IBlockchainEvent;
+  batch?: IBatch;
+  blockchainEvent?: IBlockchainEvent;
   contractAPI?: IFireflyApi;
   contractInterface?: IContractInterface;
   datatype?: IDatatype;

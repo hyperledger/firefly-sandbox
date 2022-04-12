@@ -1,5 +1,5 @@
 {
-  "name": "firefly-samples-gallery-server",
+  "name": "firefly-sandbox-server",
   "version": "1.0.0",
   "description": "",
   "main": "dist/src/index.js",

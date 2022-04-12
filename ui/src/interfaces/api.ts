@@ -2,6 +2,11 @@ import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FF_MESSAGES, MessageStatus } from '../ff_models/messageTypes';
 import { FF_TX } from '../ff_models/transactionTypes';
 
+export interface IApiStatus {
+  status: number;
+  statusText: string;
+}
+
 export interface IBlockchainEvent {
   id: string;
   sequence: number;

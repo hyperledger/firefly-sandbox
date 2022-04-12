@@ -1,34 +1,27 @@
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionDetails, AccordionSummary } from '@mui/material';
-import {
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
-import { StringIfPlural } from 'react-i18next';
+import { useContext, useEffect, useState } from 'react';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { FFAccordionHeader } from './FFAccordionHeader';
 import { FFAccordionText } from './FFAccordionText';
 
 interface Props {
-  title: string;
-  type: string;
+  activeForm: string;
+  form: JSX.Element;
   infoText: string;
   isOpen?: boolean;
-  form: JSX.Element;
-  activeForm: string;
+  title: string;
+  type: string;
 }
 
 export const FFAccordion: React.FC<Props> = ({
+  activeForm,
   form,
   infoText,
+  isOpen = false,
   title,
   type,
-  isOpen = false,
-  activeForm,
 }) => {
   const [expanded, setExpanded] = useState<boolean>(isOpen);
   const { setActiveForm } = useContext(ApplicationContext);

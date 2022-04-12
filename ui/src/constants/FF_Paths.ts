@@ -26,7 +26,8 @@ export const FF_Paths = {
   ) =>
     `/charts/histogram/${collection}?startTime=${startTime}&endTime=${endTime}&buckets=${numBuckets}`,
   // Contracts
-  contractInterfaces: '/contracts/interfaces',
+  contractApis: 'api/contracts/api',
+  contractInterfaces: 'api/contracts/interface',
   contractInterfacesById: (id: string) => `/contracts/interfaces/${id}`,
   contractInterfacesInvoke: (interfaceId: string, methodPath: string) =>
     `/contracts/interfaces/${interfaceId}/invoke/${methodPath}`,

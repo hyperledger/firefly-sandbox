@@ -1,4 +1,4 @@
-import { FireFlySubscriptionBase } from '@photic/firefly-sdk-nodejs';
+import { FireFlySubscriptionBase } from '@hyperledger/firefly-sdk';
 import { nanoid } from 'nanoid';
 import { firefly } from '../clients/firefly';
 import { WebsocketHandler } from '../utils';

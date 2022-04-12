@@ -45,7 +45,7 @@ if (UI_PATH) {
   console.log(`UI Served from ${UI_PATH}`);
   app.use(express.static(path.resolve(`${UI_PATH}/`)));
   app.get('*', (_req, res) => {
-    res.sendFile(path.resolve(`${UI_PATH}/index.html`)) 
+    res.sendFile(path.resolve(`${UI_PATH}/index.html`));
   });
 }
 

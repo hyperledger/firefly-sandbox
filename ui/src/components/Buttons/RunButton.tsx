@@ -100,8 +100,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
           onClose={handleCloseSnackbar}
           severity={'info'}
           sx={{ width: '100%' }}
+          variant={'outlined'}
         >
-          {`POST Sent to ${endpoint}`}
+          {`${t('postSentTo')}${endpoint}`}
         </Alert>
       </Snackbar>
     </>

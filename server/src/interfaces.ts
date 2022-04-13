@@ -240,3 +240,11 @@ export class ContractListenerLookup {
   @IsString()
   address: string;
 }
+
+export class Transaction {
+  @IsString()
+  id: string;
+
+  @IsString()
+  type: string;
+}

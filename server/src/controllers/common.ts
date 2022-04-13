@@ -1,7 +1,7 @@
-import { Get, JsonController, QueryParam } from 'routing-controllers';
+import { Get, JsonController, Param, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { Organization, Verifier } from '../interfaces';
+import { Organization, Transaction, Verifier } from '../interfaces';
 
 /**
  * Common Operations - API Server
@@ -43,5 +43,31 @@ export class CommonController {
       }
     }
     return result;
+  }
+
+  @Get('/verifiers/self')
+  @ResponseSchema(Verifier, { isArray: true })
+  @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
+  async verifierSelf(): Promise<Verifier[]> {
+    const status = await firefly.getStatus();
+    const verifiers = await firefly.getVerifiers('ff_system');
+    const result: Verifier[] = [];
+    for (const v of verifiers) {
+      if (status.org.id === v.identity) {
+        result.push({ did: status.org.did, type: v.type, value: v.value });
+      }
+    }
+    return result;
+  }
+
+  @Get('/transactions/:id')
+  @ResponseSchema(Transaction)
+  @OpenAPI({ summary: 'Look up a FireFly transaction by ID' })
+  async transaction(@Param('id') id: string): Promise<Transaction> {
+    const tx = await firefly.getTransaction(id);
+    return {
+      id: tx.id,
+      type: tx.type,
+    };
   }
 }

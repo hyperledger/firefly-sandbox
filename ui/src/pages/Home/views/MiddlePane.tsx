@@ -128,7 +128,7 @@ export const MiddlePane = () => {
           sx={{ ':hover': { background: 'inherit' }, padding: 0 }}
           onClick={() => {
             window.open(
-              'https://github.com/kaleido-io/firefly-sandbox/tree/main/server'
+              'https://github.com/hyperledger/firefly-sandbox/tree/main/server'
             );
           }}
         >

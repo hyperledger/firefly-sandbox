@@ -9,6 +9,7 @@ import { FF_Paths } from './FF_Paths';
 import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
+import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
 
 export enum TUTORIALS {
   BROADCAST = 'broadcast',
@@ -99,7 +100,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
-        endpoint: FF_Paths.contractInterfaces,
+        endpoint: FF_Paths.interface,
         form: <DeployContractForm />,
         id: 'deploycontract',
         shortInfo: 'deployContractInfo',
@@ -108,7 +109,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
-        endpoint: FF_Paths.contractInterfaces,
+        endpoint: FF_Paths.interface,
         form: <DefineInterfaceForm />,
         id: TUTORIALS.DEFINE_CONTRACT_INTERFACE,
         shortInfo: 'defineContractInterfaceInfo',
@@ -117,7 +118,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
-        endpoint: FF_Paths.contractApis,
+        endpoint: FF_Paths.api,
         form: <RegisterContractApiForm />,
         id: TUTORIALS.REGISTER_CONTRACT_API,
         shortInfo: 'registerContractApiInfo',
@@ -127,7 +128,7 @@ export const TutorialSections: ITutorialSection[] = [
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
         endpoint: FF_Paths.burn,
-        form: <BurnForm />,
+        form: <RegisterContractApiListenerForm />,
         id: TUTORIALS.REGISTER_CONTRACT_API_LISTENER,
         shortInfo: 'registerContractApiListenerInfo',
         title: 'registerApiListenerTitle',

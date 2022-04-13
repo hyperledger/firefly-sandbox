@@ -100,6 +100,25 @@ describe('Smart Contracts', () => {
       name: 'my-api',
     });
   });
+  test('Get contract Interfaces', async () => {
+    const int = [{
+      "name": "my-contract",
+      "description": "",
+      "version": "1.0",
+    }, {
+      "name": "my-contract",
+      "description": "",
+      "version": "1.1"
+    },
+  ] as FireFlyContractInterface[];
+
+    mockFireFly.getContractInterfaces.mockResolvedValueOnce(int);
+
+    await request(server)
+      .get('/api/contracts/interface')
+      .expect(200)
+      .expect(int);
+  });
 
   test('Get contract API', async () => {
     const api = {

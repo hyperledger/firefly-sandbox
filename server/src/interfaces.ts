@@ -207,6 +207,15 @@ export class ContractAPILookup {
   events?: ContractInterfaceEvent[];
 }
 
+export class ContractInterfaceLookup {
+  @IsString()
+  name: string;
+
+  @IsString()
+  version: string;
+}
+
+
 export class ContractListener {
   @IsString()
   @IsOptional()

@@ -9,32 +9,91 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TUTORIALS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../../theme';
+import { TUTORIALS } from '../../../constants/TutorialSections';
+import { isJsonString } from '../../../utils/strings';
 
 export const CONTRACT_INTERFACE_FORMATS = ['ffi', 'abi'];
+const DEFAULT_FFI_SCHEMA = {
+  name: 'my-contract',
+  version: '1.0',
+  methods: [{ name: 'method1' }],
+  events: [{ name: 'event1' }],
+};
+
+const DEFAULT_ABI_SCHEMA = [
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'from',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'value',
+        type: 'uint256',
+      },
+    ],
+    name: 'Changed',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: 'get',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'newValue', type: 'uint256' }],
+    name: 'set',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+];
 
 export const DefineInterfaceForm: React.FC = () => {
   const { setJsonPayload, activeForm } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
-  const [, setName] = useState<string>('');
-  const [schema, setSchema] = useState<string>('');
-  const [, setVersion] = useState<string>('');
+  const [name, setName] = useState<string>('');
+  const [schema, setSchema] = useState<object>(DEFAULT_FFI_SCHEMA);
+  const [schemaString, setSchemaString] = useState<string>(
+    JSON.stringify(DEFAULT_FFI_SCHEMA, null, 2)
+  );
+  const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {
       return;
     }
     setJsonPayload({
-      format: 'ffi',
-      name: 'string',
-      version: 'string',
-      schema: 'string',
+      format: interfaceFormat,
+      name,
+      version,
+      schema,
     });
-  }, [activeForm]);
+  }, [interfaceFormat, schema, name, version, activeForm]);
+
+  useEffect(() => {
+    if (isJsonString(schemaString)) {
+      setSchema(JSON.parse(schemaString));
+    }
+  }, [schemaString]);
+
+  useEffect(() => {
+    const newSchema =
+      interfaceFormat === 'ffi' ? DEFAULT_FFI_SCHEMA : DEFAULT_ABI_SCHEMA;
+    setSchema(newSchema);
+    setSchemaString(JSON.stringify(newSchema, null, 2));
+  }, [interfaceFormat]);
 
   return (
     <Grid container>
@@ -64,6 +123,7 @@ export const DefineInterfaceForm: React.FC = () => {
             <Grid item xs={6}>
               <FormControl fullWidth required>
                 <TextField
+                  required
                   fullWidth
                   label={t('name')}
                   onChange={(e) => {
@@ -75,6 +135,7 @@ export const DefineInterfaceForm: React.FC = () => {
             <Grid item xs={6}>
               <FormControl fullWidth required>
                 <TextField
+                  required
                   fullWidth
                   label={t('version')}
                   onChange={(e) => {
@@ -94,8 +155,8 @@ export const DefineInterfaceForm: React.FC = () => {
             required
             fullWidth
             maxRows={40}
-            value={schema}
-            onChange={(e) => setSchema(e.target.value)}
+            value={schemaString}
+            onChange={(e) => setSchemaString(e.target.value)}
           />
         </Grid>
         {/* Message */}

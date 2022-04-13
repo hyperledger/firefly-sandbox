@@ -1,17 +1,17 @@
-import LinkIcon from '@mui/icons-material/Link';
-import { Grid } from '@mui/material';
+import * as React from 'react';
 import Box from '@mui/material/Box';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import StepContent from '@mui/material/StepContent';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
-import Step from '@mui/material/Step';
-import StepContent from '@mui/material/StepContent';
-import StepLabel from '@mui/material/StepLabel';
-import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import * as React from 'react';
-import { DEFAULT_SPACING } from '../../../theme';
+import LinkIcon from '@mui/icons-material/Link';
+import { useTranslation } from 'react-i18next';
 
 export const DeployContractForm: React.FC = () => {
+  const { t } = useTranslation();
   const steps = [
     {
       label: 'Install the Solidity Compiler',
@@ -26,7 +26,7 @@ export const DeployContractForm: React.FC = () => {
     },
     {
       label: 'Deploy your compiled contract',
-      description: `Lastly, you will tell FireFly to deploy the compiled contract to your running stack. Run "ff deploy <FF_STACK_NAME> simple_storage.json". You should receive a contract address back, which we will use in the next steps.`,
+      description: `Lastly, you will tell FireFly to deploy the compiled contract to your running stack. Run "ff deploy <FF_STACK_NAME> simple_storage.json". You should receive a contract address back, which we will use while registering a contract API.`,
       link: 'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
     },
   ];
@@ -60,7 +60,9 @@ export const DeployContractForm: React.FC = () => {
               {step.label}
               <Button
                 variant="text"
-                sx={{ marginLeft: '5px' }}
+                disableRipple
+                disableFocusRipple
+                sx={{ ':hover': { background: 'inherit' } }}
                 onClick={() => {
                   window.open(step.link);
                 }}
@@ -99,26 +101,14 @@ export const DeployContractForm: React.FC = () => {
             You should now have an address for your deployed contract!
           </Typography>
           <Button
+            variant="outlined"
             onClick={handleReset}
             sx={{ mt: 1, mr: 1, textTransform: 'none' }}
           >
-            Reset
+            {t('backToStepOne')}
           </Button>
         </Paper>
       )}
     </Box>
-  );
-
-  return (
-    <Grid container>
-      <Grid container spacing={DEFAULT_SPACING}>
-        <Grid container item justifyContent="space-between" spacing={1}></Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-            message={message}
-            onSetMessage={(msg: string) => setMessage(msg)}
-          /> */}
-      </Grid>
-    </Grid>
   );
 };

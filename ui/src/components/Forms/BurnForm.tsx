@@ -38,7 +38,7 @@ export const BurnForm: React.FC = () => {
     setJsonPayload({
       pool: pool?.name,
       amount,
-      tokenIndex,
+      tokenIndex: tokenIndex?.toString(),
     });
   }, [pool, amount, tokenIndex, activeForm]);
 
@@ -100,7 +100,9 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(parseInt(event.target.value));
+    if (parseInt(event.target.value)) {
+      setAmount(parseInt(event.target.value));
+    }
   };
 
   return (

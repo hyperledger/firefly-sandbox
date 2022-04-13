@@ -27,6 +27,7 @@ export const DEFAULT_MESSAGE_JSON = {
 interface Props {
   message: string | undefined;
   jsonValue: string | undefined;
+  fileName?: string;
   onSetMessage: any;
   onSetFileName?: any;
   onSetJsonValue: any;
@@ -37,6 +38,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   noUndefined = false,
   message,
   jsonValue,
+  fileName,
   onSetMessage,
   onSetFileName,
   onSetJsonValue,
@@ -58,20 +60,14 @@ export const MessageTypeGroup: React.FC<Props> = ({
   }, [activeForm]);
 
   useEffect(() => {
-    if (
-      getTemplateCategory(activeForm) !== 'messages' ||
-      messageType === POST_BODY_TYPE.FILE
-    )
-      return;
+    if (getTemplateCategory(activeForm) !== 'messages') return;
     if (
       (!message && messageType === POST_BODY_TYPE.STRING) ||
-      (!jsonValue && messageType === POST_BODY_TYPE.JSON)
+      (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
+      (messageType === POST_BODY_TYPE.FILE && !fileName)
     ) {
       setPayloadMissingFields(true);
       return;
-    }
-    if (activeForm !== 'private') {
-      setPayloadMissingFields(false);
     }
   }, [message, jsonValue]);
 
@@ -90,11 +86,13 @@ export const MessageTypeGroup: React.FC<Props> = ({
         return;
       case POST_BODY_TYPE.STRING:
         onSetJsonValue(undefined);
+        setPayloadMissingFields(false);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         setActiveForm(activeForm.replace('blob', ''));
         return;
       case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
+        setPayloadMissingFields(false);
         onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
         setActiveForm(activeForm.replace('blob', ''));
         return;

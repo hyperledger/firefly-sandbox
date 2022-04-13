@@ -26,6 +26,7 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EventContext } from '../contexts/EventContext';
 import { SnackbarContext } from '../contexts/SnackbarContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
@@ -39,7 +40,7 @@ export const Header: React.FC = () => {
   const { setMessage } = useContext(SnackbarContext);
   const { addLogToHistory } = useContext(EventContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
-  const webSocket = useRef<WebSocket | null>(null);
+  const webSocket = useRef<ReconnectingWebSocket | null>(null);
 
   useEffect(() => {
     connectToWS();
@@ -48,7 +49,7 @@ export const Header: React.FC = () => {
   const connectToWS = () => {
     if (!wsConnected) {
       // Open websocket
-      webSocket.current = new WebSocket(WS_URL);
+      webSocket.current = new ReconnectingWebSocket(WS_URL);
       // On Open
       webSocket.current.onopen = function () {
         setWsConnected(true);

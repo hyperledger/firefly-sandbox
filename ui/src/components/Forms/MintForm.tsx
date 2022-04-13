@@ -1,3 +1,4 @@
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Button,
   FormControl,
@@ -10,15 +11,14 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import { FF_Paths } from '../../constants/FF_Paths';
+import { TUTORIALS } from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
-import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const MintForm: React.FC = () => {
   const { selfIdentity, setJsonPayload, activeForm } =
@@ -29,7 +29,7 @@ export const MintForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
 
-  const [message, setMessage] = useState<string | object | undefined>(
+  const [message] = useState<string | object | undefined>(
     DEFAULT_MESSAGE_STRING
   );
 

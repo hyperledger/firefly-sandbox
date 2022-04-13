@@ -13,7 +13,7 @@ import {
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { EventContext } from './contexts/EventContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
-import { IApiStatus, ISelfIdentity } from './interfaces/api';
+import { IApiStatus, IEvent, ISelfIdentity } from './interfaces/api';
 import { IEventHistoryItem } from './interfaces/events';
 import { themeOptions } from './theme';
 import { summarizeFetchError } from './utils/fetches';
@@ -87,7 +87,7 @@ function App() {
     return createTheme(themeOptions);
   }, []);
 
-  const addLogToHistory = (event: any) => {
+  const addLogToHistory = (event: IEvent) => {
     setLogHistory((logHistory) => {
       // This is bad practice, and should be optimized in the future
       const deepCopyMap: Map<string, IEventHistoryItem> = new Map(

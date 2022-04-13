@@ -219,7 +219,7 @@ export class ContractInterfaceLookup {
 export class ContractListener {
   @IsString()
   @IsOptional()
-  name: string;
+  name?: string;
 
   @IsString()
   topic: string;

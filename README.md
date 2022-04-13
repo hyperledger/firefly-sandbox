@@ -41,28 +41,14 @@ npm start
 
 Your application should now be ready to use at [localhost:3000](localhost:3000).
 
-## Learn more about Hyperledger FireFly Architecture
-
-- [YouTube Channel](https://www.youtube.com/playlist?list=PL0MZ85B_96CFVEdBNsHRoX_f15AJacZJD)
-  - Check out the architecture series
-- [Architecture reference documentation](https://hyperledger.github.io/firefly/architecture/node_component_architecture.html)
-  - Still evolving, and open for feedback - let us know what you think [on Rocket Chat](https://chat.hyperledger.org/channel/firefly)
-
 ## Git repositories
 
-There are multiple Git repos making up the Hyperledger FireFly project, and this
-list is likely to grow as additional pluggable extensions come online in the community:
+There are multiple Git repos making up the Hyperledger FireFly project. Some others
+that may be helpful to reference:
 
-- Command Line Interface (CLI) - https://github.com/hyperledger/firefly-cli
 - Core - https://github.com/hyperledger/firefly
-- FireFly SDK - https://github.com/kaleido-io/firefly-sdk-nodejs
-- FireFly Sandbox (this repo) - https://github.com/kaleido-io/firefly-sandbox
-- HTTPS Data Exchange - https://github.com/hyperledger/firefly-dataexchange-https
-- Hyperledger Fabric connector - https://github.com/hyperledger/firefly-fabconnect
-- Ethereum (Hyperledger Besu / Quorum) connector - https://github.com/hyperledger/firefly-ethconnect
-- Corda connector: https://github.com/hyperledger/firefly-cordaconnect - contributed from Kaleido generation 1 - porting to generation 2
-- FireFly Explorer UI - https://github.com/hyperledger/firefly-ui
-- Firefly Performance CLI (https://github.com/hyperledger/firefly-perf-cli)
+- Command Line Interface (CLI) - https://github.com/hyperledger/firefly-cli
+- FireFly Node.js SDK - https://github.com/hyperledger/firefly-sdk-nodejs
 
 ## Contributing
 

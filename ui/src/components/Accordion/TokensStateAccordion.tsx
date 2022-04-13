@@ -172,8 +172,8 @@ export const TokenStateAccordion: React.FC = () => {
                             tokenBalanceMap[poolIDKey].balances.every(
                               (b) => b.tokenIndex === undefined
                             )
-                              ? t('nonfungible')
-                              : t('fungible')
+                              ? t('fungible')
+                              : t('nonfungible')
                           })`}
                         </Typography>
                       </Grid>

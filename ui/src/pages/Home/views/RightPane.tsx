@@ -51,7 +51,7 @@ export const RightPane: React.FC = () => {
             Array.from(logHistory.entries())
               .reverse()
               .map(([txID, value], idx) => (
-                <Grid pb={1} key={idx}>
+                <Grid pb={1} key={idx} width="100%">
                   <Accordion
                     defaultExpanded={idx === 0}
                     sx={{ paddingBottom: 1 }}

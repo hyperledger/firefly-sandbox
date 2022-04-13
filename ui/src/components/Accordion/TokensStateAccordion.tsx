@@ -42,9 +42,11 @@ export const TokenStateAccordion: React.FC = () => {
         let balanceMap: {
           [key: string]: { balances: ITokenBalance[] };
         } = {};
-        balanceRes.map((b) => {
+        balanceRes.forEach((b) => {
+          if (b.key !== selfIdentity?.ethereum_address) {
+            return;
+          }
           const balanceArr = balanceMap[b.poolName]?.balances ?? [];
-
           balanceMap = {
             ...balanceMap,
             [b.poolName]: {

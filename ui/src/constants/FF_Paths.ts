@@ -28,6 +28,7 @@ export const FF_Paths = {
   // Contracts
   api: '/api/contracts/api',
   interface: '/api/contracts/interface',
+  listener: '/api/contracts/listener',
   contractInterfacesById: (id: string) => `/contracts/interfaces/${id}`,
   contractInterfacesInvoke: (interfaceId: string, methodPath: string) =>
     `/contracts/interfaces/${interfaceId}/invoke/${methodPath}`,

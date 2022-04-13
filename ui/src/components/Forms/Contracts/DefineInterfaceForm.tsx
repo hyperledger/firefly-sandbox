@@ -10,7 +10,6 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { DEFAULT_SPACING } from '../../../theme';
 import { TUTORIALS } from '../../../constants/TutorialSections';
 import { isJsonString } from '../../../utils/strings';
@@ -60,9 +59,7 @@ const DEFAULT_ABI_SCHEMA = [
 ];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
-  const { reportFetchError } = useContext(SnackbarContext);
+  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');

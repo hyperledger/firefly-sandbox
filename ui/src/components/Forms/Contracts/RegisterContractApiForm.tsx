@@ -1,13 +1,9 @@
 import {
-  Button,
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
@@ -32,8 +28,6 @@ export const RegisterContractApiForm: React.FC = () => {
   const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
-
-  const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.REGISTER_CONTRACT_API) {

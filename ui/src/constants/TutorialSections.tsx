@@ -9,6 +9,7 @@ import { FF_Paths } from './FF_Paths';
 import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
+import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
 
 export enum TUTORIALS {
   BROADCAST = 'broadcast',
@@ -127,7 +128,7 @@ export const TutorialSections: ITutorialSection[] = [
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
         endpoint: FF_Paths.burn,
-        form: <BurnForm />,
+        form: <RegisterContractApiListenerForm />,
         id: TUTORIALS.REGISTER_CONTRACT_API_LISTENER,
         shortInfo: 'registerContractApiListenerInfo',
         title: 'registerApiListenerTitle',

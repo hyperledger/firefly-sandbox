@@ -3,11 +3,8 @@ import {
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
@@ -17,24 +14,20 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { FF_Paths } from '../../constants/FF_Paths';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { ITokenPool, IVerifiers } from '../../interfaces/api';
+import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
-import {
-  DEFAULT_MESSAGE_STRING,
-  // MessageTypeGroup,
-} from '../Buttons/MessageTypeGroup';
+import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
 import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const MintForm: React.FC = () => {
-  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
+  const { selfIdentity, setJsonPayload, activeForm } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const [recipient, setRecipient] = useState<string>('');
 
   const [message, setMessage] = useState<string | object | undefined>(
     DEFAULT_MESSAGE_STRING
@@ -111,15 +104,6 @@ export const MintForm: React.FC = () => {
       return;
     }
     setAmount(parseInt(event.target.value));
-  };
-
-  const handleRecipientChange = (
-    event: SelectChangeEvent<typeof recipient>
-  ) => {
-    const {
-      target: { value },
-    } = event;
-    setRecipient(value);
   };
 
   return (

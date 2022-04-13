@@ -20,7 +20,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const BurnForm: React.FC = () => {
-  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
+  const { selfIdentity, setJsonPayload, activeForm } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();

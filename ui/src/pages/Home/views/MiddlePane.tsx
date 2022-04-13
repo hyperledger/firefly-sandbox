@@ -35,7 +35,7 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    if (activeForm === 'deploycontract') {
+    if (activeForm === 'deploycontract' || activeForm === 'listener') {
       setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
       setApiResponse({});
       setApiStatus(undefined);

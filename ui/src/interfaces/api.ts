@@ -50,6 +50,17 @@ export interface IContractInterface {
   version: string;
 }
 
+export interface IContractApi {
+  name: string;
+  address: string;
+  url: {
+    openapi: string;
+    ui: string;
+  };
+  events?: object[];
+}
+
+
 export interface IDatatype {
   id: string;
   message: string;

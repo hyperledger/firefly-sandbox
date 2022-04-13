@@ -27,7 +27,7 @@ interface NetworkIdentity {
 }
 
 export const PrivateForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
@@ -61,6 +61,7 @@ export const PrivateForm: React.FC = () => {
     if (!activeForm.includes('private')) {
       return;
     }
+    setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
@@ -118,6 +119,7 @@ export const PrivateForm: React.FC = () => {
           noUndefined
           message={message}
           jsonValue={jsonValue}
+          fileName={fileName}
           onSetMessage={(msg: string) => setMessage(msg)}
           onSetFileName={(file: string) => {
             setFileName(file);

@@ -25,6 +25,8 @@ export interface IApplicationContext {
   // Json Payload
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;
+  payloadMissingFields: boolean;
+  setPayloadMissingFields: Dispatch<SetStateAction<boolean>>;
   // API Response
   apiResponse: object;
   setApiResponse: Dispatch<SetStateAction<object>>;

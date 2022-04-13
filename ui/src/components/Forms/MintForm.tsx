@@ -21,7 +21,7 @@ import { fetchCatcher } from '../../utils/fetches';
 import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
 
 export const MintForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm } =
+  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
@@ -41,6 +41,7 @@ export const MintForm: React.FC = () => {
     if (activeForm !== TUTORIALS.MINT) {
       return;
     }
+    setPayloadMissingFields(!amount);
     if (!message) {
       setJsonPayload({
         pool: pool?.name,

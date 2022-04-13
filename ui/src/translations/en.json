@@ -36,7 +36,7 @@
   "datatypeShortInfo": "Datatypes are broadcasts to the network so everybody refers to the same JSON schema when validating their data",
   "datatypeTitle": "Send a Broadcast Message",
   "defineContractInterfaceInfo": "Upload the interface of your contract, describing all its methods and events, in either FFI or Solidity JSON ABI format",
-  "deployContractInfo": "Follow these steps to compile and deploy a contract on your blockchain",
+  "deployContractInfo": "Follow the link on each step to compile and deploy a contract on your blockchain",
   "deployContractTitle": "Deploy a Contract",
   "disconnect": "Disconnect",
   "disconnected": "Disconnected",

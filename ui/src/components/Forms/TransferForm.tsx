@@ -23,7 +23,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const TransferForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm } =
+  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
@@ -39,6 +39,7 @@ export const TransferForm: React.FC = () => {
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.TRANSFER) return;
+    setPayloadMissingFields(!recipient || !amount);
     setJsonPayload({
       pool: pool?.name,
       amount,

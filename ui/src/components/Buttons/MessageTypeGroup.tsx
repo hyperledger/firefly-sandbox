@@ -16,6 +16,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
+import { getTemplateCategory } from '../../pages/Home/views/MiddlePane';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -25,6 +26,7 @@ export const DEFAULT_MESSAGE_JSON = {
 interface Props {
   message: string | undefined;
   jsonValue: string | undefined;
+  fileName?: string;
   onSetMessage: any;
   onSetFileName?: any;
   onSetJsonValue: any;
@@ -35,6 +37,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   noUndefined = false,
   message,
   jsonValue,
+  fileName,
   onSetMessage,
   onSetFileName,
   onSetJsonValue,
@@ -43,13 +46,29 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
-  const { activeForm, setActiveForm } = useContext(ApplicationContext);
+  const { activeForm, setActiveForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
 
   useEffect(() => {
     if (activeForm.indexOf('blob') < 0) {
       setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
+    } else {
+      const file: any = document.querySelector('input[type="file"]');
+      setPayloadMissingFields(!file.files[0] ? true : false);
     }
   }, [activeForm]);
+
+  useEffect(() => {
+    if (getTemplateCategory(activeForm) !== 'messages') return;
+    if (
+      (!message && messageType === POST_BODY_TYPE.STRING) ||
+      (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
+      (messageType === POST_BODY_TYPE.FILE && !fileName)
+    ) {
+      setPayloadMissingFields(true);
+      return;
+    }
+  }, [message, jsonValue]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -66,11 +85,13 @@ export const MessageTypeGroup: React.FC<Props> = ({
         return;
       case POST_BODY_TYPE.STRING:
         onSetJsonValue(undefined);
+        setPayloadMissingFields(false);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         setActiveForm(activeForm.replace('blob', ''));
         return;
       case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
+        setPayloadMissingFields(false);
         onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
         setActiveForm(activeForm.replace('blob', ''));
         return;
@@ -145,9 +166,11 @@ export const MessageTypeGroup: React.FC<Props> = ({
               <Typography sx={{ width: '50%' }}>{t('uploadFile')}*</Typography>
               <input
                 type="file"
-                onChange={(event: any) =>
-                  onSetFileName(event?.target?.files[0]?.name)
-                }
+                required
+                onChange={(event: any) => {
+                  setPayloadMissingFields(false);
+                  onSetFileName(event?.target?.files[0]?.name);
+                }}
               />
             </Button>
           )}

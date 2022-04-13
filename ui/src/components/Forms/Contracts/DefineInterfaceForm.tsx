@@ -9,24 +9,20 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApplicationContext } from '../../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
-import { DEFAULT_SPACING } from '../../../theme';
 import { TUTORIALS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { DEFAULT_SPACING } from '../../../theme';
 
 export const CONTRACT_INTERFACE_FORMATS = ['ffi', 'abi'];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
-  const { reportFetchError } = useContext(SnackbarContext);
+  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
-  const [name, setName] = useState<string>('');
+  const [, setName] = useState<string>('');
   const [schema, setSchema] = useState<string>('');
-  const [version, setVersion] = useState<string>('');
-  const [refresh, setRefresh] = useState<number>(0);
+  const [, setVersion] = useState<string>('');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {

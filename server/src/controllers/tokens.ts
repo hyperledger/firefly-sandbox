@@ -115,7 +115,7 @@ export class TokensTemplateController {
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
       });
-      return { type: 'message', id: pool.message };
+      return { type: 'token_pool', id: pool.id };
     `);
   }
 

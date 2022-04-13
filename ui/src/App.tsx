@@ -94,6 +94,12 @@ function App() {
     return createTheme(themeOptions);
   }, []);
 
+  const isFinalEvent = (t: string) => {
+    return (
+      t.endsWith('confirmed') || t.endsWith('rejected') || t.endsWith('failed')
+    );
+  };
+
   const addLogToHistory = (event: IEvent) => {
     setLogHistory((logHistory) => {
       // This is bad practice, and should be optimized in the future
@@ -103,6 +109,7 @@ function App() {
 
       const txMap = deepCopyMap.get(event.tx);
       if (txMap !== undefined) {
+        // TODO: Need better logic
         const isComplete = event.reference === dumbAwaitedEventID;
         if (isComplete) dumbAwaitedEventID = undefined;
 
@@ -110,8 +117,7 @@ function App() {
           deepCopyMap.set(event.tx, {
             events: [event, ...txMap.events],
             created: event.created,
-            // TODO: Need better logic
-            isComplete,
+            isComplete: isFinalEvent(event.type),
           })
         );
       } else {
@@ -119,7 +125,7 @@ function App() {
           deepCopyMap.set(event.tx, {
             events: [event],
             created: event.created,
-            isComplete: event.reference === dumbAwaitedEventID,
+            isComplete: isFinalEvent(event.type),
           })
         );
       }

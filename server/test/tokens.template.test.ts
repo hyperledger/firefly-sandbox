@@ -23,7 +23,7 @@ describe('Templates: Tokens', () => {
               symbol: 'P1',
               type: 'fungible',
             });
-            return { type: 'message', id: pool.message };
+            return { type: 'token_pool', id: pool.id };
         `),
         );
       });

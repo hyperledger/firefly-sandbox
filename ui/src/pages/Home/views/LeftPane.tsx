@@ -4,6 +4,7 @@ import React, { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContractStateAccordion } from '../../../components/Accordion/ContractStateAccordion';
 import { FFAccordion } from '../../../components/Accordion/FFAccordion';
+import { TokenStateAccordion } from '../../../components/Accordion/TokensStateAccordion';
 import {
   TutorialSections,
   TUTORIAL_CATEGORIES,
@@ -28,7 +29,7 @@ const tutorialTabs = [
 
 const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
   0: undefined,
-  1: undefined,
+  1: <TokenStateAccordion />,
   2: <ContractStateAccordion />,
 };
 

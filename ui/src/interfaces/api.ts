@@ -227,6 +227,13 @@ export interface ITokenApproval {
   blockchainEvent: string;
 }
 
+export interface ITokenBalance {
+  pool: string;
+  key: string;
+  balance: string;
+  tokenIndex?: string;
+}
+
 export interface ITokenConnector {
   name: string;
 }

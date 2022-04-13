@@ -17,12 +17,14 @@ export const PoolForm: React.FC = () => {
   const { setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
 
-  const [name, setName] = useState<string>();
-  const [symbol, setSymbol] = useState<string>();
+  const [name, setName] = useState<string>('');
+  const [symbol, setSymbol] = useState<string>('');
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.POOL) {
+      setName('');
+      setSymbol('');
       return;
     }
     setPayloadMissingFields(!name || !symbol ? true : false);
@@ -34,18 +36,10 @@ export const PoolForm: React.FC = () => {
   }, [name, symbol, type, activeForm]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setName(undefined);
-      return;
-    }
     setName(event.target.value);
   };
 
   const handleSymbolChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setSymbol(undefined);
-      return;
-    }
     setSymbol(event.target.value);
   };
 
@@ -60,6 +54,7 @@ export const PoolForm: React.FC = () => {
               fullWidth
               label={t('poolName')}
               placeholder={t('abcCoin')}
+              value={name}
               onChange={handleNameChange}
             />
           </Grid>
@@ -70,6 +65,7 @@ export const PoolForm: React.FC = () => {
               required
               label={t('poolSymbol')}
               placeholder={t('abc')}
+              value={symbol}
               onChange={handleSymbolChange}
             />
           </Grid>

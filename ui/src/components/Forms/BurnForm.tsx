@@ -28,7 +28,7 @@ export const BurnForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<number>(0);
-  const [tokenIndex, setTokenIndex] = useState<string | null>();
+  const [tokenIndex, setTokenIndex] = useState<number | null>();
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
 
@@ -79,7 +79,7 @@ export const BurnForm: React.FC = () => {
   }, [pool, refresh]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : '1');
+    setTokenIndex(isFungible() ? null : 1);
     if (!isFungible()) {
       setAmount(1);
     }
@@ -93,7 +93,10 @@ export const BurnForm: React.FC = () => {
   const handleTokenIndexChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setTokenIndex(event.target.value);
+    const index = parseInt(event.target.value);
+    if (index && index > 0) {
+      setTokenIndex(index);
+    }
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -171,12 +174,17 @@ export const BurnForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        {tokenIndex ? (
+        {tokenIndex && tokenIndex > -1 ? (
           <Grid item xs={4}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth
                 type="number"
+                InputProps={{
+                  inputProps: {
+                    min: 1,
+                  },
+                }}
                 label={t('tokenIndex')}
                 placeholder="ex. 1"
                 onChange={handleTokenIndexChange}

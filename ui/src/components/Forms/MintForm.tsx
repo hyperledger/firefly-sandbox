@@ -34,11 +34,12 @@ export const MintForm: React.FC = () => {
   );
 
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>();
+  const [amount, setAmount] = useState<number>(1);
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.MINT) {
+      setAmount(1);
       return;
     }
     setPayloadMissingFields(!amount);
@@ -100,11 +101,9 @@ export const MintForm: React.FC = () => {
   }, [pool, refresh]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value.length === 0) {
-      setAmount(undefined);
-      return;
+    if (parseInt(event.target.value)) {
+      setAmount(parseInt(event.target.value));
     }
-    setAmount(parseInt(event.target.value));
   };
 
   return (
@@ -167,6 +166,7 @@ export const MintForm: React.FC = () => {
               type="number"
               label={t('amount')}
               placeholder={t('exampleAmount')}
+              value={amount}
               onChange={handleAmountChange}
             />
           </FormControl>

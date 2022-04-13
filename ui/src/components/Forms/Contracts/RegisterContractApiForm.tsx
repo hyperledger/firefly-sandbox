@@ -35,8 +35,8 @@ export const RegisterContractApiForm: React.FC = () => {
     }
     setJsonPayload({
       name,
-      interfaceName: contractInterfaces[contractInterfaceIdx].name,
-      interfaceVersion: contractInterfaces[contractInterfaceIdx].version,
+      interfaceName: contractInterfaces[contractInterfaceIdx]?.name,
+      interfaceVersion: contractInterfaces[contractInterfaceIdx]?.version,
       address: contractAddress,
     });
   }, [name, contractInterfaceIdx, contractAddress, activeForm]);

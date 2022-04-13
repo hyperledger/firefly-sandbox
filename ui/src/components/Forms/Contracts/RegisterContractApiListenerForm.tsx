@@ -80,11 +80,11 @@ export const RegisterContractApiListenerForm: React.FC = () => {
               required
               disabled={contractApis.length ? false : true}
             >
-              <InputLabel>{t('contractInterface')}</InputLabel>
+              <InputLabel>{t('contractApi')}</InputLabel>
               <Select
                 fullWidth
                 value={contractApi}
-                label={t('contractInterface')}
+                label={t('contractApi')}
                 onChange={(e) => {
                   setContractApi(e.target.value);
                 }}

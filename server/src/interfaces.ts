@@ -225,9 +225,6 @@ export class ContractListener {
   topic: string;
 
   @IsString()
-  apiName: string;
-
-  @IsString()
   eventPath: string;
 }
 
@@ -237,12 +234,6 @@ export class ContractListenerLookup {
 
   @IsString()
   topic: string;
-
-  @IsString()
-  interfaceName: string;
-
-  @IsString()
-  interfaceVersion: string;
 
   @IsString()
   address: string;

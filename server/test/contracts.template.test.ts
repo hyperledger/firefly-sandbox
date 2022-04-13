@@ -76,4 +76,35 @@ describe('Templates: Smart Contracts', () => {
         );
       });
   });
+
+  test('Contract Listener', () => {
+    return request(server)
+      .get('/api/contracts/template/listener')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+
+        expect(
+          compiled({
+            name: '',
+            topic: 'app1',
+            apiName: 'api1',
+            eventPath: 'set',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const listener = await firefly.createContractAPIListener(
+              'api1',
+              'set',
+              { topic: 'app1', name: undefined, },
+            );
+            return {
+              name: listener.name,
+              topic: listener.topic,
+              address: listener.location.address,
+            };
+          `),
+        );
+      });
+  });
 });

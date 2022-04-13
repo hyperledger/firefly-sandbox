@@ -106,47 +106,38 @@ export class ContractsController {
     };
   }
 
-  @Get('/listener')
+  @Get('/api/:name/listener')
   @ResponseSchema(ContractListenerLookup, { isArray: true })
-  @OpenAPI({ summary: 'List contract listeners' })
-  async getListeners(): Promise<ContractListenerLookup[]> {
-    const listeners = await firefly.getContractListeners();
-    const results: ContractListenerLookup[] = [];
-    for (const l of listeners) {
-      const ffi = await firefly.getContractInterface(l.interface.id);
-      results.push({
-        name: l.name,
-        topic: l.topic,
-        interfaceName: ffi.name,
-        interfaceVersion: ffi.version,
-        address: l.location.address,
-      });
-    }
-    return results;
+  @OpenAPI({ summary: 'List contract API listeners' })
+  async getAPIListeners(@Param('name') name: string): Promise<ContractListenerLookup[]> {
+    const api = await firefly.getContractAPI(name);
+    const listeners = await firefly.getContractListeners({
+      interface: api.interface.id,
+      location: api.location,
+    });
+    return listeners.map((l) => ({
+      name: l.name,
+      topic: l.topic,
+      address: l.location.address,
+    }));
   }
 
-  @Post('/listener')
+  @Post('/api/:name/listener')
   @ResponseSchema(ContractListenerLookup)
   @OpenAPI({ summary: 'Create a new contract listener' })
-  async createListener(@Body() body: ContractListener): Promise<ContractListenerLookup> {
-    const api = await firefly.getContractAPI(body.apiName);
-    if (api === undefined) {
-      throw new NotFoundError();
-    }
-    const ffi = await firefly.getContractInterface(api.interface.id);
-    const listener = await firefly.createContractListener({
-      interface: { id: api.interface.id },
-      location: api.location,
+  async createListener(
+    @Param('name') name: string,
+    @Body() body: ContractListener,
+  ): Promise<ContractListenerLookup> {
+    // See ContractsTemplateController and keep template code up to date.
+    const listener = await firefly.createContractAPIListener(name, body.eventPath, {
       topic: body.topic,
       name: body.name,
-      eventPath: body.eventPath,
     });
     return {
       name: listener.name,
       topic: listener.topic,
       address: listener.location.address,
-      interfaceName: ffi.name,
-      interfaceVersion: ffi.version,
     };
   }
 }
@@ -187,6 +178,22 @@ export class ContractsTemplateController {
         },
       });
       return { type: 'message', id: api.message };
+    `);
+  }
+
+  @Get('/listener')
+  listenerTemplate() {
+    return formatTemplate(`
+      const listener = await firefly.createContractAPIListener(
+        <%= ${q('apiName')} %>,
+        <%= ${q('eventPath')} %>,
+        { topic: <%= ${q('topic')} %>, name: <%= name ? ${q('name')} : 'undefined' %>, },
+      );
+      return {
+        name: listener.name,
+        topic: listener.topic,
+        address: listener.location.address,
+      };
     `);
   }
 }

@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TUTORIAL_CATEGORIES } from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
 import { getTemplateCategory } from '../../pages/Home/views/MiddlePane';

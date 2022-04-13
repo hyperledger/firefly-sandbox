@@ -1,17 +1,17 @@
-import 'reflect-metadata';
 import * as http from 'http';
-import * as express from 'express';
-import * as cors from 'cors';
+import * as path from 'path';
 import * as bodyParser from 'body-parser';
+import * as cors from 'cors';
+import * as express from 'express';
+import 'reflect-metadata';
+import { RoutingControllersOptions, useExpressServer } from 'routing-controllers';
 import * as swaggerUi from 'swagger-ui-express';
-import { useExpressServer, RoutingControllersOptions } from 'routing-controllers';
-import { genOpenAPI, WebsocketHandler } from './utils';
+import { CommonController } from './controllers/common';
+import { ContractsController, ContractsTemplateController } from './controllers/contracts';
 import { MessagesController, MessagesTemplateController } from './controllers/messages';
 import { TokensController, TokensTemplateController } from './controllers/tokens';
-import { CommonController } from './controllers/common';
 import { SimpleWebSocket } from './controllers/websocket';
-import { ContractsController, ContractsTemplateController } from './controllers/contracts';
-import * as path from 'path';
+import { genOpenAPI, WebsocketHandler } from './utils';
 
 const app = express();
 app.use(bodyParser.json());

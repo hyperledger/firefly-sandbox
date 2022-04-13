@@ -1,42 +1,25 @@
 import {
-  Button,
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { FF_Paths } from '../../../constants/FF_Paths';
-import { ApplicationContext } from '../../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../../contexts/SnackbarContext';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
-import { fetchCatcher } from '../../../utils/fetches';
-import {
-  DEFAULT_MESSAGE_STRING,
-  // MessageTypeGroup,
-} from '../../Buttons/MessageTypeGroup';
 import { TUTORIALS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { DEFAULT_SPACING } from '../../../theme';
 
 export const RegisterContractApiForm: React.FC = () => {
-  const { selfIdentity, jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
-  const { reportFetchError } = useContext(SnackbarContext);
+  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
   const { t } = useTranslation();
 
-  const [contractInterfaces, setContractInterfaces] = useState<string[]>([]);
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const [name, setName] = useState<string>('');
-  const [blockchainAddress, setBlockchainAddress] = useState<string>('');
-
-  const [refresh, setRefresh] = useState<number>(0);
+  const [contractInterfaces] = useState<string[]>([]);
+  const [, setName] = useState<string>('');
+  const [, setBlockchainAddress] = useState<string>('');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.REGISTER_CONTRACT_API) {
@@ -69,7 +52,7 @@ export const RegisterContractApiForm: React.FC = () => {
                 label={
                   contractInterfaces.length ? t('tokenPool') : t('noTokenPools')
                 }
-                onChange={(e) => {
+                onChange={() => {
                   return null;
                 }}
               >

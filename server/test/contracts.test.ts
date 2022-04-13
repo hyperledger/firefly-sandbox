@@ -156,21 +156,18 @@ describe('Smart Contracts', () => {
     expect(mockFireFly.getContractInterface).toHaveBeenCalledWith('int1', true);
   });
 
-  test('Create contract listener', async () => {
-    const req: ContractListener = {
-      apiName: 'my-api',
-      eventPath: 'Changed',
-      topic: 'my-app',
-    };
+  test('Get contract listeners', async () => {
     const api = {
       name: 'my-api',
-      interface: { id: 'api1' },
-      location: { address: '0x123' },
+      message: 'msg1',
+      interface: {
+        id: 'int1',
+      },
+      urls: {
+        openapi: 'openapi-url',
+        ui: 'ui-url',
+      },
     } as FireFlyContractAPI;
-    const int = {
-      name: 'my-contract',
-      version: '1.0',
-    } as FireFlyContractInterface;
     const listener = {
       name: 'listener1',
       topic: 'my-app',
@@ -178,23 +175,42 @@ describe('Smart Contracts', () => {
     } as FireFlyContractListener;
 
     mockFireFly.getContractAPI.mockResolvedValueOnce(api);
-    mockFireFly.getContractInterface.mockResolvedValueOnce(int);
-    mockFireFly.createContractListener.mockResolvedValueOnce(listener);
+    mockFireFly.getContractListeners.mockResolvedValueOnce([listener]);
 
-    await request(server).post('/api/contracts/listener').send(req).expect(200).expect({
+    await request(server)
+      .get('/api/contracts/api/my-api/listener')
+      .expect(200)
+      .expect([
+        {
+          name: 'listener1',
+          topic: 'my-app',
+          address: '0x123',
+        },
+      ]);
+
+    expect(mockFireFly.getContractListeners).toHaveBeenCalledWith({ interface: 'int1' });
+  });
+
+  test('Create contract listener', async () => {
+    const req: ContractListener = {
+      eventPath: 'Changed',
+      topic: 'my-app',
+    };
+    const listener = {
+      name: 'listener1',
+      topic: 'my-app',
+      location: { address: '0x123' },
+    } as FireFlyContractListener;
+
+    mockFireFly.createContractAPIListener.mockResolvedValueOnce(listener);
+
+    await request(server).post('/api/contracts/api/my-api/listener').send(req).expect(200).expect({
       name: 'listener1',
       topic: 'my-app',
       address: '0x123',
-      interfaceName: 'my-contract',
-      interfaceVersion: '1.0',
     });
 
-    expect(mockFireFly.getContractAPI).toHaveBeenCalledWith('my-api');
-    expect(mockFireFly.getContractInterface).toHaveBeenCalledWith('api1');
-    expect(mockFireFly.createContractListener).toHaveBeenCalledWith({
-      eventPath: 'Changed',
-      interface: { id: 'api1' },
-      location: { address: '0x123' },
+    expect(mockFireFly.createContractAPIListener).toHaveBeenCalledWith('my-api', 'Changed', {
       topic: 'my-app',
     });
   });

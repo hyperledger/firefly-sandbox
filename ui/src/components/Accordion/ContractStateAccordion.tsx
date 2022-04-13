@@ -127,7 +127,7 @@ export const ContractStateAccordion: React.FC = () => {
                     <Grid container>
                       {contractListeners
                         ?.filter((l) => l.address === api.address)
-                        .map((l, idx) => {
+                        .map((l) => {
                           return (
                             <Grid
                               item
@@ -137,11 +137,11 @@ export const ContractStateAccordion: React.FC = () => {
                               direction="row"
                               justifyContent="space-between"
                               alignItems="flex-start"
-                              key={idx}
+                              key={l.id}
                             >
                               <Grid item>
                                 <FFAccordionText
-                                  text={`${t('listener')}: ${l.name}; ${t(
+                                  text={`${t('listener')}: ${l.eventName}; ${t(
                                     'topic'
                                   )}:${l.topic}`}
                                   color="secondary"

@@ -59,13 +59,16 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
           status: response.status,
           statusText: response.statusText,
         });
-        return response.json();
+        return Promise.all([response, response.json()]);
       })
-      .then((data) => {
+      .then((result) => {
+        const [response, data] = result;
         setShowSnackbar(true);
         setApiResponse(data);
-        setJustSubmitted(true);
-        addAwaitedEventID(data);
+        if (response.status === 202) {
+          setJustSubmitted(true);
+          addAwaitedEventID(data);
+        }
       })
       .catch((err) => {
         setShowSnackbar(true);

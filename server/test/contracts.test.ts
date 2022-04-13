@@ -168,9 +168,10 @@ describe('Smart Contracts', () => {
       },
     } as FireFlyContractAPI;
     const listener = {
-      name: 'listener1',
+      id: 'listener1',
       topic: 'my-app',
       location: { address: '0x123' },
+      event: { name: 'event1' },
     } as FireFlyContractListener;
 
     mockFireFly.getContractAPI.mockResolvedValueOnce(api);
@@ -181,9 +182,10 @@ describe('Smart Contracts', () => {
       .expect(200)
       .expect([
         {
-          name: 'listener1',
+          id: 'listener1',
           topic: 'my-app',
           address: '0x123',
+          eventName: 'event1',
         },
       ]);
 
@@ -197,17 +199,19 @@ describe('Smart Contracts', () => {
       topic: 'my-app',
     };
     const listener = {
-      name: 'listener1',
+      id: 'listener1',
       topic: 'my-app',
       location: { address: '0x123' },
+      event: { name: 'Changed' },
     } as FireFlyContractListener;
 
     mockFireFly.createContractAPIListener.mockResolvedValueOnce(listener);
 
     await request(server).post('/api/contracts/listener').send(req).expect(200).expect({
-      name: 'listener1',
+      id: 'listener1',
       topic: 'my-app',
       address: '0x123',
+      eventName: 'Changed',
     });
 
     expect(mockFireFly.createContractAPIListener).toHaveBeenCalledWith('my-api', 'Changed', {

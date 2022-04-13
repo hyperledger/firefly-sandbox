@@ -61,9 +61,11 @@ export interface IContractApi {
 }
 
 export interface IContractListener {
+  id: string;
   address: string;
-  name: string;
+  name?: string;
   topic: string;
+  eventName: string;
 }
 
 export interface IDatatype {

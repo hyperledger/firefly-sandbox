@@ -32,7 +32,8 @@
     "underscore": "^1.13.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start:sm": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",

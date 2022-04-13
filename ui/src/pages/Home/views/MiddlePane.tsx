@@ -36,7 +36,7 @@ export const MiddlePane = () => {
   const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    if (activeForm === 'deploycontract' || activeForm === 'listener') {
+    if (activeForm === 'deploycontract') {
       setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
       setApiResponse({});
       setApiStatus(undefined);
@@ -128,7 +128,7 @@ export const MiddlePane = () => {
           sx={{ ':hover': { background: 'inherit' }, padding: 0 }}
           onClick={() => {
             window.open(
-              'https://github.com/kaleido-io/firefly-sandbox/tree/main/server'
+              'https://github.com/hyperledger/firefly-sandbox/tree/main/server'
             );
           }}
         >

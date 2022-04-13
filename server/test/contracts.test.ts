@@ -101,23 +101,22 @@ describe('Smart Contracts', () => {
     });
   });
   test('Get contract Interfaces', async () => {
-    const int = [{
-      "name": "my-contract",
-      "description": "",
-      "version": "1.0",
-    }, {
-      "name": "my-contract",
-      "description": "",
-      "version": "1.1"
-    },
-  ] as FireFlyContractInterface[];
+    const int = [
+      {
+        name: 'my-contract',
+        description: '',
+        version: '1.0',
+      },
+      {
+        name: 'my-contract',
+        description: '',
+        version: '1.1',
+      },
+    ] as FireFlyContractInterface[];
 
     mockFireFly.getContractInterfaces.mockResolvedValueOnce(int);
 
-    await request(server)
-      .get('/api/contracts/interface')
-      .expect(200)
-      .expect(int);
+    await request(server).get('/api/contracts/interface').expect(200).expect(int);
   });
 
   test('Get contract API', async () => {
@@ -193,6 +192,7 @@ describe('Smart Contracts', () => {
 
   test('Create contract listener', async () => {
     const req: ContractListener = {
+      apiName: 'my-api',
       eventPath: 'Changed',
       topic: 'my-app',
     };
@@ -204,7 +204,7 @@ describe('Smart Contracts', () => {
 
     mockFireFly.createContractAPIListener.mockResolvedValueOnce(listener);
 
-    await request(server).post('/api/contracts/api/my-api/listener').send(req).expect(200).expect({
+    await request(server).post('/api/contracts/listener').send(req).expect(200).expect({
       name: 'listener1',
       topic: 'my-app',
       address: '0x123',

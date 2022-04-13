@@ -74,7 +74,7 @@ export class ContractsController {
   @OpenAPI({ summary: 'List contract interfaces' })
   async getContractInterfaces(): Promise<ContractInterfaceLookup[]> {
     const interfaces = await firefly.getContractInterfaces();
-    return interfaces
+    return interfaces;
   }
 
   @Get('/api')
@@ -122,15 +122,12 @@ export class ContractsController {
     }));
   }
 
-  @Post('/api/:name/listener')
+  @Post('/listener')
   @ResponseSchema(ContractListenerLookup)
   @OpenAPI({ summary: 'Create a new contract listener' })
-  async createListener(
-    @Param('name') name: string,
-    @Body() body: ContractListener,
-  ): Promise<ContractListenerLookup> {
+  async createListener(@Body() body: ContractListener): Promise<ContractListenerLookup> {
     // See ContractsTemplateController and keep template code up to date.
-    const listener = await firefly.createContractAPIListener(name, body.eventPath, {
+    const listener = await firefly.createContractAPIListener(body.apiName, body.eventPath, {
       topic: body.topic,
       name: body.name,
     });

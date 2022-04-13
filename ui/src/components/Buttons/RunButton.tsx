@@ -1,8 +1,16 @@
 import { ArrowForwardIos } from '@mui/icons-material';
-import { Alert, Button, Snackbar, Typography } from '@mui/material';
-import { useContext, useState } from 'react';
+import {
+  Alert,
+  Button,
+  CircularProgress,
+  Grid,
+  Snackbar,
+  Typography,
+} from '@mui/material';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { EventContext } from '../../contexts/EventContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 
 interface Props {
@@ -16,6 +24,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { activeForm, setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
+  const { dumbAwaitedEventID, addAwaitedEventID } = useContext(EventContext);
+  // TODO: Remove soon
+  const [justSubmitted, setJustSubmitted] = useState<boolean>(false);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -24,6 +35,11 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
     setShowSnackbar(false);
   };
+
+  // TODO: Remove soon
+  useEffect(() => {
+    setJustSubmitted(false);
+  }, [dumbAwaitedEventID]);
 
   const handlePost = () => {
     const blobUpload = activeForm.includes('blob');
@@ -48,6 +64,8 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       .then((data) => {
         setShowSnackbar(true);
         setApiResponse(data);
+        setJustSubmitted(true);
+        addAwaitedEventID(data);
       })
       .catch((err) => {
         setShowSnackbar(true);
@@ -82,29 +100,50 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   return (
     <>
-      <Button
-        endIcon={<ArrowForwardIos />}
-        variant="contained"
-        disabled={disabled || payloadMissingFields}
-        sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
-        onClick={handlePost}
-      >
-        <Typography>{t('run')}</Typography>
-      </Button>
-      <Snackbar
-        open={showSnackbar}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={'success'}
-          sx={{ width: '100%' }}
-          variant={'filled'}
+      {dumbAwaitedEventID || justSubmitted ? (
+        <Grid
+          justifyContent="space-between"
+          direction="row"
+          container
+          alignItems={'center'}
         >
-          {`${t('postSentTo')}${endpoint}`}
-        </Alert>
-      </Snackbar>
+          <Grid item xs={11}>
+            <Typography sx={{ fontSize: '16px', fontWeight: '500' }}>
+              {t('waitingForTxEventsToFinish')}
+            </Typography>
+          </Grid>
+          <Grid item xs={1} container justifyContent="flex-end">
+            <CircularProgress size={16} color="warning" />
+          </Grid>
+        </Grid>
+      ) : (
+        <>
+          <Button
+            endIcon={<ArrowForwardIos />}
+            variant="contained"
+            disabled={disabled || payloadMissingFields}
+            sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+            onClick={handlePost}
+            size="small"
+          >
+            <Typography>{t('run')}</Typography>
+          </Button>
+          <Snackbar
+            open={showSnackbar}
+            autoHideDuration={6000}
+            onClose={handleCloseSnackbar}
+          >
+            <Alert
+              onClose={handleCloseSnackbar}
+              severity={'success'}
+              sx={{ width: '100%' }}
+              variant={'filled'}
+            >
+              {`${t('postSentTo')}${endpoint}`}
+            </Alert>
+          </Snackbar>
+        </>
+      )}
     </>
   );
 };

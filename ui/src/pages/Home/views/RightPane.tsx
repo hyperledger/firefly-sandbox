@@ -1,8 +1,9 @@
-import { ExpandMore } from '@mui/icons-material';
+import { CheckCircleOutline, ExpandMore } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  CircularProgress,
   Divider,
   Grid,
   Typography,
@@ -39,7 +40,6 @@ export const RightPane: React.FC = () => {
             background: theme.palette.background.default,
             height: 'auto',
             position: 'sticky',
-            top: '0',
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 600 }}>
@@ -51,97 +51,117 @@ export const RightPane: React.FC = () => {
             Array.from(logHistory.entries())
               .reverse()
               .map(([txID, value], idx) => (
-                <Accordion
-                  key={idx}
-                  defaultExpanded={idx === 0}
-                  sx={{ paddingBottom: 1 }}
-                >
-                  {/* Summary */}
-                  <AccordionSummary expandIcon={<ExpandMore />}>
-                    <EventAccordionHeader
-                      leftContent={
-                        <>
-                          <Grid
-                            container
-                            justifyContent={'flex-start'}
-                            alignItems={'flex-start'}
-                          >
-                            <Grid item xs={12}>
-                              <FFAccordionText
-                                text={t('transactionID')}
-                                color="primary"
-                                isHeader
-                              />
-                            </Grid>
-                            <Grid item xs={12} pt={1}>
-                              <HashPopover address={txID} />
-                            </Grid>
-                          </Grid>
-                        </>
-                      }
-                      rightContent={
-                        <FFAccordionText
-                          text={getFFTime(value.created)}
-                          color={'secondary'}
-                        />
-                      }
-                    />
-                  </AccordionSummary>
-                  {/* Details */}
-                  <AccordionDetails>
-                    {value.events.map((e: any, idx: number) => {
-                      return (
-                        <React.Fragment key={idx}>
-                          {/* Event section */}
-                          <Grid
-                            pt={1}
-                            container
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="flex-start"
-                          >
-                            <Grid item xs={6}>
-                              <FFAccordionText
-                                text={t(
-                                  FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS]
-                                    .nicename
-                                )}
-                                color={'primary'}
-                                isBold
-                              />
-                            </Grid>
+                <Grid pb={1} key={idx}>
+                  <Accordion
+                    defaultExpanded={idx === 0}
+                    sx={{ paddingBottom: 1 }}
+                  >
+                    {/* Summary */}
+                    <AccordionSummary expandIcon={<ExpandMore />}>
+                      <EventAccordionHeader
+                        leftContent={
+                          <>
                             <Grid
                               container
-                              justifyContent="flex-end"
-                              item
-                              pl={1}
-                              xs={6}
+                              justifyContent={'flex-start'}
+                              alignItems={'flex-start'}
                             >
+                              <Grid item xs={12} container direction="row">
+                                <FFAccordionText
+                                  text={t('transactionID')}
+                                  color="primary"
+                                  isHeader
+                                />
+
+                                <Grid item pl={1}>
+                                  {!value.isComplete ? (
+                                    <CircularProgress
+                                      color="warning"
+                                      size="20px"
+                                    />
+                                  ) : (
+                                    <CheckCircleOutline color="success" />
+                                  )}
+                                </Grid>
+                              </Grid>
+                              <Grid item xs={12} pt={1}>
+                                <HashPopover address={txID} />
+                              </Grid>
+                            </Grid>
+                          </>
+                        }
+                        rightContent={
+                          <Grid
+                            container
+                            justifyContent={'flex-end'}
+                            alignItems="center"
+                          >
+                            <Grid item>
                               <FFAccordionText
-                                text={getFFOnlyTime(e.created)}
+                                text={getFFTime(value.created)}
                                 color={'secondary'}
                               />
                             </Grid>
                           </Grid>
-                          {/* Event key: values */}
-                          <Grid>
-                            <Grid item xs={12} container>
-                              {FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS]
-                                .eventKeyList(e as IEvent)
-                                .map(
-                                  (d, idx) =>
-                                    d.label !== '' && (
-                                      <FFListItem key={idx} item={d} />
-                                    )
-                                )}
+                        }
+                      />
+                    </AccordionSummary>
+                    {/* Details */}
+                    <AccordionDetails>
+                      {value.events.map((e: IEvent, idx: number) => {
+                        return (
+                          <React.Fragment key={idx}>
+                            {/* Event section */}
+                            <Grid
+                              pt={1}
+                              container
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="flex-start"
+                            >
+                              <Grid item xs={6}>
+                                <FFAccordionText
+                                  text={t(
+                                    FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS]
+                                      .nicename
+                                  )}
+                                  color={'primary'}
+                                  isBold
+                                />
+                              </Grid>
+                              <Grid
+                                container
+                                justifyContent="flex-end"
+                                item
+                                pl={1}
+                                xs={6}
+                              >
+                                <FFAccordionText
+                                  text={getFFOnlyTime(e.created)}
+                                  color={'secondary'}
+                                />
+                              </Grid>
                             </Grid>
-                          </Grid>
-                          {idx !== value.events.length - 1 && <Divider />}
-                        </React.Fragment>
-                      );
-                    })}
-                  </AccordionDetails>
-                </Accordion>
+                            {/* Event key: values */}
+                            <Grid>
+                              <Grid item xs={12} container>
+                                {FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS]
+                                  .eventKeyList(e as IEvent)
+                                  .map(
+                                    (d, idx) =>
+                                      d.label !== '' && (
+                                        <FFListItem key={idx} item={d} />
+                                      )
+                                  )}
+                              </Grid>
+                            </Grid>
+                            {idx !== value.events.length - 1 && <Divider />}
+                          </React.Fragment>
+                        );
+                      })}
+                    </AccordionDetails>
+                  </Accordion>
+                </Grid>
               ))
           ) : (
             <Grid

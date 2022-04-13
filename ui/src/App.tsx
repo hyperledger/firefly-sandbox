@@ -20,6 +20,8 @@ import { summarizeFetchError } from './utils/fetches';
 
 // TODO: Make dynamic
 export const SELECTED_NS = 'default';
+// TODO: Figure out why this works
+let dumbAwaitedEventID: string | undefined = undefined;
 
 function App() {
   const [initialized, setInitialized] = useState(true);
@@ -101,10 +103,15 @@ function App() {
 
       const txMap = deepCopyMap.get(event.tx);
       if (txMap !== undefined) {
+        const isComplete = event.reference === dumbAwaitedEventID;
+        if (isComplete) dumbAwaitedEventID = undefined;
+
         return new Map(
           deepCopyMap.set(event.tx, {
-            events: [...txMap.events, event],
+            events: [event, ...txMap.events],
             created: event.created,
+            // TODO: Need better logic
+            isComplete,
           })
         );
       } else {
@@ -112,10 +119,17 @@ function App() {
           deepCopyMap.set(event.tx, {
             events: [event],
             created: event.created,
+            isComplete: event.reference === dumbAwaitedEventID,
           })
         );
       }
     });
+  };
+
+  const addAwaitedEventID = (apiRes: any) => {
+    if (apiRes?.id && apiRes?.id) {
+      dumbAwaitedEventID = apiRes.id;
+    }
   };
 
   if (initialized) {
@@ -144,6 +158,8 @@ function App() {
             value={{
               logHistory,
               addLogToHistory,
+              dumbAwaitedEventID,
+              addAwaitedEventID,
             }}
           >
             <StyledEngineProvider injectFirst>

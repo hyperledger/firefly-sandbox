@@ -165,17 +165,21 @@ export const MiddlePane = () => {
               {codeBlock}
             </SyntaxHighlighter>
           </Grid>
-          <Grid container item justifyContent="space-between">
-            <CopyToClipboard text={codeBlock}>
-              <Button size="small" startIcon={<ContentCopy />}>
-                {t('copyCode')}
-              </Button>
-            </CopyToClipboard>
-            <RunButton
-              disabled={activeForm === 'deploycontract'}
-              endpoint={endpoints[activeForm]}
-              payload={jsonPayload}
-            />
+          <Grid container item justifyContent="space-between" direction="row">
+            <Grid item xs={6}>
+              <CopyToClipboard text={codeBlock}>
+                <Button size="small" startIcon={<ContentCopy />}>
+                  {t('copyCode')}
+                </Button>
+              </CopyToClipboard>
+            </Grid>
+            <Grid container item xs={6} justifyContent="flex-end">
+              <RunButton
+                disabled={activeForm === 'deploycontract'}
+                endpoint={endpoints[activeForm]}
+                payload={jsonPayload}
+              />
+            </Grid>
           </Grid>
         </Paper>
 

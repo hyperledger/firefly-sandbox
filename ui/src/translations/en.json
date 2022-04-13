@@ -133,5 +133,6 @@
   "typescriptSDK": "Typescript SDK",
   "uploadFile": "Upload File",
   "version": "Version",
+  "waitingForTxEventsToFinish": "Waiting for Events to Finish...",
   "websocketConnectionFailure": "Failed to connect to websocket. Please try again."
 }

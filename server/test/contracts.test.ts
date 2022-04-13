@@ -1,8 +1,17 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyContractAPI, FireFlyContractInterface } from '@hyperledger/firefly-sdk';
+import FireFly, {
+  FireFlyContractAPI,
+  FireFlyContractInterface,
+  FireFlyContractListener,
+} from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
-import { ContractAPI, ContractInterface, ContractInterfaceFormat } from '../src/interfaces';
+import {
+  ContractAPI,
+  ContractInterface,
+  ContractInterfaceFormat,
+  ContractListener,
+} from '../src/interfaces';
 
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
@@ -126,5 +135,48 @@ describe('Smart Contracts', () => {
 
     expect(mockFireFly.getContractAPI).toHaveBeenCalledWith('my-api');
     expect(mockFireFly.getContractInterface).toHaveBeenCalledWith('int1', true);
+  });
+
+  test('Create contract listener', async () => {
+    const req: ContractListener = {
+      apiName: 'my-api',
+      eventPath: 'Changed',
+      topic: 'my-app',
+    };
+    const api = {
+      name: 'my-api',
+      interface: { id: 'api1' },
+      location: { address: '0x123' },
+    } as FireFlyContractAPI;
+    const int = {
+      name: 'my-contract',
+      version: '1.0',
+    } as FireFlyContractInterface;
+    const listener = {
+      name: 'listener1',
+      topic: 'my-app',
+      location: { address: '0x123' },
+    } as FireFlyContractListener;
+
+    mockFireFly.getContractAPI.mockResolvedValueOnce(api);
+    mockFireFly.getContractInterface.mockResolvedValueOnce(int);
+    mockFireFly.createContractListener.mockResolvedValueOnce(listener);
+
+    await request(server).post('/api/contracts/listener').send(req).expect(200).expect({
+      name: 'listener1',
+      topic: 'my-app',
+      address: '0x123',
+      interfaceName: 'my-contract',
+      interfaceVersion: '1.0',
+    });
+
+    expect(mockFireFly.getContractAPI).toHaveBeenCalledWith('my-api');
+    expect(mockFireFly.getContractInterface).toHaveBeenCalledWith('api1');
+    expect(mockFireFly.createContractListener).toHaveBeenCalledWith({
+      eventPath: 'Changed',
+      interface: { id: 'api1' },
+      location: { address: '0x123' },
+      topic: 'my-app',
+    });
   });
 });

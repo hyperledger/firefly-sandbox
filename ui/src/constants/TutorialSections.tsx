@@ -127,7 +127,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
-        endpoint: FF_Paths.burn,
+        endpoint: FF_Paths.listener,
         form: <RegisterContractApiListenerForm />,
         id: TUTORIALS.REGISTER_CONTRACT_API_LISTENER,
         shortInfo: 'registerContractApiListenerInfo',

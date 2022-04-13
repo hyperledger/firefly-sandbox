@@ -215,7 +215,6 @@ export class ContractInterfaceLookup {
   version: string;
 }
 
-
 export class ContractListener {
   @IsString()
   @IsOptional()
@@ -223,6 +222,9 @@ export class ContractListener {
 
   @IsString()
   topic: string;
+
+  @IsString()
+  apiName: string;
 
   @IsString()
   eventPath: string;

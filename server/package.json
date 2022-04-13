@@ -18,14 +18,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kaleido-io/firefly-samples-gallery.git"
+    "url": "git+https://github.com/hyperledger/firefly-sandbox.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/kaleido-io/firefly-samples-gallery/issues"
+    "url": "https://github.com/hyperledger/firefly-sandbox/issues"
   },
-  "homepage": "https://github.com/kaleido-io/firefly-samples-gallery#readme",
+  "homepage": "https://github.com/hyperledger/firefly-sandbox#readme",
   "dependencies": {
     "@hyperledger/firefly-sdk": "^0.1.0-alpha.1",
     "body-parser": "^1.20.0",

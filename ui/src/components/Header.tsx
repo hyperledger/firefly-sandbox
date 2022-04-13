@@ -32,7 +32,7 @@ import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
 
-const WS_URL = 'ws://localhost:3001/api/ws';
+const WS_URL = `ws://${window.location.host}/api/ws`;
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();

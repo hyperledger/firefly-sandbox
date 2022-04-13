@@ -27,6 +27,8 @@ export const FF_Paths = {
     `/charts/histogram/${collection}?startTime=${startTime}&endTime=${endTime}&buckets=${numBuckets}`,
   // Contracts
   api: '/api/contracts/api',
+  listenerByApiName: (apiName: string) =>
+    `/api/contracts/api/${apiName}/listener`,
   interface: '/api/contracts/interface',
   listener: '/api/contracts/listener',
   contractInterfacesById: (id: string) => `/contracts/interfaces/${id}`,

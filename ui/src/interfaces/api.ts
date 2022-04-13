@@ -53,13 +53,18 @@ export interface IContractInterface {
 export interface IContractApi {
   name: string;
   address: string;
-  url: {
+  urls: {
     openapi: string;
     ui: string;
   };
   events?: object[];
 }
 
+export interface IContractListener {
+  address: string;
+  name: string;
+  topic: string;
+}
 
 export interface IDatatype {
   id: string;

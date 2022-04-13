@@ -18,6 +18,9 @@ import { IEventHistoryItem } from './interfaces/events';
 import { themeOptions } from './theme';
 import { summarizeFetchError } from './utils/fetches';
 
+// TODO: Make dynamic
+export const SELECTED_NS = 'default';
+
 function App() {
   const [initialized, setInitialized] = useState(true);
   const [message, setMessage] = useState('');

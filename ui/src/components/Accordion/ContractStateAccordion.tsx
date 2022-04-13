@@ -1,4 +1,4 @@
-import { ExpandMore, Launch } from '@mui/icons-material';
+import { ExpandMore, Launch, Refresh } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -26,6 +26,9 @@ export const ContractStateAccordion: React.FC = () => {
   const [contractApis, setContractApis] = useState<IContractApi[]>();
   const [contractListeners, setContractListeners] =
     useState<IContractListener[]>();
+  const [lastRefreshTime, setLastRefreshTime] = useState<string>(
+    new Date().toISOString()
+  );
 
   useEffect(() => {
     fetchCatcher(`${FF_Paths.api}`)
@@ -35,7 +38,7 @@ export const ContractStateAccordion: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, []);
+  }, [lastRefreshTime]);
 
   useEffect(() => {
     setContractListeners([]);
@@ -62,11 +65,31 @@ export const ContractStateAccordion: React.FC = () => {
     >
       {/* Summary */}
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <FFAccordionText
-          color="primary"
-          isHeader
-          text={t('fireflyCurrentState')}
-        />
+        <Grid container direction="row" alignItems="center">
+          <Grid xs={8} item container justifyContent="flex-start">
+            <FFAccordionText
+              color="primary"
+              isHeader
+              text={t('fireflyCurrentState')}
+            />
+          </Grid>
+          <Grid
+            xs={4}
+            item
+            container
+            justifyContent="flex-end"
+            alignItems="center"
+          >
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setLastRefreshTime(new Date().toISOString());
+              }}
+            >
+              <Refresh />
+            </IconButton>
+          </Grid>
+        </Grid>
       </AccordionSummary>
       {/* Details */}
       <AccordionDetails>

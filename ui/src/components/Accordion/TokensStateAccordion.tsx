@@ -1,9 +1,10 @@
-import { ExpandMore } from '@mui/icons-material';
+import { ExpandMore, Refresh } from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
   Grid,
+  IconButton,
   Typography,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
@@ -14,7 +15,7 @@ import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
 import { fetchCatcher } from '../../utils/fetches';
-import { jsNumberForAddress } from '../../utils/strings';
+import { getShortHash, jsNumberForAddress } from '../../utils/strings';
 import { HashPopover } from '../Popovers/HashPopover';
 import { FFAccordionText } from './FFAccordionText';
 
@@ -28,6 +29,9 @@ export const TokenStateAccordion: React.FC = () => {
   const [tokenBalanceMap, setTokenBalanceMap] = useState<{
     [key: string]: { balances: ITokenBalance[] };
   }>({});
+  const [lastRefreshTime, setLastRefreshTime] = useState<string>(
+    new Date().toISOString()
+  );
 
   useEffect(() => {
     fetchCatcher(`${FF_Paths.tokenBalances}`)
@@ -54,7 +58,7 @@ export const TokenStateAccordion: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, []);
+  }, [lastRefreshTime]);
 
   const makeNonFungibleString = (balances: ITokenBalance[]): string => {
     return `${t('total')}: ${balances.length} (${balances
@@ -75,14 +79,34 @@ export const TokenStateAccordion: React.FC = () => {
     >
       {/* Summary */}
       <AccordionSummary expandIcon={<ExpandMore />}>
-        <FFAccordionText
-          color="primary"
-          isHeader
-          text={t('fireflyCurrentState')}
-        />
+        <Grid container direction="row" alignItems="center">
+          <Grid xs={8} item container justifyContent="flex-start">
+            <FFAccordionText
+              color="primary"
+              isHeader
+              text={t('fireflyCurrentState')}
+            />
+          </Grid>
+          <Grid
+            xs={4}
+            item
+            container
+            justifyContent="flex-end"
+            alignItems="center"
+          >
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setLastRefreshTime(new Date().toISOString());
+              }}
+            >
+              <Refresh />
+            </IconButton>
+          </Grid>
+        </Grid>
       </AccordionSummary>
       {/* Details */}
-      <AccordionDetails>
+      <AccordionDetails sx={{ maxHeight: '250px', overflow: 'auto' }}>
         <Grid container justifyContent={'flex-start'} alignItems={'flex-start'}>
           {/* Balances Section Header */}
           <Grid item container xs={12} direction="row" alignItems={'flex-end'}>
@@ -98,11 +122,11 @@ export const TokenStateAccordion: React.FC = () => {
                 paddingBottom: 0,
               }}
               color={'primary'}
-              variant="body2"
+              variant="body1"
               noWrap
             >
               &nbsp;
-              {selfIdentity?.ethereum_address}
+              {getShortHash(selfIdentity?.ethereum_address ?? '')}
             </Typography>
           </Grid>
           <Grid item container xs={12} direction="row">

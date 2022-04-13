@@ -108,7 +108,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
           alignItems={'center'}
         >
           <Grid item xs={11}>
-            <Typography sx={{ fontSize: '16px', fontWeight: '500' }}>
+            <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>
               {t('waitingForTxEventsToFinish')}
             </Typography>
           </Grid>

@@ -20,7 +20,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { TUTORIALS } from '../../constants/TutorialSections';
 
 export const BurnForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm } =
+  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
@@ -34,6 +34,7 @@ export const BurnForm: React.FC = () => {
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.BURN) return;
+    setPayloadMissingFields(!amount);
     setJsonPayload({
       pool: pool?.name,
       amount,

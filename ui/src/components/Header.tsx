@@ -28,7 +28,6 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import { EventContext } from '../contexts/EventContext';
-import { SnackbarContext } from '../contexts/SnackbarContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
@@ -37,7 +36,6 @@ const WS_URL = `ws://${window.location.host}/api/ws`;
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();
-  const { setMessage } = useContext(SnackbarContext);
   const { addLogToHistory } = useContext(EventContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
@@ -53,10 +51,6 @@ export const Header: React.FC = () => {
       // On Open
       webSocket.current.onopen = function () {
         setWsConnected(true);
-      };
-      // On Error
-      webSocket.current.onerror = function () {
-        setMessage(t('websocketConnectionFailure'));
       };
       // On Message
       webSocket.current.onmessage = (message: any) => {

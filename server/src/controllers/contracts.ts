@@ -116,9 +116,11 @@ export class ContractsController {
       location: api.location,
     });
     return listeners.map((l) => ({
+      id: l.id,
       name: l.name,
       topic: l.topic,
       address: l.location.address,
+      eventName: l.event.name,
     }));
   }
 
@@ -132,9 +134,11 @@ export class ContractsController {
       name: body.name,
     });
     return {
+      id: listener.id,
       name: listener.name,
       topic: listener.topic,
       address: listener.location.address,
+      eventName: listener.event.name,
     };
   }
 }

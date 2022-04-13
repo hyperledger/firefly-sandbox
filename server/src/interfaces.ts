@@ -232,6 +232,9 @@ export class ContractListener {
 
 export class ContractListenerLookup {
   @IsString()
+  id: string;
+
+  @IsString()
   name?: string;
 
   @IsString()
@@ -239,6 +242,9 @@ export class ContractListenerLookup {
 
   @IsString()
   address: string;
+
+  @IsString()
+  eventName: string;
 }
 
 export class Transaction {

@@ -123,7 +123,6 @@ export const RegisterContractApiListenerForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
-              required
               label={t('name')}
               onChange={(e) => setName(e.target.value)}
             />

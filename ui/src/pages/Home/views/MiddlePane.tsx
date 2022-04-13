@@ -3,6 +3,7 @@ import { t } from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import CopyIcon from '@mui/icons-material/ContentCopy';
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
@@ -18,6 +19,7 @@ import {
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
+import { copyToClipboard } from '../../../utils/strings';
 
 const getTutorials = (tutorialTitle: string) => {
   return TutorialSections.find((t) => t.title === tutorialTitle)?.tutorials.map(
@@ -147,10 +149,21 @@ export const MiddlePane = () => {
             padding: DEFAULT_PADDING,
           }}
         >
-          <Grid item>
+          <Grid container item pb={DEFAULT_PADDING}>
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
               {t('typescriptSDK')}
             </Typography>
+            <Button
+              variant="text"
+              disableRipple
+              disableFocusRipple
+              sx={{ ':hover': { background: 'inherit' } }}
+              onClick={() => {
+                copyToClipboard(codeBlock);
+              }}
+            >
+              <CopyIcon />
+            </Button>
           </Grid>
           <Grid
             container

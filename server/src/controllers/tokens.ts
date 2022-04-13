@@ -89,9 +89,17 @@ export class TokensController {
     @QueryParam('pool') pool: string,
     @QueryParam('key') key: string,
   ): Promise<TokenBalance[]> {
+    const poolMap = new Map<string, string>();
     const balances = await firefly.getTokenBalances({ pool, key, balance: '>0' });
+    for (const b of balances) {
+      if (!poolMap.has(b.pool)) {
+        const pool = await firefly.getTokenPool(b.pool);
+        poolMap.set(b.pool, pool.name);
+      }
+    }
     return balances.map((b) => ({
       pool: b.pool,
+      poolName: poolMap.get(b.pool),
       key: b.key,
       balance: b.balance,
       tokenIndex: b.tokenIndex,
@@ -115,7 +123,7 @@ export class TokensTemplateController {
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
       });
-      return { type: 'message', id: pool.message };
+      return { type: 'token_pool', id: pool.id };
     `);
   }
 

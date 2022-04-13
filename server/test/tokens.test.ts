@@ -127,14 +127,15 @@ describe('Tokens', () => {
   });
 
   test('Get balances', async () => {
-    const balances = [{ key: '0x123', balance: '1' } as FireFlyTokenBalance];
+    const balances = [{ key: '0x123', balance: '1', pool: 'pool1' } as FireFlyTokenBalance];
 
+    mockFireFly.getTokenPool.mockResolvedValueOnce({ name: 'pool-name' } as FireFlyTokenPool);
     mockFireFly.getTokenBalances.mockResolvedValueOnce(balances);
 
     await request(server)
       .get('/api/tokens/balances?pool=pool1&key=0x123')
       .expect(200)
-      .expect([{ key: '0x123', balance: '1' }]);
+      .expect([{ key: '0x123', balance: '1', pool: 'pool1', poolName: 'pool-name' }]);
 
     expect(mockFireFly.getTokenBalances).toHaveBeenCalledWith({
       pool: 'pool1',

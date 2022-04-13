@@ -135,6 +135,9 @@ export class TokenBalance {
   pool: string;
 
   @IsString()
+  poolName: string;
+
+  @IsString()
   key: string;
 
   @IsNumberString()

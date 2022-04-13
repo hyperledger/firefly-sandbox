@@ -16,7 +16,6 @@ import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
 import { fetchCatcher } from '../../utils/fetches';
 import { getShortHash, jsNumberForAddress } from '../../utils/strings';
-import { HashPopover } from '../Popovers/HashPopover';
 import { FFAccordionText } from './FFAccordionText';
 
 export const TokenStateAccordion: React.FC = () => {
@@ -43,12 +42,14 @@ export const TokenStateAccordion: React.FC = () => {
         let balanceMap: {
           [key: string]: { balances: ITokenBalance[] };
         } = {};
-        balanceRes.map((b) => {
-          const balanceArr = balanceMap[b.pool]?.balances ?? [];
-
+        balanceRes.forEach((b) => {
+          if (b.key !== selfIdentity?.ethereum_address) {
+            return;
+          }
+          const balanceArr = balanceMap[b.poolName]?.balances ?? [];
           balanceMap = {
             ...balanceMap,
-            [b.pool]: {
+            [b.poolName]: {
               balances: [...balanceArr, b],
             },
           };
@@ -155,7 +156,7 @@ export const TokenStateAccordion: React.FC = () => {
                         xs={11}
                         alignItems="center"
                       >
-                        <HashPopover address={poolIDKey} />
+                        <Typography>{poolIDKey}</Typography>
                         <Typography
                           sx={{
                             paddingLeft: 2,

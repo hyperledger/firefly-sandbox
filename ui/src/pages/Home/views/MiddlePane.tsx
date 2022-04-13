@@ -1,13 +1,14 @@
+import { ContentCopy } from '@mui/icons-material';
+import LinkIcon from '@mui/icons-material/Link';
 import { Button, Chip, Grid, Paper, Typography } from '@mui/material';
 import { t } from 'i18next';
 import { useContext, useEffect, useState } from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
-import CopyIcon from '@mui/icons-material/ContentCopy';
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
-import LinkIcon from '@mui/icons-material/Link';
 import {
   TutorialSections,
   TUTORIAL_CATEGORIES,
@@ -19,7 +20,6 @@ import {
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
-import { copyToClipboard } from '../../../utils/strings';
 
 const getTutorials = (tutorialTitle: string) => {
   return TutorialSections.find((t) => t.title === tutorialTitle)?.tutorials.map(
@@ -149,22 +149,6 @@ export const MiddlePane = () => {
             padding: DEFAULT_PADDING,
           }}
         >
-          <Grid container item pb={DEFAULT_PADDING}>
-            <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              {t('typescriptSDK')}
-            </Typography>
-            <Button
-              variant="text"
-              disableRipple
-              disableFocusRipple
-              sx={{ ':hover': { background: 'inherit' } }}
-              onClick={() => {
-                copyToClipboard(codeBlock);
-              }}
-            >
-              <CopyIcon />
-            </Button>
-          </Grid>
           <Grid
             container
             item
@@ -181,12 +165,21 @@ export const MiddlePane = () => {
               {codeBlock}
             </SyntaxHighlighter>
           </Grid>
-          <Grid container item justifyContent="flex-end">
-            <RunButton
-              disabled={activeForm === 'deploycontract'}
-              endpoint={endpoints[activeForm]}
-              payload={jsonPayload}
-            />
+          <Grid container item justifyContent="space-between" direction="row">
+            <Grid item xs={6}>
+              <CopyToClipboard text={codeBlock}>
+                <Button size="small" startIcon={<ContentCopy />}>
+                  {t('copyCode')}
+                </Button>
+              </CopyToClipboard>
+            </Grid>
+            <Grid container item xs={6} justifyContent="flex-end">
+              <RunButton
+                disabled={activeForm === 'deploycontract'}
+                endpoint={endpoints[activeForm]}
+                payload={jsonPayload}
+              />
+            </Grid>
           </Grid>
         </Paper>
 

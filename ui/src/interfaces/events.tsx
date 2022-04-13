@@ -7,4 +7,5 @@ export interface IEventHistory {
 export interface IEventHistoryItem {
   events: IEvent[];
   created: string;
+  isComplete: boolean;
 }

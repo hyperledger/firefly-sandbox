@@ -19,8 +19,10 @@ import { IEvent } from '../interfaces/api';
 import { IEventHistoryItem } from '../interfaces/events';
 
 export interface IEventContext {
-  logHistory: Map<string, IEventHistoryItem>;
   addLogToHistory: (event: IEvent) => void;
+  logHistory: Map<string, IEventHistoryItem>;
+  dumbAwaitedEventID: string | undefined;
+  addAwaitedEventID: (apiRes: any) => void;
 }
 
 export const EventContext = createContext({} as IEventContext);

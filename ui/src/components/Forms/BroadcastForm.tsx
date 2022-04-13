@@ -10,7 +10,7 @@ import {
 } from '../Buttons/MessageTypeGroup';
 
 export const BroadcastForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
 
   const { t } = useTranslation();

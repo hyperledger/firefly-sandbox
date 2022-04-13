@@ -27,7 +27,7 @@ interface NetworkIdentity {
 }
 
 export const PrivateForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
@@ -85,6 +85,10 @@ export const PrivateForm: React.FC = () => {
       });
     }
   }, [jsonValue]);
+
+  useEffect(() => {
+    setPayloadMissingFields(recipients.length === 0);
+  }, [recipients]);
 
   const handleRecipientChange = (
     event: SelectChangeEvent<typeof recipients>

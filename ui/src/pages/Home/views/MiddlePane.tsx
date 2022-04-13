@@ -19,6 +19,28 @@ import {
   FFColors,
 } from '../../../theme';
 
+const getTutorials = (tutorialTitle: string) => {
+  return TutorialSections.find((t) => t.title === tutorialTitle)?.tutorials.map(
+    (tu) => tu.id
+  );
+};
+
+export const getTemplateCategory = (activeForm: string) => {
+  const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
+  if (messagingForms?.includes(activeForm)) {
+    return 'messages';
+  }
+  const tokenForms = getTutorials(TUTORIAL_CATEGORIES.TOKENS);
+  if (tokenForms?.includes(activeForm)) {
+    return 'tokens';
+  }
+  const contractsForms = getTutorials(TUTORIAL_CATEGORIES.CONTRACTS);
+  if (contractsForms?.includes(activeForm)) {
+    return 'contracts';
+  }
+  return 'messages';
+};
+
 export const MiddlePane = () => {
   const {
     jsonPayload,
@@ -42,7 +64,7 @@ export const MiddlePane = () => {
       setApiStatus(undefined);
       return;
     }
-    const templateCategory = getTemplateCategory();
+    const templateCategory = getTemplateCategory(activeForm);
 
     fetch(`/api/${templateCategory}/template/${activeForm}`, {
       method: 'GET',
@@ -93,27 +115,6 @@ export const MiddlePane = () => {
       : FFColors.White;
   };
 
-  const getTutorials = (tutorialTitle: string) => {
-    return TutorialSections.find(
-      (t) => t.title === tutorialTitle
-    )?.tutorials.map((tu) => tu.id);
-  };
-
-  const getTemplateCategory = () => {
-    const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
-    if (messagingForms?.includes(activeForm)) {
-      return 'messages';
-    }
-    const tokenForms = getTutorials(TUTORIAL_CATEGORIES.TOKENS);
-    if (tokenForms?.includes(activeForm)) {
-      return 'tokens';
-    }
-    const contractsForms = getTutorials(TUTORIAL_CATEGORIES.CONTRACTS);
-    if (contractsForms?.includes(activeForm)) {
-      return 'contracts';
-    }
-    return 'messages';
-  };
   return (
     <Grid>
       {/* Header */}

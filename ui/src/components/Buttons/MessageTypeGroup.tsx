@@ -14,8 +14,10 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { TUTORIAL_CATEGORIES } from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
+import { getTemplateCategory } from '../../pages/Home/views/MiddlePane';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -43,13 +45,35 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
-  const { activeForm, setActiveForm } = useContext(ApplicationContext);
+  const { activeForm, setActiveForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
 
   useEffect(() => {
     if (activeForm.indexOf('blob') < 0) {
       setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
+    } else {
+      const file: any = document.querySelector('input[type="file"]');
+      setPayloadMissingFields(!file.files[0] ? true : false);
     }
   }, [activeForm]);
+
+  useEffect(() => {
+    if (
+      getTemplateCategory(activeForm) !== 'messages' ||
+      messageType === POST_BODY_TYPE.FILE
+    )
+      return;
+    if (
+      (!message && messageType === POST_BODY_TYPE.STRING) ||
+      (!jsonValue && messageType === POST_BODY_TYPE.JSON)
+    ) {
+      setPayloadMissingFields(true);
+      return;
+    }
+    if (activeForm !== 'private') {
+      setPayloadMissingFields(false);
+    }
+  }, [message, jsonValue]);
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -145,9 +169,11 @@ export const MessageTypeGroup: React.FC<Props> = ({
               <Typography sx={{ width: '50%' }}>{t('uploadFile')}*</Typography>
               <input
                 type="file"
-                onChange={(event: any) =>
-                  onSetFileName(event?.target?.files[0]?.name)
-                }
+                required
+                onChange={(event: any) => {
+                  setPayloadMissingFields(false);
+                  onSetFileName(event?.target?.files[0]?.name);
+                }}
               />
             </Button>
           )}

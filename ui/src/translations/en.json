@@ -92,6 +92,7 @@
   "run": "Run",
   "schema": "Schema",
   "serverCode": "Server Code",
+  "serverCodeInfo": "Build an action using the panels on the left. When you press run, the backend Node.js server will execute a code snippet similar to below.",
   "serverResponse": "Server Response",
   "standard": "Standard",
   "subscribe": "Subscribe",

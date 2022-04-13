@@ -1,4 +1,4 @@
-import { Chip, Grid, Paper, Typography } from '@mui/material';
+import { Button, Chip, Grid, Paper, Typography } from '@mui/material';
 import { t } from 'i18next';
 import { useContext, useEffect, useState } from 'react';
 import SyntaxHighlighter from 'react-syntax-highlighter';
@@ -6,6 +6,7 @@ import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hl
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FF_Paths } from '../../../constants/FF_Paths';
+import LinkIcon from '@mui/icons-material/Link';
 import {
   TutorialSections,
   TUTORIAL_CATEGORIES,
@@ -119,10 +120,25 @@ export const MiddlePane = () => {
       <Grid container item p={DEFAULT_PADDING}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {t('serverCode')}
+        </Typography>{' '}
+        <Button
+          variant="text"
+          disableRipple
+          disableFocusRipple
+          sx={{ ':hover': { background: 'inherit' }, padding: 0 }}
+          onClick={() => {
+            window.open(
+              'https://github.com/kaleido-io/firefly-sandbox/tree/main/server'
+            );
+          }}
+        >
+          <LinkIcon />{' '}
+        </Button>
+        <Typography variant="subtitle1" sx={{ paddingTop: '16px' }}>
+          {t('serverCodeInfo')}
         </Typography>
       </Grid>
       <Grid container item p={DEFAULT_PADDING} pt={0}>
-        {/* SDK Box */}
         <Paper
           elevation={0}
           sx={{

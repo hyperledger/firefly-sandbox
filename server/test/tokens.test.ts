@@ -34,7 +34,6 @@ describe('Tokens', () => {
     };
     const pool = {
       id: 'pool1',
-      message: 'msg1',
       tx: { id: 'tx1' },
     } as FireFlyTokenPool;
 
@@ -44,7 +43,7 @@ describe('Tokens', () => {
       .post('/api/tokens/pools')
       .send(req)
       .expect(202)
-      .expect({ type: 'message', id: 'msg1' });
+      .expect({ type: 'token_pool', id: 'pool1' });
 
     expect(mockFireFly.createTokenPool).toHaveBeenCalledWith({
       name: 'my-pool',

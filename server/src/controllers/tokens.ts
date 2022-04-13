@@ -37,7 +37,7 @@ export class TokensController {
       symbol: body.symbol,
       type: body.type,
     });
-    return { type: 'message', id: pool.message };
+    return { type: 'token_pool', id: pool.id };
   }
 
   @Post('/mint')

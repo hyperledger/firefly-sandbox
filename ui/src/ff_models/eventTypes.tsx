@@ -380,7 +380,7 @@ export const FF_EVENTS_CATEGORY_MAP: {
         value: (
           <FFListText
             color="secondary"
-            text={event.tokenTransfer?.type ?? t('---')}
+            text={t(event.tokenTransfer?.type ?? '') ?? t('---')}
           />
         ),
       },

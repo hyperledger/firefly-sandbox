@@ -12,20 +12,16 @@ This is an API exerciser and prototyping tool for applications that communicate 
 
 ![Sandbox Dashboard](./ui/src/images/dashboard.png)
 
-## Setup
+## Running with CLI
 
-To run the application, you will require a 2-party FireFly system running
-locally on ports 5000 & 5001. The easiest way to set this up is with the
-[FireFly CLI](https://github.com/hyperledger/firefly-cli):
+As of v0.0.47 of the [firefly-cli](https://github.com/hyperledger/firefly-cli), one instance
+of the sandbox will be started by default for each member of your local FireFly network.
+Simply initialize a new stack with the default parameters, and you'll be able to explore and
+exercise it using the sandbox.
 
-```
-ff init sandbox 2
-ff start sandbox
-```
+## Running manually
 
-## Running
-
-Once the FireFly stack is ready, set up and run the sample with:
+To run the application manually, start the server and the UI:
 
 ```
 cd server
@@ -38,8 +34,6 @@ cd ui
 npm install
 npm start
 ```
-
-Your application should now be ready to use at [localhost:3000](localhost:3000).
 
 ## Git repositories
 

@@ -25,6 +25,8 @@ function App() {
 
   const [selfIdentity, setSelfIdentity] = useState<ISelfIdentity>();
   const [jsonPayload, setJsonPayload] = useState<object>({});
+  const [payloadMissingFields, setPayloadMissingFields] =
+    useState<boolean>(false);
   const [activeForm, setActiveForm] = useState<string>('broadcast');
   const [apiStatus, setApiStatus] = useState<IApiStatus>();
   const [apiResponse, setApiResponse] = useState<object>({
@@ -123,6 +125,8 @@ function App() {
             selfIdentity,
             jsonPayload,
             setJsonPayload,
+            payloadMissingFields,
+            setPayloadMissingFields,
             activeForm,
             setActiveForm,
             apiResponse,

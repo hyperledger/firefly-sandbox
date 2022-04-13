@@ -18,7 +18,8 @@ import { TUTORIALS } from '../../../constants/TutorialSections';
 import { IContractInterface } from '../../../interfaces/api';
 
 export const RegisterContractApiForm: React.FC = () => {
-  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
+  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -33,6 +34,7 @@ export const RegisterContractApiForm: React.FC = () => {
     if (activeForm !== TUTORIALS.REGISTER_CONTRACT_API) {
       return;
     }
+    setPayloadMissingFields(!name || !contractAddress);
     setJsonPayload({
       name,
       interfaceName: contractInterfaces[contractInterfaceIdx]?.name,

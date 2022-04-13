@@ -59,7 +59,8 @@ const DEFAULT_ABI_SCHEMA = [
 ];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
+  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
@@ -74,6 +75,7 @@ export const DefineInterfaceForm: React.FC = () => {
     if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {
       return;
     }
+    setPayloadMissingFields(!schema);
     setJsonPayload({
       format: interfaceFormat,
       name,
@@ -85,6 +87,7 @@ export const DefineInterfaceForm: React.FC = () => {
   useEffect(() => {
     if (isJsonString(schemaString)) {
       setSchema(JSON.parse(schemaString));
+      setPayloadMissingFields(!schemaString);
     }
   }, [schemaString]);
 

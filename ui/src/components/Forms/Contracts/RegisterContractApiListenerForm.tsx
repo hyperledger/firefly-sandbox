@@ -18,7 +18,8 @@ import { TUTORIALS } from '../../../constants/TutorialSections';
 import { IContractApi } from '../../../interfaces/api';
 
 export const RegisterContractApiListenerForm: React.FC = () => {
-  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
+  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -34,6 +35,8 @@ export const RegisterContractApiListenerForm: React.FC = () => {
     if (activeForm !== TUTORIALS.REGISTER_CONTRACT_API_LISTENER) {
       return;
     }
+    if (!topic || !eventPath) setPayloadMissingFields(true);
+    setPayloadMissingFields(!topic || !contractApi || !eventPath);
     setJsonPayload({
       name,
       topic,

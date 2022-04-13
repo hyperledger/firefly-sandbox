@@ -14,7 +14,7 @@ interface Props {
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
-  const { activeForm, setApiStatus, setApiResponse } =
+  const { activeForm, setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
@@ -85,7 +85,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       <Button
         endIcon={<ArrowForwardIos />}
         variant="contained"
-        disabled={disabled}
+        disabled={disabled || payloadMissingFields}
         sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
         onClick={handlePost}
       >

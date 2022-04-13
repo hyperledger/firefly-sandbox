@@ -22,7 +22,8 @@ export const FFAccordion: React.FC<Props> = ({
   type,
 }) => {
   const [expanded, setExpanded] = useState<boolean>(isOpen);
-  const { activeForm, setActiveForm } = useContext(ApplicationContext);
+  const { activeForm, setActiveForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
   useEffect(() => {
     if (type + 'blob' !== activeForm && type !== activeForm) {
       setExpanded(false);
@@ -35,6 +36,7 @@ export const FFAccordion: React.FC<Props> = ({
       expanded={expanded}
       onChange={() => {
         setActiveForm(type);
+        setPayloadMissingFields(false);
         setExpanded(!expanded);
       }}
     >

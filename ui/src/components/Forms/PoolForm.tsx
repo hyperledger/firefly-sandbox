@@ -14,7 +14,8 @@ import { DEFAULT_SPACING } from '../../theme';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
-  const { setJsonPayload, activeForm } = useContext(ApplicationContext);
+  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+    useContext(ApplicationContext);
 
   const [name, setName] = useState<string>();
   const [symbol, setSymbol] = useState<string>();
@@ -24,6 +25,7 @@ export const PoolForm: React.FC = () => {
     if (activeForm !== TUTORIALS.POOL) {
       return;
     }
+    setPayloadMissingFields(!name || !symbol ? true : false);
     setJsonPayload({
       name: name,
       symbol: symbol,
@@ -65,6 +67,7 @@ export const PoolForm: React.FC = () => {
           <Grid item xs={6}>
             <TextField
               fullWidth
+              required
               label={t('poolSymbol')}
               placeholder={t('abc')}
               onChange={handleSymbolChange}

@@ -33,16 +33,21 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     setJustSubmitted,
   } = useContext(EventContext);
 
+  useEffect(() => {
+    setJustSubmitted(false);
+    setDumbAwaitedEventId(undefined);
+  }, [activeForm]);
+
+  useEffect(() => {
+    setJustSubmitted(false);
+  }, [dumbAwaitedEventID]);
+
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setShowSnackbar(false);
   };
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
 
   const handlePost = () => {
     setApiStatus(undefined);

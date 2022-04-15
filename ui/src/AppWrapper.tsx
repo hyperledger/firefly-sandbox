@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { Header } from './components/Header';
 import { EventContext } from './contexts/EventContext';
@@ -28,6 +28,10 @@ export const AppWrapper: React.FC = () => {
   );
   const [justSubmitted, setJustSubmitted] = useState<boolean>(false);
 
+  useEffect(() => {
+    setJustSubmitted(false);
+  }, [dumbAwaitedEventID]);
+
   const isFinalEvent = (t: string) => {
     return (
       t.endsWith('confirmed') || t.endsWith('rejected') || t.endsWith('failed')
@@ -51,7 +55,7 @@ export const AppWrapper: React.FC = () => {
         const isComplete = !!(
           event.reference === dumbAwaitedEventID || event.correlator
         );
-        if (isComplete) {
+        if (isComplete || isFailed(event.type)) {
           dumbAwaitedEventID = undefined;
           setJustSubmitted(false);
         }

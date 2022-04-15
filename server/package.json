@@ -7,7 +7,6 @@
     "prebuild": "rimraf dist",
     "build": "tsc",
     "prepare": "npm run build",
-    "prestart": "npm run build",
     "start": "node .",
     "start:dev": "tsnd --respawn ./src/index.ts",
     "test": "jest --verbose --silent",

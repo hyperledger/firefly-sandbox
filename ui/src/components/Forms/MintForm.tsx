@@ -42,7 +42,7 @@ export const MintForm: React.FC = () => {
       setAmount(1);
       return;
     }
-    setPayloadMissingFields(!amount);
+    setPayloadMissingFields(!amount || !pool);
     if (!message) {
       setJsonPayload({
         pool: pool?.name,

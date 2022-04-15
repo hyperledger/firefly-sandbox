@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -26,7 +27,9 @@ export const RegisterContractApiForm: React.FC = () => {
   const [contractInterfaces, setContractInterfaces] = useState<
     IContractInterface[]
   >([]);
-  const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
+  const [contractInterfaceIdx, setContractInterfaceIdx] = useState<
+    number | null
+  >();
   const [name, setName] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
 
@@ -37,8 +40,12 @@ export const RegisterContractApiForm: React.FC = () => {
     setPayloadMissingFields(!name || !contractAddress);
     setJsonPayload({
       name,
-      interfaceName: contractInterfaces[contractInterfaceIdx]?.name,
-      interfaceVersion: contractInterfaces[contractInterfaceIdx]?.version,
+      interfaceName: contractInterfaceIdx
+        ? contractInterfaces[contractInterfaceIdx]?.name
+        : '',
+      interfaceVersion: contractInterfaceIdx
+        ? contractInterfaces[contractInterfaceIdx]?.version
+        : '',
       address: contractAddress,
     });
   }, [name, contractInterfaceIdx, contractAddress, activeForm]);
@@ -69,7 +76,7 @@ export const RegisterContractApiForm: React.FC = () => {
               <InputLabel>{t('contractInterface')}</InputLabel>
               <Select
                 fullWidth
-                value={contractInterfaceIdx}
+                value={contractInterfaceIdx ?? ''}
                 label={t('contractInterface')}
                 onChange={(e) => {
                   setContractInterfaceIdx(e.target.value as number);
@@ -104,6 +111,9 @@ export const RegisterContractApiForm: React.FC = () => {
               label={t('address')}
               onChange={(e) => setContractAddress(e.target.value)}
             />
+            <FormHelperText id="address-helper-text">
+              {t('contractAddressHelperText')}
+            </FormHelperText>
           </FormControl>
         </Grid>
       </Grid>

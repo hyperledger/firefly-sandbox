@@ -28,13 +28,13 @@ export const BurnForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<number>(0);
-  const [tokenIndex, setTokenIndex] = useState<number | null>();
+  const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.BURN) return;
-    setPayloadMissingFields(!amount);
+    setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
     setJsonPayload({
       pool: pool?.name,
       amount,
@@ -79,7 +79,6 @@ export const BurnForm: React.FC = () => {
   }, [pool, refresh]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : 1);
     if (!isFungible()) {
       setAmount(1);
     }
@@ -93,10 +92,7 @@ export const BurnForm: React.FC = () => {
   const handleTokenIndexChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    const index = parseInt(event.target.value);
-    if (index && index > 0) {
-      setTokenIndex(index);
-    }
+    setTokenIndex(event.target.value);
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -159,36 +155,27 @@ export const BurnForm: React.FC = () => {
             ></RefreshIcon>
           </Button>
         </Grid>
-        <Grid container item justifyContent="space-between" spacing={1}>
-          {/* From Address */}
-          {/* Amount */}
-          <Grid item xs={6}>
-            <FormControl fullWidth required>
-              <TextField
-                fullWidth
-                disabled={!isFungible()}
-                value={amount}
-                type="number"
-                label="Amount"
-                placeholder="ex. 10"
-                onChange={handleAmountChange}
-              />
-            </FormControl>
-          </Grid>
+        <Grid item xs={4}>
+          <FormControl fullWidth required>
+            <TextField
+              fullWidth
+              value={amount}
+              disabled={!isFungible()}
+              type="number"
+              label={t('amount')}
+              placeholder="ex. 10"
+              onChange={handleAmountChange}
+            />
+          </FormControl>
         </Grid>
-        {tokenIndex && tokenIndex > -1 ? (
+        {!isFungible() ? (
           <Grid item xs={4}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth
-                type="number"
-                InputProps={{
-                  inputProps: {
-                    min: 1,
-                  },
-                }}
                 label={t('tokenIndex')}
                 placeholder="ex. 1"
+                value={tokenIndex}
                 onChange={handleTokenIndexChange}
               />
             </FormControl>

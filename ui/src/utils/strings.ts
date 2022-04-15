@@ -17,3 +17,12 @@ export const isJsonString = (str: string) => {
   }
   return true;
 };
+
+export const isSuccessfulResponse = (statusCode: number) => {
+  if (statusCode >= 200 && statusCode < 299) {
+    return true;
+  } else if (statusCode >= 400 && statusCode < 600) {
+    return false;
+  }
+  return false;
+};

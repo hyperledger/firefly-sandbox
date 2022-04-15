@@ -1,4 +1,8 @@
-import { CheckCircleOutline, ExpandMore } from '@mui/icons-material';
+import {
+  CheckCircleOutline,
+  ErrorOutline,
+  ExpandMore,
+} from '@mui/icons-material';
 import {
   Accordion,
   AccordionDetails,
@@ -79,8 +83,10 @@ export const RightPane: React.FC = () => {
                                       color="warning"
                                       size="20px"
                                     />
+                                  ) : !value.isFailed ? (
+                                    <CheckCircleOutline color={'success'} />
                                   ) : (
-                                    <CheckCircleOutline color="success" />
+                                    <ErrorOutline color={'error'} />
                                   )}
                                 </Grid>
                               </Grid>

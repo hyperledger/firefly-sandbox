@@ -24,6 +24,7 @@
   "connected": "Connected",
   "connectedToFirefly": "Listening for events from backend",
   "connector": "Connector",
+  "contractAddressHelperText": "The contract address on your blockchain",
   "contractApi": "Contract API",
   "contractApiConfirmed": "Contract API Confirmed",
   "contractInterface": "Contract Interface",

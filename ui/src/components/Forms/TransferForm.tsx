@@ -33,7 +33,7 @@ export const TransferForm: React.FC = () => {
   const [amount, setAmount] = useState<number>(1);
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
-  const [tokenIndex, setTokenIndex] = useState<number | null>();
+  const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [refresh, setRefresh] = useState<number>(0);
 
@@ -42,7 +42,9 @@ export const TransferForm: React.FC = () => {
       setAmount(1);
       return;
     }
-    setPayloadMissingFields(!recipient || !amount);
+    setPayloadMissingFields(
+      !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
+    );
     setJsonPayload({
       pool: pool?.name,
       amount,
@@ -81,7 +83,6 @@ export const TransferForm: React.FC = () => {
   }, [activeForm]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : 1);
     if (!isFungible()) {
       setAmount(1);
     }
@@ -123,9 +124,7 @@ export const TransferForm: React.FC = () => {
   const handleTokenIndexChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (parseInt(event.target.value)) {
-      setTokenIndex(parseInt(event.target.value));
-    }
+    setTokenIndex(event.target.value);
   };
 
   const handleRecipientChange = (
@@ -227,19 +226,14 @@ export const TransferForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        {tokenIndex && tokenIndex > -1 ? (
+        {!isFungible() ? (
           <Grid item xs={4}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth
-                type="number"
+                value={tokenIndex}
                 label={t('tokenIndex')}
                 placeholder="ex. 1"
-                InputProps={{
-                  inputProps: {
-                    min: 1,
-                  },
-                }}
                 onChange={handleTokenIndexChange}
               />
             </FormControl>

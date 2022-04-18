@@ -9,9 +9,11 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { setDumbAwaitedEventId } from '../../AppWrapper';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
+import { isSuccessfulResponse } from '../../utils/strings';
 
 interface Props {
   endpoint: string;
@@ -24,24 +26,32 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { activeForm, setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
-  const { dumbAwaitedEventID, addAwaitedEventID } = useContext(EventContext);
-  // TODO: Remove soon
-  const [justSubmitted, setJustSubmitted] = useState<boolean>(false);
+  const {
+    addAwaitedEventID,
+    dumbAwaitedEventID,
+    justSubmitted,
+    setJustSubmitted,
+  } = useContext(EventContext);
+
+  useEffect(() => {
+    setJustSubmitted(false);
+    setDumbAwaitedEventId(undefined);
+  }, [activeForm]);
+
+  useEffect(() => {
+    setJustSubmitted(false);
+  }, [dumbAwaitedEventID]);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-
     setShowSnackbar(false);
   };
 
-  // TODO: Remove soon
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
-
   const handlePost = () => {
+    setApiStatus(undefined);
+    setApiResponse({});
     const blobUpload = activeForm.includes('blob');
     managePayload();
     const reqDetails: any = {
@@ -68,6 +78,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
         if (response.status === 202) {
           setJustSubmitted(true);
           addAwaitedEventID(data);
+        } else if (!isSuccessfulResponse(response.status)) {
+          setJustSubmitted(false);
+          setDumbAwaitedEventId(undefined);
         }
       })
       .catch((err) => {

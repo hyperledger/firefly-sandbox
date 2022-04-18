@@ -90,6 +90,7 @@ export interface IEvent {
   tx: string;
   batch?: IBatch;
   blockchainEvent?: IBlockchainEvent;
+  correlator?: string;
   contractAPI?: IFireflyApi;
   contractInterface?: IContractInterface;
   datatype?: IDatatype;

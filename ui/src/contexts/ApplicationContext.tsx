@@ -33,9 +33,6 @@ export interface IApplicationContext {
   // API Status
   apiStatus: IApiStatus | undefined;
   setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
-  // Logs
-  logs: string[];
-  setLogs: Dispatch<SetStateAction<string[]>>;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

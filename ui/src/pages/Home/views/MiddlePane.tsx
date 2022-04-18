@@ -20,6 +20,7 @@ import {
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
+import { isSuccessfulResponse } from '../../../utils/strings';
 
 const getTutorials = (tutorialTitle: string) => {
   return TutorialSections.find((t) => t.title === tutorialTitle)?.tutorials.map(
@@ -98,15 +99,6 @@ export const MiddlePane = () => {
     const compiled = _.template(codeTemplate);
     const result = compiled(jsonPayload);
     setCodeBlock(result);
-  };
-
-  const isSuccessfulResponse = (statusCode: number) => {
-    if (statusCode >= 200 && statusCode < 299) {
-      return true;
-    } else if (statusCode >= 400 && statusCode < 600) {
-      return false;
-    }
-    return false;
   };
 
   const getApiStatusColor = () => {

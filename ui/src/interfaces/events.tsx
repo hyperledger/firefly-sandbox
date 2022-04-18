@@ -8,4 +8,5 @@ export interface IEventHistoryItem {
   events: IEvent[];
   created: string;
   isComplete: boolean;
+  isFailed?: boolean;
 }

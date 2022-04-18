@@ -75,7 +75,9 @@ export const DefineInterfaceForm: React.FC = () => {
     if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {
       return;
     }
-    setPayloadMissingFields(!schema);
+    setPayloadMissingFields(
+      !schema || (interfaceFormat === 'abi' && (!name || !version))
+    );
     setJsonPayload({
       format: interfaceFormat,
       name,

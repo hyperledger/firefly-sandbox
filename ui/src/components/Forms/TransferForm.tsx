@@ -33,17 +33,22 @@ export const TransferForm: React.FC = () => {
   const [amount, setAmount] = useState<number>(1);
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
-  const [tokenIndex, setTokenIndex] = useState<string | null>();
+  const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [tokenBalance, setTokenBalance] = useState<number>(0);
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.TRANSFER) return;
-    setPayloadMissingFields(!recipient || !amount);
+    if (activeForm !== TUTORIALS.TRANSFER) {
+      setAmount(1);
+      return;
+    }
+    setPayloadMissingFields(
+      !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
+    );
     setJsonPayload({
       pool: pool?.name,
       amount,
-      tokenIndex,
+      tokenIndex: tokenIndex?.toString(),
       to: recipient,
     });
     return;
@@ -64,7 +69,13 @@ export const TransferForm: React.FC = () => {
 
     fetchCatcher(`${FF_Paths.verifiers}`)
       .then((verifiersRes: IVerifiers[]) => {
-        setTokenVerifiers(verifiersRes);
+        const verifiers = verifiersRes.filter(
+          (v) => v.did !== selfIdentity?.did
+        );
+        setTokenVerifiers(verifiers);
+        if (verifiers.length > 0) {
+          setRecipient(verifiers[0].value);
+        }
       })
       .catch((err) => {
         reportFetchError(err);
@@ -72,7 +83,6 @@ export const TransferForm: React.FC = () => {
   }, [activeForm]);
 
   useEffect(() => {
-    setTokenIndex(isFungible() ? null : '1');
     if (!isFungible()) {
       setAmount(1);
     }
@@ -106,7 +116,9 @@ export const TransferForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(parseInt(event.target.value));
+    if (parseInt(event.target.value)) {
+      setAmount(parseInt(event.target.value));
+    }
   };
 
   const handleTokenIndexChange = (
@@ -214,12 +226,12 @@ export const TransferForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        {tokenIndex ? (
+        {!isFungible() ? (
           <Grid item xs={4}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth
-                type="number"
+                value={tokenIndex}
                 label={t('tokenIndex')}
                 placeholder="ex. 1"
                 onChange={handleTokenIndexChange}

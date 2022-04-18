@@ -257,3 +257,19 @@ export class Transaction {
   @IsString()
   type: string;
 }
+
+export class DatatypeInterface {
+  @IsString()
+  @IsOptional()
+  id?: string;
+
+  @IsString()
+  name: string;
+
+  @IsString()
+  version: string;
+
+  @IsDefined()
+  @JSONSchema({ type: 'object' })
+  schema: any;
+}

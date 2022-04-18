@@ -2,7 +2,7 @@ import * as request from 'supertest';
 import FireFly, { FireFlyDatatype } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
-import { ContractAPI, DatatypeInterface, ContractListener } from '../src/interfaces';
+import { DatatypeInterface } from '../src/interfaces';
 
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
@@ -36,13 +36,13 @@ const baseDatatypeRes = {
 describe('Datatypes', () => {
   test('Create a datatype', async () => {
     const req = {
-      name: 'my-contract',
+      name: 'my-datatype',
       version: '1.0',
       schema: SAMPLE_SCHEMA,
     } as DatatypeInterface;
 
     const datatypeResponse = {
-      name: 'my-contract',
+      name: 'my-datatype',
       version: '1.0',
       id: 'datatype1',
       ...baseDatatypeRes,
@@ -58,7 +58,7 @@ describe('Datatypes', () => {
 
     expect(mockFireFly.createDatatype).toHaveBeenCalledWith(
       {
-        name: 'my-contract',
+        name: 'my-datatype',
         version: '1.0',
       },
       SAMPLE_SCHEMA,
@@ -68,12 +68,12 @@ describe('Datatypes', () => {
   test('Get datatypes', async () => {
     const req = [
       {
-        name: 'my-contract',
+        name: 'my-datatype',
         version: '1.0',
         ...baseDatatypeRes,
       },
       {
-        name: 'my-contract-2',
+        name: 'my-datatype-2',
         version: '2.0',
         ...baseDatatypeRes,
       },
@@ -85,10 +85,10 @@ describe('Datatypes', () => {
       .get('/api/datatypes')
       .expect(200)
       .expect([
-        { id: 'datatype1', name: 'my-contract', version: '1.0', schema: SAMPLE_SCHEMA },
+        { id: 'datatype1', name: 'my-datatype', version: '1.0', schema: SAMPLE_SCHEMA },
         {
           id: 'datatype1',
-          name: 'my-contract-2',
+          name: 'my-datatype-2',
           version: '2.0',
           schema: SAMPLE_SCHEMA,
         },
@@ -97,7 +97,7 @@ describe('Datatypes', () => {
 
   test('Get datatype by name and version', async () => {
     const req = {
-      name: 'my-contract',
+      name: 'my-datatype',
       version: '1.0',
       ...baseDatatypeRes,
     } as FireFlyDatatype;
@@ -105,8 +105,8 @@ describe('Datatypes', () => {
     mockFireFly.getDatatype.mockResolvedValueOnce(req);
 
     await request(server)
-      .get('/api/datatypes/my-contract/1.0')
+      .get('/api/datatypes/my-datatype/1.0')
       .expect(200)
-      .expect({ id: 'datatype1', name: 'my-contract', version: '1.0', schema: SAMPLE_SCHEMA });
+      .expect({ id: 'datatype1', name: 'my-datatype', version: '1.0', schema: SAMPLE_SCHEMA });
   });
 });

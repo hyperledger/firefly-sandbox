@@ -46,13 +46,13 @@ export const MintForm: React.FC = () => {
     if (!message) {
       setJsonPayload({
         pool: pool?.name,
-        amount: amount,
+        amount: amount.toString(),
       });
       return;
     }
     setJsonPayload({
       pool: pool?.name,
-      amount: amount,
+      amount: amount.toString(),
       message: {
         data: [
           {

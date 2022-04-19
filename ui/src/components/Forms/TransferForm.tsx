@@ -48,7 +48,7 @@ export const TransferForm: React.FC = () => {
     );
     setJsonPayload({
       pool: pool?.name,
-      amount,
+      amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
       to: recipient,
     });

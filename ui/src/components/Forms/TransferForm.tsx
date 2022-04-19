@@ -70,9 +70,7 @@ export const TransferForm: React.FC = () => {
 
     fetchCatcher(`${FF_Paths.verifiers}`)
       .then((verifiersRes: IVerifiers[]) => {
-        const verifiers = verifiersRes.filter(
-          (v) => v.did !== selfIdentity?.did
-        );
+        const verifiers = verifiersRes;
         setTokenVerifiers(verifiers);
         if (verifiers.length > 0) {
           setRecipient(verifiers[0].value);
@@ -128,13 +126,6 @@ export const TransferForm: React.FC = () => {
     setTokenIndex(event.target.value);
   };
 
-  const handleRecipientChange = (event: React.ChangeEvent<any>) => {
-    const {
-      target: { value },
-    } = event;
-    setRecipient(tokenVerifiers[value] ? tokenVerifiers[value].value : value);
-  };
-
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
@@ -178,13 +169,17 @@ export const TransferForm: React.FC = () => {
           {/* Recipient Select box */}
           <FormControl fullWidth required>
             <Autocomplete
-              id="free-solo-demo"
               freeSolo
               options={tokenVerifiers.map((identity) => identity.did)}
               renderInput={(params) => (
                 <TextField {...params} label={t('tokenRecipient')} />
               )}
-              onInputChange={handleRecipientChange}
+              onInputChange={(event, value) => {
+                const addressFound = tokenVerifiers.find(
+                  (tv) => tv.did === value
+                );
+                setRecipient(addressFound ? addressFound.value : value);
+              }}
             />
           </FormControl>
         </Grid>

@@ -1,8 +1,8 @@
 import * as request from 'supertest';
 import FireFly, {
-  FireFlyOrganization,
-  FireFlyStatus,
-  FireFlyVerifier,
+  FireFlyOrganizationResponse,
+  FireFlyStatusResponse,
+  FireFlyVerifierResponse,
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
@@ -12,7 +12,10 @@ const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Common Operations', () => {
   test('List organizations', async () => {
-    const orgs = [{ id: 'org1' } as FireFlyOrganization, { id: 'org2' } as FireFlyOrganization];
+    const orgs = [
+      { id: 'org1' } as FireFlyOrganizationResponse,
+      { id: 'org2' } as FireFlyOrganizationResponse,
+    ];
 
     mockFireFly.getOrganizations.mockResolvedValueOnce(orgs);
 
@@ -25,8 +28,11 @@ describe('Common Operations', () => {
   });
 
   test('List organizations without self', async () => {
-    const status = { org: { id: 'org1' } } as FireFlyStatus;
-    const orgs = [{ id: 'org1' } as FireFlyOrganization, { id: 'org2' } as FireFlyOrganization];
+    const status = { org: { id: 'org1' } } as FireFlyStatusResponse;
+    const orgs = [
+      { id: 'org1' } as FireFlyOrganizationResponse,
+      { id: 'org2' } as FireFlyOrganizationResponse,
+    ];
 
     mockFireFly.getStatus.mockResolvedValueOnce(status);
     mockFireFly.getOrganizations.mockResolvedValueOnce(orgs);
@@ -41,7 +47,7 @@ describe('Common Operations', () => {
   });
 
   test('Get self', async () => {
-    const status = { org: { id: 'org1' } } as FireFlyStatus;
+    const status = { org: { id: 'org1' } } as FireFlyStatusResponse;
 
     mockFireFly.getStatus.mockResolvedValueOnce(status);
 
@@ -51,8 +57,8 @@ describe('Common Operations', () => {
   });
 
   test('List verifiers', async () => {
-    const orgs = [{ id: 'org1', did: 'did:org1' } as FireFlyOrganization];
-    const verifiers = [{ identity: 'org1', value: '0x123' } as FireFlyVerifier];
+    const orgs = [{ id: 'org1', did: 'did:org1' } as FireFlyOrganizationResponse];
+    const verifiers = [{ identity: 'org1', value: '0x123' } as FireFlyVerifierResponse];
 
     mockFireFly.getOrganizations.mockResolvedValueOnce(orgs);
     mockFireFly.getVerifiers.mockResolvedValueOnce(verifiers);

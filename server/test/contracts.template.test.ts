@@ -101,7 +101,7 @@ describe('Templates: Smart Contracts', () => {
             return {
               name: listener.name,
               topic: listener.topic,
-              address: listener.location.address,
+              address: listener.location,
             };
           `),
         );

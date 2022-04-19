@@ -33,7 +33,7 @@ export class DatatypesController {
     @Param('name') name: string,
     @Param('version') version: string,
   ): Promise<DatatypeInterface> {
-    const datatype = await firefly.getDatatype({ name, version });
+    const datatype = await firefly.getDatatype(name, version);
     if (datatype === undefined) {
       throw new NotFoundError();
     }

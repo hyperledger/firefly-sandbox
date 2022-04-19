@@ -19,6 +19,7 @@ export const PoolForm: React.FC = () => {
 
   const [name, setName] = useState<string>('');
   const [symbol, setSymbol] = useState<string>('');
+  const [address, setAddress] = useState<string | undefined>();
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
@@ -29,9 +30,10 @@ export const PoolForm: React.FC = () => {
     }
     setPayloadMissingFields(!name || !symbol ? true : false);
     setJsonPayload({
-      name: name,
-      symbol: symbol,
-      type: type,
+      name,
+      symbol,
+      type,
+      address,
     });
   }, [name, symbol, type, activeForm]);
 
@@ -86,6 +88,17 @@ export const PoolForm: React.FC = () => {
                 <MenuItem value={'nonfungible'}>{t('nonfungible')}</MenuItem>
               </Select>
             </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <TextField
+              fullWidth
+              label={t('contractAddress')}
+              placeholder={'0xabc123'}
+              value={address ?? ''}
+              onChange={(event) => {
+                setAddress(event?.target.value);
+              }}
+            />
           </Grid>
         </Grid>
       </Grid>

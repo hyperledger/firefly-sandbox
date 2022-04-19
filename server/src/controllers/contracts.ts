@@ -43,7 +43,7 @@ export class ContractsController {
         ? await firefly.generateContractInterface({
             name: body.name,
             version: body.version,
-            input: { abi: body.schema },
+            input: JSON.stringify({ abi: body.schema }),
           })
         : body.schema;
     const result = await firefly.createContractInterface(ffi);
@@ -62,9 +62,7 @@ export class ContractsController {
         name: body.interfaceName,
         version: body.interfaceVersion,
       },
-      location: {
-        address: body.address,
-      },
+      location: body.address,
     });
     return { type: 'message', id: api.message };
   }
@@ -84,7 +82,7 @@ export class ContractsController {
     const apis = await firefly.getContractAPIs();
     return apis.map((api) => ({
       name: api.name,
-      address: api.location?.address,
+      address: api.location,
       urls: api.urls,
     }));
   }
@@ -100,7 +98,7 @@ export class ContractsController {
     const ffi = await firefly.getContractInterface(api.interface.id, true);
     return {
       name: api.name,
-      address: api.location?.address,
+      address: api.location,
       urls: api.urls,
       events: ffi.events?.map((e) => ({ pathname: e.pathname })),
     };
@@ -119,7 +117,7 @@ export class ContractsController {
       id: l.id,
       name: l.name,
       topic: l.topic,
-      address: l.location.address,
+      address: l.location,
       eventName: l.event.name,
     }));
   }
@@ -137,7 +135,7 @@ export class ContractsController {
       id: listener.id,
       name: listener.name,
       topic: listener.topic,
-      address: listener.location.address,
+      address: listener.location,
       eventName: listener.event.name,
     };
   }
@@ -193,7 +191,7 @@ export class ContractsTemplateController {
       return {
         name: listener.name,
         topic: listener.topic,
-        address: listener.location.address,
+        address: listener.location,
       };
     `);
   }

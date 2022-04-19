@@ -1,4 +1,3 @@
-import { FireFlyTokenPoolType } from '@hyperledger/firefly-sdk';
 import {
   ArrayNotEmpty,
   IsDefined,
@@ -94,6 +93,11 @@ export class Verifier {
   value: string;
 }
 
+export class TokenConfig {
+  @IsString()
+  address: string;
+}
+
 export class TokenPoolInput {
   @IsString()
   name: string;
@@ -101,8 +105,11 @@ export class TokenPoolInput {
   @IsString()
   symbol: string;
 
-  @IsEnum(FireFlyTokenPoolType)
-  type: FireFlyTokenPoolType;
+  @IsString()
+  type: 'fungible' | 'nonfungible';
+
+  @IsOptional()
+  config?: TokenConfig;
 }
 
 export class TokenPool extends TokenPoolInput {
@@ -114,9 +121,8 @@ export class TokenMint {
   @IsString()
   pool: string;
 
-  @IsInt()
-  @Min(0)
-  amount: number;
+  @IsString()
+  amount: string;
 }
 
 export class TokenBurn extends TokenMint {
@@ -190,10 +196,10 @@ export class ContractAPI {
 
 export class ContractAPIURLs {
   @IsString()
-  openapi: string;
+  openapi?: string;
 
   @IsString()
-  ui: string;
+  ui?: string;
 }
 
 export class ContractAPILookup {

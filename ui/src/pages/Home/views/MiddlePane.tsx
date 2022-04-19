@@ -29,6 +29,9 @@ const getTutorials = (tutorialTitle: string) => {
 };
 
 export const getTemplateCategory = (activeForm: string) => {
+  if (activeForm === 'datatypes') {
+    return 'datatypes';
+  }
   const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
   if (messagingForms?.includes(activeForm)) {
     return 'messages';
@@ -68,8 +71,10 @@ export const MiddlePane = () => {
       return;
     }
     const templateCategory = getTemplateCategory(activeForm);
-
-    fetch(`/api/${templateCategory}/template/${activeForm}`, {
+    const templateEndpoint = `/api/${templateCategory}/template${
+      activeForm !== 'datatypes' ? `/${activeForm}` : ''
+    }`;
+    fetch(templateEndpoint, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -88,8 +93,7 @@ export const MiddlePane = () => {
   }, [activeForm]);
 
   useEffect(() => {
-    const payload: any = jsonPayload;
-    if (template && templateName === activeForm && payload) {
+    if (template && templateName === activeForm && jsonPayload) {
       buildCodeBlock(template);
     }
   }, [template, templateName, jsonPayload]);
@@ -184,7 +188,7 @@ export const MiddlePane = () => {
             padding: DEFAULT_PADDING,
           }}
         >
-          <Grid item container xs={12}>
+          <Grid item container xs={12} sx={{ maxWidth: '550px' }}>
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {t('serverResponse')}

@@ -1,13 +1,11 @@
 import {
+  Autocomplete,
   Button,
   FormControl,
   Grid,
   InputLabel,
-  ListItemText,
   MenuItem,
-  OutlinedInput,
   Select,
-  SelectChangeEvent,
   TextField,
   Typography,
 } from '@mui/material';
@@ -47,7 +45,7 @@ export const TransferForm: React.FC = () => {
     );
     setJsonPayload({
       pool: pool?.name,
-      amount,
+      amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
       to: recipient,
     });
@@ -69,9 +67,7 @@ export const TransferForm: React.FC = () => {
 
     fetchCatcher(`${FF_Paths.verifiers}`)
       .then((verifiersRes: IVerifiers[]) => {
-        const verifiers = verifiersRes.filter(
-          (v) => v.did !== selfIdentity?.did
-        );
+        const verifiers = verifiersRes;
         setTokenVerifiers(verifiers);
         if (verifiers.length > 0) {
           setRecipient(verifiers[0].value);
@@ -127,15 +123,6 @@ export const TransferForm: React.FC = () => {
     setTokenIndex(event.target.value);
   };
 
-  const handleRecipientChange = (
-    event: SelectChangeEvent<typeof recipient>
-  ) => {
-    const {
-      target: { value },
-    } = event;
-    setRecipient(value);
-  };
-
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
@@ -178,24 +165,19 @@ export const TransferForm: React.FC = () => {
         <Grid container item>
           {/* Recipient Select box */}
           <FormControl fullWidth required>
-            <InputLabel>{t('tokenRecipient')}</InputLabel>
-            <Select
-              value={recipient}
-              onChange={handleRecipientChange}
-              input={<OutlinedInput label={t('tokenRecipient')} />}
-              renderValue={(selected) => {
-                const verifier = tokenVerifiers.find(
-                  (v) => v.value === selected
+            <Autocomplete
+              freeSolo
+              options={tokenVerifiers.map((identity) => identity.did)}
+              renderInput={(params) => (
+                <TextField {...params} label={t('tokenRecipient')} />
+              )}
+              onInputChange={(event, value) => {
+                const addressFound = tokenVerifiers.find(
+                  (tv) => tv.did === value
                 );
-                return `${verifier?.did}`;
+                setRecipient(addressFound ? addressFound.value : value);
               }}
-            >
-              {tokenVerifiers.map((identity, idx) => (
-                <MenuItem key={idx} value={identity.value}>
-                  <ListItemText primary={identity.did} />
-                </MenuItem>
-              ))}
-            </Select>
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>

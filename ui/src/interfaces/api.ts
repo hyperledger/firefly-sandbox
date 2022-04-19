@@ -71,13 +71,11 @@ export interface IContractListener {
 export interface IDatatype {
   id: string;
   message: string;
-  validator: string;
+  validator: 'json' | 'none' | 'definition';
   namespace: string;
   name: string;
   version: string;
-  hash: string;
-  created: string;
-  value?: any;
+  schema: any;
 }
 
 export interface IEvent {

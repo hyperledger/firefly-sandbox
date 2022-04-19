@@ -51,9 +51,9 @@ export const FF_Paths = {
   dataBlobById: (id: string) => `/data/${id}/blob`,
   dataMessagesById: (id: string) => `/data/${id}/messages`,
   // Datatype
-  datatypes: '/datatypes',
+  datatypes: '/api/datatypes',
   datatypesByNameVersion: (name: string, version: string) =>
-    `/datatypes/${name}/${version}`,
+    `/api/datatypes/${name}/${version}`,
   events: '/events',
   eventsById: (eventId: string) => `/events/${eventId}`,
   // Groups

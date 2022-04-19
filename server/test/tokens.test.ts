@@ -1,9 +1,8 @@
 import * as request from 'supertest';
 import FireFly, {
-  FireFlyTokenBalance,
-  FireFlyTokenPool,
-  FireFlyTokenPoolType,
-  FireFlyTokenTransfer,
+  FireFlyTokenBalanceFilter,
+  FireFlyTokenPoolResponse,
+  FireFlyTokenTransferResponse,
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
@@ -14,7 +13,10 @@ const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
 describe('Tokens', () => {
   test('List token pools', async () => {
-    const pools = [{ id: 'pool1' } as FireFlyTokenPool, { id: 'pool2' } as FireFlyTokenPool];
+    const pools = [
+      { id: 'pool1' } as FireFlyTokenPoolResponse,
+      { id: 'pool2' } as FireFlyTokenPoolResponse,
+    ];
 
     mockFireFly.getTokenPools.mockResolvedValueOnce(pools);
 
@@ -30,12 +32,12 @@ describe('Tokens', () => {
     const req: TokenPoolInput = {
       name: 'my-pool',
       symbol: 'P1',
-      type: FireFlyTokenPoolType.FUNGIBLE,
+      type: 'fungible',
     };
     const pool = {
       id: 'pool1',
       tx: { id: 'tx1' },
-    } as FireFlyTokenPool;
+    } as FireFlyTokenPoolResponse;
 
     mockFireFly.createTokenPool.mockResolvedValueOnce(pool);
 
@@ -49,18 +51,19 @@ describe('Tokens', () => {
       name: 'my-pool',
       symbol: 'P1',
       type: 'fungible',
+      config: {},
     });
   });
 
   test('Mint tokens', async () => {
     const req: TokenMint = {
       pool: 'my-pool',
-      amount: 10,
+      amount: '10',
     };
     const transfer = {
       localId: 'transfer1',
       tx: { id: 'tx1' },
-    } as FireFlyTokenTransfer;
+    } as FireFlyTokenTransferResponse;
 
     mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
 
@@ -72,19 +75,19 @@ describe('Tokens', () => {
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
-      amount: 10,
+      amount: '10',
     });
   });
 
   test('Burn tokens', async () => {
     const req: TokenBurn = {
       pool: 'my-pool',
-      amount: 1,
+      amount: '1',
     };
     const transfer = {
       localId: 'transfer1',
       tx: { id: 'tx1' },
-    } as FireFlyTokenTransfer;
+    } as FireFlyTokenTransferResponse;
 
     mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
 
@@ -96,20 +99,20 @@ describe('Tokens', () => {
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
-      amount: 1,
+      amount: '1',
     });
   });
 
   test('Transfer tokens', async () => {
     const req: TokenTransfer = {
       pool: 'my-pool',
-      amount: 1,
+      amount: '1',
       to: '0x111',
     };
     const transfer = {
       localId: 'transfer1',
       tx: { id: 'tx1' },
-    } as FireFlyTokenTransfer;
+    } as FireFlyTokenTransferResponse;
 
     mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
 
@@ -121,15 +124,17 @@ describe('Tokens', () => {
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
       pool: 'my-pool',
-      amount: 1,
+      amount: '1',
       to: '0x111',
     });
   });
 
   test('Get balances', async () => {
-    const balances = [{ key: '0x123', balance: '1', pool: 'pool1' } as FireFlyTokenBalance];
+    const balances = [{ key: '0x123', balance: '1', pool: 'pool1' } as FireFlyTokenBalanceFilter];
 
-    mockFireFly.getTokenPool.mockResolvedValueOnce({ name: 'pool-name' } as FireFlyTokenPool);
+    mockFireFly.getTokenPool.mockResolvedValueOnce({
+      name: 'pool-name',
+    } as FireFlyTokenPoolResponse);
     mockFireFly.getTokenBalances.mockResolvedValueOnce(balances);
 
     await request(server)

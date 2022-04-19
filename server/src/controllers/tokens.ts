@@ -36,6 +36,9 @@ export class TokensController {
       name: body.name,
       symbol: body.symbol,
       type: body.type,
+      config: {
+        address: body.address,
+      },
     });
     return { type: 'token_pool', id: pool.id };
   }
@@ -122,6 +125,9 @@ export class TokensTemplateController {
         name: <%= ${q('name')} %>,
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
+        config: {
+          address: <%= ${q('address')} %>
+        }
       });
       return { type: 'token_pool', id: pool.id };
     `);

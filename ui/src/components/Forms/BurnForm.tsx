@@ -37,7 +37,7 @@ export const BurnForm: React.FC = () => {
     setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
     setJsonPayload({
       pool: pool?.name,
-      amount,
+      amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
     });
   }, [pool, amount, tokenIndex, activeForm]);

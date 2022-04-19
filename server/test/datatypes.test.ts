@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyDatatype } from '@hyperledger/firefly-sdk';
+import FireFly, { FireFlyDatatypeResponse } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { DatatypeInterface } from '../src/interfaces';
@@ -26,7 +26,7 @@ const SAMPLE_SCHEMA = {
 const baseDatatypeRes = {
   id: 'datatype1',
   validator: 'json',
-  value: SAMPLE_SCHEMA,
+  value: JSON.stringify(SAMPLE_SCHEMA),
   created: '4/18/2022',
   hash: '0x123',
   message: 'abc-def',
@@ -46,7 +46,7 @@ describe('Datatypes', () => {
       version: '1.0',
       id: 'datatype1',
       ...baseDatatypeRes,
-    };
+    } as FireFlyDatatypeResponse;
 
     mockFireFly.createDatatype.mockResolvedValueOnce(datatypeResponse);
 
@@ -56,13 +56,11 @@ describe('Datatypes', () => {
       .expect(202)
       .expect({ type: 'datatype', id: 'datatype1' });
 
-    expect(mockFireFly.createDatatype).toHaveBeenCalledWith(
-      {
-        name: 'my-datatype',
-        version: '1.0',
-      },
-      SAMPLE_SCHEMA,
-    );
+    expect(mockFireFly.createDatatype).toHaveBeenCalledWith({
+      name: 'my-datatype',
+      version: '1.0',
+      value: SAMPLE_SCHEMA,
+    });
   });
 
   test('Get datatypes', async () => {
@@ -77,7 +75,7 @@ describe('Datatypes', () => {
         version: '2.0',
         ...baseDatatypeRes,
       },
-    ] as FireFlyDatatype[];
+    ] as FireFlyDatatypeResponse[];
 
     mockFireFly.getDatatypes.mockResolvedValueOnce(req);
 
@@ -85,12 +83,17 @@ describe('Datatypes', () => {
       .get('/api/datatypes')
       .expect(200)
       .expect([
-        { id: 'datatype1', name: 'my-datatype', version: '1.0', schema: SAMPLE_SCHEMA },
+        {
+          id: 'datatype1',
+          name: 'my-datatype',
+          version: '1.0',
+          schema: JSON.stringify(SAMPLE_SCHEMA),
+        },
         {
           id: 'datatype1',
           name: 'my-datatype-2',
           version: '2.0',
-          schema: SAMPLE_SCHEMA,
+          schema: JSON.stringify(SAMPLE_SCHEMA),
         },
       ]);
   });
@@ -100,13 +103,18 @@ describe('Datatypes', () => {
       name: 'my-datatype',
       version: '1.0',
       ...baseDatatypeRes,
-    } as FireFlyDatatype;
+    } as FireFlyDatatypeResponse;
 
     mockFireFly.getDatatype.mockResolvedValueOnce(req);
 
     await request(server)
       .get('/api/datatypes/my-datatype/1.0')
       .expect(200)
-      .expect({ id: 'datatype1', name: 'my-datatype', version: '1.0', schema: SAMPLE_SCHEMA });
+      .expect({
+        id: 'datatype1',
+        name: 'my-datatype',
+        version: '1.0',
+        schema: JSON.stringify(SAMPLE_SCHEMA),
+      });
   });
 });

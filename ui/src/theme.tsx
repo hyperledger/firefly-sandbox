@@ -81,5 +81,22 @@ export const themeOptions: ThemeOptions = {
         },
       },
     },
+    MuiCssBaseline: {
+      styleOverrides: {
+        body: {
+          overflow: 'overlay',
+          scrollbarColor: '#12171d',
+          '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+            cursor: 'pointer',
+            backgroundColor: '#12171d',
+          },
+          '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+            borderRadius: 8,
+            backgroundColor: '#1e242a',
+            border: '3px solid #12171d',
+          },
+        },
+      },
+    },
   },
 };

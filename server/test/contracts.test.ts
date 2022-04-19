@@ -1,8 +1,8 @@
 import * as request from 'supertest';
 import FireFly, {
-  FireFlyContractAPI,
-  FireFlyContractInterface,
-  FireFlyContractListener,
+  FireFlyContractAPIResponse,
+  FireFlyContractInterfaceResponse,
+  FireFlyContractListenerResponse,
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
@@ -31,7 +31,7 @@ describe('Smart Contracts', () => {
       name: 'my-contract',
       version: '1.0',
       message: 'msg1',
-    } as FireFlyContractInterface;
+    } as FireFlyContractInterfaceResponse;
 
     mockFireFly.createContractInterface.mockResolvedValueOnce(int);
 
@@ -55,7 +55,7 @@ describe('Smart Contracts', () => {
       name: 'my-contract',
       version: '1.0',
       message: 'msg1',
-    } as FireFlyContractInterface;
+    } as FireFlyContractInterfaceResponse;
 
     mockFireFly.generateContractInterface.mockResolvedValueOnce(int);
     mockFireFly.createContractInterface.mockResolvedValueOnce(int);
@@ -84,7 +84,7 @@ describe('Smart Contracts', () => {
     const api = {
       name: 'my-api',
       message: 'msg1',
-    } as FireFlyContractAPI;
+    } as FireFlyContractAPIResponse;
 
     mockFireFly.createContractAPI.mockResolvedValueOnce(api);
 
@@ -100,6 +100,7 @@ describe('Smart Contracts', () => {
       name: 'my-api',
     });
   });
+
   test('Get contract Interfaces', async () => {
     const int = [
       {
@@ -112,7 +113,7 @@ describe('Smart Contracts', () => {
         description: '',
         version: '1.1',
       },
-    ] as FireFlyContractInterface[];
+    ] as FireFlyContractInterfaceResponse[];
 
     mockFireFly.getContractInterfaces.mockResolvedValueOnce(int);
 
@@ -130,12 +131,12 @@ describe('Smart Contracts', () => {
         openapi: 'openapi-url',
         ui: 'ui-url',
       },
-    } as FireFlyContractAPI;
+    } as FireFlyContractAPIResponse;
     const int = {
       name: 'my-contract',
       version: '1.0',
       message: 'msg1',
-    } as FireFlyContractInterface;
+    } as FireFlyContractInterfaceResponse;
 
     mockFireFly.getContractAPI.mockResolvedValueOnce(api);
     mockFireFly.getContractInterface.mockResolvedValueOnce(int);
@@ -166,13 +167,13 @@ describe('Smart Contracts', () => {
         openapi: 'openapi-url',
         ui: 'ui-url',
       },
-    } as FireFlyContractAPI;
+    } as FireFlyContractAPIResponse;
     const listener = {
       id: 'listener1',
       topic: 'my-app',
-      location: { address: '0x123' },
+      location: { address: '0x123' } as any,
       event: { name: 'event1' },
-    } as FireFlyContractListener;
+    } as FireFlyContractListenerResponse;
 
     mockFireFly.getContractAPI.mockResolvedValueOnce(api);
     mockFireFly.getContractListeners.mockResolvedValueOnce([listener]);
@@ -201,9 +202,9 @@ describe('Smart Contracts', () => {
     const listener = {
       id: 'listener1',
       topic: 'my-app',
-      location: { address: '0x123' },
+      location: '0x123',
       event: { name: 'Changed' },
-    } as FireFlyContractListener;
+    } as FireFlyContractListenerResponse;
 
     mockFireFly.createContractAPIListener.mockResolvedValueOnce(listener);
 

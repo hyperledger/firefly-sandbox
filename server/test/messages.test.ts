@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyDataRef, FireFlyMessage } from '@hyperledger/firefly-sdk';
+import FireFly, { FireFlyDataResponse, FireFlyMessageResponse } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { BroadcastValue, PrivateValue } from '../src/interfaces';
@@ -16,7 +16,7 @@ describe('Messages', () => {
     };
     const msg = {
       header: { id: 'msg1' },
-    } as FireFlyMessage;
+    } as FireFlyMessageResponse;
 
     mockFireFly.sendBroadcast.mockResolvedValueOnce(msg);
 
@@ -36,10 +36,10 @@ describe('Messages', () => {
   test('Broadcast with blob', async () => {
     const data = {
       id: 'data1',
-    } as FireFlyDataRef;
+    } as FireFlyDataResponse;
     const msg = {
       header: { id: 'msg1' },
-    } as FireFlyMessage;
+    } as FireFlyMessageResponse;
 
     mockFireFly.uploadDataBlob.mockResolvedValueOnce(data);
     mockFireFly.sendBroadcast.mockResolvedValueOnce(msg);
@@ -67,7 +67,7 @@ describe('Messages', () => {
     };
     const msg = {
       header: { id: 'msg1' },
-    } as FireFlyMessage;
+    } as FireFlyMessageResponse;
 
     mockFireFly.sendPrivateMessage.mockResolvedValueOnce(msg);
 
@@ -90,10 +90,10 @@ describe('Messages', () => {
   test('Private with blob', async () => {
     const data = {
       id: 'data1',
-    } as FireFlyDataRef;
+    } as FireFlyDataResponse;
     const msg = {
       header: { id: 'msg1' },
-    } as FireFlyMessage;
+    } as FireFlyMessageResponse;
 
     mockFireFly.uploadDataBlob.mockResolvedValueOnce(data);
     mockFireFly.sendPrivateMessage.mockResolvedValueOnce(msg);

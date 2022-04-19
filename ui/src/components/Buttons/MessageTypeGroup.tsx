@@ -74,21 +74,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(!file.files[0] ? true : false);
     }
-    if (messageType === POST_BODY_TYPE.JSON) {
-      fetchCatcher(`${FF_Paths.datatypes}`)
-        .then((dtRes: IDatatype[]) => {
-          setDatatypes(dtRes);
-          if (dtRes.length > 0) {
-            setDatatype(dtRes[0]);
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-    } else {
-      setDatatype(undefined);
-    }
-  }, [activeForm]);
+    setDefaultJsonDatatype();
+  }, [activeForm, messageType]);
 
   useEffect(() => {
     if (getTemplateCategory(activeForm) !== 'messages') return;
@@ -108,14 +95,37 @@ export const MessageTypeGroup: React.FC<Props> = ({
     }
   };
 
-  // useEffect(() => {
-  //   if (
-  //     getTemplateCategory(activeForm) !== 'messages' ||
-  //     messageType !== POST_BODY_TYPE.JSON
-  //   )
-  //     return;
-  //   setDatatypeBasedJson();
-  // }, [datatype]);
+  useEffect(() => {
+    if (
+      getTemplateCategory(activeForm) !== 'messages' ||
+      messageType !== POST_BODY_TYPE.JSON ||
+      !datatype
+    )
+      return;
+    setDatatypeBasedJson();
+  }, [datatype]);
+
+  const setDefaultJsonDatatype = () => {
+    if (messageType === POST_BODY_TYPE.JSON) {
+      fetchCatcher(`${FF_Paths.datatypes}`)
+        .then((dtRes: IDatatype[]) => {
+          setDatatypes(dtRes);
+          if (dtRes.length > 0) {
+            setDatatype(dtRes[0]);
+            setDatatypeBasedJson();
+            return;
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+      if (!datatype) {
+        onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
+      }
+    } else {
+      setDatatype(undefined);
+    }
+  };
 
   const setDatatypeBasedJson = () => {
     const properties = datatype?.schema?.properties;
@@ -136,9 +146,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
             : null;
       }
       onSetJsonValue(JSON.stringify(newJsonValue));
-      return;
     }
-    onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
   };
 
   const handleMessageTypeChange = (
@@ -160,6 +168,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         onSetJsonValue(undefined);
         checkMissingFields();
         onSetMessage(DEFAULT_MESSAGE_STRING);
+        setDatatype(undefined);
         if (activeForm.includes('blob')) {
           setActiveForm(activeForm.replace('blob', ''));
         }
@@ -167,7 +176,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
       case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
         checkMissingFields();
-        onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
+        setDefaultJsonDatatype();
         if (activeForm.includes('blob')) {
           setActiveForm(activeForm.replace('blob', ''));
         }
@@ -176,6 +185,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         onSetMessage(undefined);
         onSetJsonValue(undefined);
         onSetFileName('');
+        setDatatype(undefined);
         setActiveForm(
           activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
         );

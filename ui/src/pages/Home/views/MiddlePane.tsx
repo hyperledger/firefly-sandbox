@@ -94,6 +94,8 @@ export const MiddlePane = () => {
 
   useEffect(() => {
     if (template && templateName === activeForm && jsonPayload) {
+      if (activeForm.includes('private') && !(jsonPayload as any).recipients)
+        return;
       buildCodeBlock(template);
     }
   }, [template, templateName, jsonPayload]);
@@ -137,7 +139,13 @@ export const MiddlePane = () => {
           {t('serverCodeInfo')}
         </Typography>
       </Grid>
-      <Grid container item p={DEFAULT_PADDING} pt={0}>
+      <Grid
+        container
+        item
+        p={DEFAULT_PADDING}
+        pt={0}
+        sx={{ maxWidth: '550px' }}
+      >
         <Paper
           elevation={0}
           sx={{

@@ -26,6 +26,7 @@ export const DEFAULT_MESSAGE_JSON = {
 interface Props {
   message: string | undefined;
   jsonValue: string | undefined;
+  recipients?: string[] | undefined;
   fileName?: string;
   onSetMessage: any;
   onSetFileName?: any;
@@ -38,6 +39,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   message,
   jsonValue,
   fileName,
+  recipients,
   onSetMessage,
   onSetFileName,
   onSetJsonValue,
@@ -51,7 +53,11 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   useEffect(() => {
     if (activeForm.indexOf('blob') < 0) {
+      if (!message && !jsonValue) {
+        onSetMessage(DEFAULT_MESSAGE_STRING);
+      }
       setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
+      checkMissingFields();
     } else {
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(!file.files[0] ? true : false);
@@ -60,15 +66,21 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   useEffect(() => {
     if (getTemplateCategory(activeForm) !== 'messages') return;
+    checkMissingFields();
+  }, [message, jsonValue, messageType, fileName, recipients]);
+
+  const checkMissingFields = () => {
     if (
+      (activeForm.includes('private') && recipients?.length === 0) ||
       (!message && messageType === POST_BODY_TYPE.STRING) ||
       (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
       (messageType === POST_BODY_TYPE.FILE && !fileName)
     ) {
       setPayloadMissingFields(true);
-      return;
+    } else {
+      setPayloadMissingFields(false);
     }
-  }, [message, jsonValue]);
+  };
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
@@ -81,19 +93,25 @@ export const MessageTypeGroup: React.FC<Props> = ({
     switch (newAlignment) {
       case POST_BODY_TYPE.NONE:
         onSetMessage(undefined);
-        setActiveForm(activeForm.replace('blob', ''));
+        if (activeForm.includes('blob')) {
+          setActiveForm(activeForm.replace('blob', ''));
+        }
         return;
       case POST_BODY_TYPE.STRING:
         onSetJsonValue(undefined);
-        setPayloadMissingFields(false);
+        checkMissingFields();
         onSetMessage(DEFAULT_MESSAGE_STRING);
-        setActiveForm(activeForm.replace('blob', ''));
+        if (activeForm.includes('blob')) {
+          setActiveForm(activeForm.replace('blob', ''));
+        }
         return;
       case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
-        setPayloadMissingFields(false);
+        checkMissingFields();
         onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
-        setActiveForm(activeForm.replace('blob', ''));
+        if (activeForm.includes('blob')) {
+          setActiveForm(activeForm.replace('blob', ''));
+        }
         return;
       case POST_BODY_TYPE.FILE:
         onSetMessage(undefined);

@@ -36,6 +36,9 @@ export class TokensController {
       name: body.name,
       symbol: body.symbol,
       type: body.type,
+      config: {
+        address: body.address,
+      },
     });
     return { type: 'token_pool', id: pool.id };
   }

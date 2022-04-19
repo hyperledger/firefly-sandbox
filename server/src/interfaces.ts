@@ -110,6 +110,10 @@ export class TokenPoolInput {
 
   @IsOptional()
   config?: TokenConfig;
+
+  @IsString()
+  @IsOptional()
+  address?: string;
 }
 
 export class TokenPool extends TokenPoolInput {

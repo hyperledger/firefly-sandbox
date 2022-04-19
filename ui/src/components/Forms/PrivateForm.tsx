@@ -61,7 +61,6 @@ export const PrivateForm: React.FC = () => {
     if (!activeForm.includes('private')) {
       return;
     }
-    setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
@@ -120,6 +119,7 @@ export const PrivateForm: React.FC = () => {
           message={message}
           jsonValue={jsonValue}
           fileName={fileName}
+          recipients={recipients}
           onSetMessage={(msg: string) => setMessage(msg)}
           onSetFileName={(file: string) => {
             setFileName(file);

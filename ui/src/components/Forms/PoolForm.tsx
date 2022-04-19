@@ -26,16 +26,17 @@ export const PoolForm: React.FC = () => {
     if (activeForm !== TUTORIALS.POOL) {
       setName('');
       setSymbol('');
+      setAddress('');
       return;
     }
-    setPayloadMissingFields(!name || !symbol ? true : false);
+    setPayloadMissingFields(!name || !symbol);
     setJsonPayload({
       name,
       symbol,
       type,
       address,
     });
-  }, [name, symbol, type, activeForm]);
+  }, [name, symbol, type, address, activeForm]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setName(event.target.value);

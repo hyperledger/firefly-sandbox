@@ -56,13 +56,11 @@ describe('Datatypes', () => {
       .expect(202)
       .expect({ type: 'datatype', id: 'datatype1' });
 
-    expect(mockFireFly.createDatatype).toHaveBeenCalledWith(
-      {
-        name: 'my-datatype',
-        version: '1.0',
-      },
-      SAMPLE_SCHEMA,
-    );
+    expect(mockFireFly.createDatatype).toHaveBeenCalledWith({
+      name: 'my-datatype',
+      version: '1.0',
+      value: SAMPLE_SCHEMA,
+    });
   });
 
   test('Get datatypes', async () => {

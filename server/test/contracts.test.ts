@@ -69,7 +69,7 @@ describe('Smart Contracts', () => {
     expect(mockFireFly.generateContractInterface).toHaveBeenCalledWith({
       name: 'my-contract',
       version: '1.0',
-      input: JSON.stringify({ abi: req.schema }),
+      input: { abi: req.schema },
     });
     expect(mockFireFly.createContractInterface).toHaveBeenCalledWith(int);
   });
@@ -96,10 +96,11 @@ describe('Smart Contracts', () => {
 
     expect(mockFireFly.createContractAPI).toHaveBeenCalledWith({
       interface: { name: 'my-contract', version: '1.0' },
-      location: '0x123',
+      location: { address: '0x123' },
       name: 'my-api',
     });
   });
+
   test('Get contract Interfaces', async () => {
     const int = [
       {
@@ -170,7 +171,7 @@ describe('Smart Contracts', () => {
     const listener = {
       id: 'listener1',
       topic: 'my-app',
-      location: '0x123',
+      location: { address: '0x123' } as any,
       event: { name: 'event1' },
     } as FireFlyContractListenerResponse;
 

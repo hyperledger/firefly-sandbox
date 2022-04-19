@@ -27,9 +27,7 @@ export const RegisterContractApiForm: React.FC = () => {
   const [contractInterfaces, setContractInterfaces] = useState<
     IContractInterface[]
   >([]);
-  const [contractInterfaceIdx, setContractInterfaceIdx] = useState<
-    number | null
-  >();
+  const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
 
@@ -40,12 +38,8 @@ export const RegisterContractApiForm: React.FC = () => {
     setPayloadMissingFields(!name || !contractAddress);
     setJsonPayload({
       name,
-      interfaceName: contractInterfaceIdx
-        ? contractInterfaces[contractInterfaceIdx]?.name
-        : '',
-      interfaceVersion: contractInterfaceIdx
-        ? contractInterfaces[contractInterfaceIdx]?.version
-        : '',
+      interfaceName: contractInterfaces[contractInterfaceIdx]?.name || '',
+      interfaceVersion: contractInterfaces[contractInterfaceIdx]?.version || '',
       address: contractAddress,
     });
   }, [name, contractInterfaceIdx, contractAddress, activeForm]);

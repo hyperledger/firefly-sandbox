@@ -6,7 +6,11 @@ import {
 } from '@mui/icons-material';
 import {
   Button,
+  FormControl,
   Grid,
+  InputLabel,
+  MenuItem,
+  Select,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -14,9 +18,14 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FF_Paths } from '../../constants/FF_Paths';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
+import { IDatatype } from '../../interfaces/api';
 import { getTemplateCategory } from '../../pages/Home/views/MiddlePane';
+import { DEFAULT_PADDING } from '../../theme';
+import { fetchCatcher } from '../../utils/fetches';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -48,6 +57,9 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
+  const { reportFetchError } = useContext(SnackbarContext);
+  const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
+  const [datatype, setDatatype] = useState<IDatatype | undefined>();
   const { activeForm, setActiveForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
 
@@ -61,6 +73,20 @@ export const MessageTypeGroup: React.FC<Props> = ({
     } else {
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(!file.files[0] ? true : false);
+    }
+    if (messageType === POST_BODY_TYPE.JSON) {
+      fetchCatcher(`${FF_Paths.datatypes}`)
+        .then((dtRes: IDatatype[]) => {
+          setDatatypes(dtRes);
+          if (dtRes.length > 0) {
+            setDatatype(dtRes[0]);
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+    } else {
+      setDatatype(undefined);
     }
   }, [activeForm]);
 
@@ -80,6 +106,39 @@ export const MessageTypeGroup: React.FC<Props> = ({
     } else {
       setPayloadMissingFields(false);
     }
+  };
+
+  // useEffect(() => {
+  //   if (
+  //     getTemplateCategory(activeForm) !== 'messages' ||
+  //     messageType !== POST_BODY_TYPE.JSON
+  //   )
+  //     return;
+  //   setDatatypeBasedJson();
+  // }, [datatype]);
+
+  const setDatatypeBasedJson = () => {
+    const properties = datatype?.schema?.properties;
+    if (properties) {
+      const keys = Object.keys(properties);
+      const newJsonValue = {} as any;
+      for (const k of keys) {
+        const type = properties[k].type;
+        newJsonValue[k] =
+          type === 'string'
+            ? 'string'
+            : type === 'integer'
+            ? 1
+            : type === 'boolean'
+            ? true
+            : type === 'number'
+            ? 50.5
+            : null;
+      }
+      onSetJsonValue(JSON.stringify(newJsonValue));
+      return;
+    }
+    onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
   };
 
   const handleMessageTypeChange = (
@@ -155,25 +214,70 @@ export const MessageTypeGroup: React.FC<Props> = ({
       {
         <Grid container item xs={12} pt={1}>
           {messageType !== POST_BODY_TYPE.FILE ? (
-            <TextField
-              label={t('message')}
-              multiline
-              required
-              fullWidth
-              maxRows={7}
-              value={
-                messageType === POST_BODY_TYPE.STRING
-                  ? message
-                  : jsonValue
-                  ? jsonValue
-                  : ''
-              }
-              onChange={(e) =>
-                messageType === POST_BODY_TYPE.STRING
-                  ? onSetMessage(e.target.value)
-                  : onSetJsonValue(e.target.value)
-              }
-            />
+            <>
+              {messageType === POST_BODY_TYPE.JSON ? (
+                <Grid
+                  container
+                  item
+                  justifyContent="space-between"
+                  spacing={1}
+                  pb={DEFAULT_PADDING}
+                >
+                  <Grid item width="100%">
+                    <FormControl
+                      fullWidth
+                      required
+                      disabled={datatypes.length ? false : true}
+                    >
+                      <InputLabel>
+                        {datatypes.length ? t('datatypes') : t('noDatatypes')}
+                      </InputLabel>
+                      <Select
+                        fullWidth
+                        value={datatype?.id ?? ''}
+                        label={
+                          datatypes.length ? t('datatypes') : t('noDatatypes')
+                        }
+                        onChange={(e) =>
+                          setDatatype(
+                            datatypes.find((t) => t.id === e.target.value)
+                          )
+                        }
+                      >
+                        {datatypes.map((tp, idx) => (
+                          <MenuItem key={idx} value={tp.id}>
+                            <Typography color="primary">
+                              {tp.name}&nbsp;({tp.version})
+                            </Typography>
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+                </Grid>
+              ) : (
+                <></>
+              )}
+              <TextField
+                label={t('message')}
+                multiline
+                required
+                fullWidth
+                maxRows={7}
+                value={
+                  messageType === POST_BODY_TYPE.STRING
+                    ? message
+                    : jsonValue
+                    ? jsonValue
+                    : ''
+                }
+                onChange={(e) =>
+                  messageType === POST_BODY_TYPE.STRING
+                    ? onSetMessage(e.target.value)
+                    : onSetJsonValue(e.target.value)
+                }
+              />
+            </>
           ) : (
             <Button
               variant="outlined"

@@ -43,6 +43,12 @@ wsConfig.websockets.forEach((w) => new w().init(wsConfig.prefix, wsConfig.handle
 
 const api = genOpenAPI(serverOptions);
 
+app.use('/api', swaggerUi.serve);
+app.get('/api', swaggerUi.setup(api));
+app.get('/api-json', (req, res) => {
+  res.type('text').send(JSON.stringify(api, null, 2));
+});
+
 const UI_PATH = process.env.UI_PATH;
 if (UI_PATH) {
   console.log(`UI Served from ${UI_PATH}`);
@@ -51,12 +57,6 @@ if (UI_PATH) {
     res.sendFile(path.resolve(`${UI_PATH}/index.html`));
   });
 }
-
-app.use('/api', swaggerUi.serve);
-app.get('/api', swaggerUi.setup(api));
-app.get('/api-json', (req, res) => {
-  res.type('text').send(JSON.stringify(api, null, 2));
-});
 
 const server = new http.Server(app);
 server.on('upgrade', function upgrade(request, socket, head) {

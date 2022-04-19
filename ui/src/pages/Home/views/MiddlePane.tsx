@@ -188,7 +188,7 @@ export const MiddlePane = () => {
             padding: DEFAULT_PADDING,
           }}
         >
-          <Grid item container xs={12}>
+          <Grid item container xs={12} sx={{ maxWidth: '550px' }}>
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ fontWeight: 600 }}>
                 {t('serverResponse')}

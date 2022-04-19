@@ -51,10 +51,11 @@ export class DatatypesController {
   @OpenAPI({ summary: 'Creates and broadcasts a new datatype' })
   async createDatatype(@Body() body: DatatypeInterface): Promise<AsyncResponse> {
     // See DatatypesTemplateController and keep template code up to date.
-    const datatype = await firefly.createDatatype(
-      { name: body.name, version: body.version },
-      body.schema,
-    );
+    const datatype = await firefly.createDatatype({
+      name: body.name,
+      version: body.version,
+      value: body.schema,
+    });
     return { type: 'datatype', id: datatype.id };
   }
 }

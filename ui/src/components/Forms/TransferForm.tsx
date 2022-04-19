@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Button,
   FormControl,
   Grid,
@@ -127,13 +128,11 @@ export const TransferForm: React.FC = () => {
     setTokenIndex(event.target.value);
   };
 
-  const handleRecipientChange = (
-    event: SelectChangeEvent<typeof recipient>
-  ) => {
+  const handleRecipientChange = (event: React.ChangeEvent<any>) => {
     const {
       target: { value },
     } = event;
-    setRecipient(value);
+    setRecipient(tokenVerifiers[value] ? tokenVerifiers[value].value : value);
   };
 
   return (
@@ -178,24 +177,15 @@ export const TransferForm: React.FC = () => {
         <Grid container item>
           {/* Recipient Select box */}
           <FormControl fullWidth required>
-            <InputLabel>{t('tokenRecipient')}</InputLabel>
-            <Select
-              value={recipient}
-              onChange={handleRecipientChange}
-              input={<OutlinedInput label={t('tokenRecipient')} />}
-              renderValue={(selected) => {
-                const verifier = tokenVerifiers.find(
-                  (v) => v.value === selected
-                );
-                return `${verifier?.did}`;
-              }}
-            >
-              {tokenVerifiers.map((identity, idx) => (
-                <MenuItem key={idx} value={identity.value}>
-                  <ListItemText primary={identity.did} />
-                </MenuItem>
-              ))}
-            </Select>
+            <Autocomplete
+              id="free-solo-demo"
+              freeSolo
+              options={tokenVerifiers.map((identity) => identity.did)}
+              renderInput={(params) => (
+                <TextField {...params} label={t('tokenRecipient')} />
+              )}
+              onInputChange={handleRecipientChange}
+            />
           </FormControl>
         </Grid>
         <Grid item xs={12}>

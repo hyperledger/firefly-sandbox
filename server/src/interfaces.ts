@@ -3,13 +3,11 @@ import {
   IsDefined,
   IsEnum,
   IsInstance,
-  IsInt,
   IsNumberString,
   IsObject,
   IsOptional,
   IsString,
   IsUUID,
-  Min,
 } from 'class-validator';
 import { JSONSchema } from 'class-validator-jsonschema';
 

@@ -1,5 +1,5 @@
 import * as request from 'supertest';
-import FireFly, { FireFlyDatatypeFilter, FireFlyDatatypeResponse } from '@hyperledger/firefly-sdk';
+import FireFly, { FireFlyDatatypeResponse } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
 import { DatatypeInterface } from '../src/interfaces';

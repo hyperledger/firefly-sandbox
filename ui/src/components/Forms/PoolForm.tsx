@@ -39,11 +39,15 @@ export const PoolForm: React.FC = () => {
   }, [name, symbol, type, address, activeForm]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setName(event.target.value);
+    if (event.target.value.indexOf(' ') < 0) {
+      setName(event.target.value);
+    }
   };
 
   const handleSymbolChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSymbol(event.target.value);
+    if (event.target.value.indexOf(' ') < 0) {
+      setSymbol(event.target.value);
+    }
   };
 
   return (

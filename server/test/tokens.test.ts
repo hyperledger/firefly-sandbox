@@ -51,6 +51,7 @@ describe('Tokens', () => {
       name: 'my-pool',
       symbol: 'P1',
       type: 'fungible',
+      config: {},
     });
   });
 

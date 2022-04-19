@@ -10,6 +10,7 @@ import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfa
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
+import { DefineDatatypeForm } from '../components/Forms/Datatypes/DefineDatatypeForm';
 
 export enum TUTORIALS {
   BROADCAST = 'broadcast',
@@ -21,6 +22,7 @@ export enum TUTORIALS {
   DEFINE_CONTRACT_INTERFACE = 'interface',
   REGISTER_CONTRACT_API = 'api',
   REGISTER_CONTRACT_API_LISTENER = 'listener',
+  DATATYPE = 'datatypes',
 }
 
 export enum TUTORIAL_CATEGORIES {
@@ -50,6 +52,15 @@ export const TutorialSections: ITutorialSection[] = [
         form: <PrivateForm />,
         shortInfo: 'privateShortInfo',
         title: 'privateTitle',
+      },
+      {
+        id: TUTORIALS.DATATYPE,
+        docsURL:
+          'https://hyperledger.github.io/firefly/gettingstarted/define_datatype.html',
+        endpoint: FF_Paths.datatypes,
+        form: <DefineDatatypeForm />,
+        shortInfo: 'createDatatypeInfo',
+        title: 'createDatatypeTitle',
       },
     ],
   },

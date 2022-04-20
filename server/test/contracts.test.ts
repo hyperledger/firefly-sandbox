@@ -171,7 +171,7 @@ describe('Smart Contracts', () => {
     const listener = {
       id: 'listener1',
       topic: 'my-app',
-      location: { address: '0x123' } as any,
+      location: { address: '0x123' },
       event: { name: 'event1' },
     } as FireFlyContractListenerResponse;
 

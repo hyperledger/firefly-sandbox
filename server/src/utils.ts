@@ -82,3 +82,15 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   }
   return varName;
 }
+
+export function getMessageBody(body: any) {
+  const dataBody = {} as any;
+  dataBody.value = body.value || body.jsonValue;
+  if (body.jsonValue && body.datatypename && body.datatypeversion) {
+    dataBody.datatype = {
+      name: body.datatypename,
+      version: body.datatypeversion,
+    };
+  }
+  return dataBody;
+}

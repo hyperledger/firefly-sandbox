@@ -3,7 +3,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q, FormDataSchema } from '../utils';
+import { formatTemplate, quoteAndEscape as q, FormDataSchema, getMessageBody } from '../utils';
 import {
   BroadcastBlob,
   BroadcastValue,
@@ -24,14 +24,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
   async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = {} as any;
-    dataBody.value = body.value || body.jsonValue;
-    if (body.jsonValue && body.datatypename && body.datatypeversion) {
-      dataBody.datatype = {
-        name: body.datatypename,
-        version: body.datatypeversion,
-      };
-    }
+    const dataBody = getMessageBody(body);
     const message = await firefly.sendBroadcast({
       header: {
         tag: body.tag || undefined,
@@ -70,14 +63,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
   async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = {} as any;
-    dataBody.value = body.value || body.jsonValue;
-    if (body.jsonValue && body.datatypename && body.datatypeversion) {
-      dataBody.datatype = {
-        name: body.datatypename,
-        version: body.datatypeversion,
-      };
-    }
+    const dataBody = getMessageBody(body);
     const message = await firefly.sendPrivateMessage({
       header: {
         tag: body.tag || undefined,

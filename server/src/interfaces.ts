@@ -129,7 +129,8 @@ export class TokenPoolInput {
   name: string;
 
   @IsString()
-  symbol: string;
+  @IsOptional()
+  symbol?: string;
 
   @IsString()
   type: 'fungible' | 'nonfungible';

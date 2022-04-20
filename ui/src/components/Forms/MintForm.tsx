@@ -1,7 +1,9 @@
 import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -19,6 +21,8 @@ import { ITokenPool } from '../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
+import { BroadcastForm } from './BroadcastForm';
+import { PrivateForm } from './PrivateForm';
 
 export const MintForm: React.FC = () => {
   const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
@@ -29,17 +33,17 @@ export const MintForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
 
-  const [message] = useState<string | object | undefined>(
-    DEFAULT_MESSAGE_STRING
-  );
+  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
 
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
   const [refresh, setRefresh] = useState<number>(0);
+  const [withMessage, setWithMessage] = useState<boolean>(false);
+  const [messageMethod, setMessageMethod] = useState<string>('broadcast');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.MINT) {
-      setAmount('1');
+      resetValues();
       return;
     }
     setPayloadMissingFields(!amount || !pool);
@@ -61,7 +65,7 @@ export const MintForm: React.FC = () => {
         ],
       },
     });
-  }, [pool, amount, message, activeForm]);
+  }, [pool, amount, activeForm]);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.MINT) return;
@@ -100,6 +104,12 @@ export const MintForm: React.FC = () => {
       });
   }, [pool, refresh]);
 
+  const resetValues = () => {
+    setAmount('1');
+    setWithMessage(false);
+    setMessageMethod('broadcast');
+  };
+
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);
   };
@@ -128,7 +138,8 @@ export const MintForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.name}
+                      {tp.symbol ? `(${tp.symbol}) - ` : ' - '}
                       {tp.type === 'fungible'
                         ? t('fungible')
                         : t('nonfungible')}
@@ -169,11 +180,50 @@ export const MintForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-          message={message}
-          onSetMessage={(msg: string) => setMessage(msg)}
-        /> */}
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={withMessage}
+                onChange={() => {
+                  setWithMessage(!withMessage);
+                }}
+              />
+            }
+            label={t('mintWithData')}
+          />
+        </Grid>
+        {withMessage && (
+          <>
+            <Grid item width="100%">
+              <FormControl fullWidth required>
+                <InputLabel>{t('messagingMethod')}</InputLabel>
+                <Select
+                  fullWidth
+                  value={messageMethod}
+                  label={t('messagingMethod')}
+                  onChange={(e) => setMessageMethod(e.target.value)}
+                >
+                  <MenuItem key={'messageMethod-broadcast'} value={'broadcast'}>
+                    {t('broadcast')}
+                  </MenuItem>
+                  <MenuItem key={'messageMethod-private'} value={'private'}>
+                    {t('private')}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </>
+        )}
+        {withMessage === true && (
+          <Grid container item>
+            {messageMethod === 'broadcast' ? (
+              <BroadcastForm />
+            ) : (
+              <PrivateForm />
+            )}
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

@@ -145,7 +145,8 @@ export const TransferForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.name}
+                      {tp.symbol ? `(${tp.symbol}) - ` : ' - '}
                       {tp.type === 'fungible'
                         ? t('fungible')
                         : t('nonfungible')}

@@ -123,7 +123,7 @@ export class TokenMint {
   @IsString()
   pool: string;
 
-  @IsString()
+  @IsNumberString()
   amount: string;
 }
 

@@ -17,6 +17,8 @@ describe('Templates: Messages', () => {
             topic: '',
             value: '',
             jsonValue: '',
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -25,7 +27,9 @@ describe('Templates: Messages', () => {
                 tag: undefined,
                 topics: undefined,
               },
-              data: [{value: ''}],
+              data: [
+                    { value: '' }
+                ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -37,6 +41,8 @@ describe('Templates: Messages', () => {
             topic: 'test-topic',
             value: "'Hello'",
             jsonValue: '',
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -45,7 +51,9 @@ describe('Templates: Messages', () => {
                 tag: 'test-tag',
                 topics: ['test-topic'],
               },
-              data: [{value: '\\'Hello\\''}],
+              data: [
+                    { value: '\\'Hello\\'' }
+                ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -57,6 +65,8 @@ describe('Templates: Messages', () => {
             topic: 'test-topic',
             value: '',
             jsonValue: { val1: 'foo', val2: 'bar' },
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -65,7 +75,15 @@ describe('Templates: Messages', () => {
               tag: 'test-tag',
               topics: ['test-topic'],
             },
-            data: [{value: {"val1":"f ... l2":"bar"}}],
+            data: [
+              {
+                datatype: { 
+                  name: undefined,
+                  version: undefined
+                },
+                value: {"val1":"f ... l2":"bar"}
+              }
+                ],
           });
           return { type: 'message', id: message.header.id };
       `),
@@ -118,6 +136,8 @@ describe('Templates: Messages', () => {
             value: '',
             jsonValue: '',
             recipients: [],
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -129,7 +149,9 @@ describe('Templates: Messages', () => {
               group: {
                 members: [],
               },
-              data: [{value: ''}],
+              data: [
+                    { value: '' }
+                ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -142,6 +164,8 @@ describe('Templates: Messages', () => {
             value: "'Hello'",
             jsonValue: '',
             recipients: ['alpha', 'beta'],
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -153,7 +177,9 @@ describe('Templates: Messages', () => {
               group: {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
-              data: [{value: '\\'Hello\\''}],
+              data: [
+                    { value: '\\'Hello\\'' }
+                ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -166,6 +192,8 @@ describe('Templates: Messages', () => {
             value: '',
             jsonValue: { val1: 'foo', val2: 'bar' },
             recipients: ['alpha', 'beta'],
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -177,7 +205,15 @@ describe('Templates: Messages', () => {
               group: {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
-              data: [{value: {"val1":"f ... l2":"bar"}}],
+              data: [
+                {
+                  datatype: { 
+                    name: undefined,
+                    version: undefined
+                  },
+                  value: {"val1":"f ... l2":"bar"}
+                }
+                  ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -197,6 +233,8 @@ describe('Templates: Messages', () => {
             topic: 'test-topic',
             filename: 'document.pdf',
             recipients: ['alpha', 'beta'],
+            datatypename: '',
+            datatypeversion: '',
           }),
         ).toBe(
           formatTemplate(`

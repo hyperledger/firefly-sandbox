@@ -3,13 +3,11 @@ import {
   IsDefined,
   IsEnum,
   IsInstance,
-  IsInt,
   IsNumberString,
   IsObject,
   IsOptional,
   IsString,
   IsUUID,
-  Min,
 } from 'class-validator';
 import { JSONSchema } from 'class-validator-jsonschema';
 
@@ -31,6 +29,14 @@ export class BaseMessageFields {
   tag?: string;
 }
 
+export class DatatypeDefinition {
+  @IsString()
+  name: string;
+
+  @IsString()
+  version: string;
+}
+
 export class BroadcastValue extends BaseMessageFields {
   @IsString()
   @IsOptional()
@@ -39,6 +45,18 @@ export class BroadcastValue extends BaseMessageFields {
   @IsObject()
   @IsOptional()
   jsonValue?: any;
+
+  @IsObject()
+  @IsOptional()
+  datatype?: DatatypeDefinition;
+
+  @IsString()
+  @IsOptional()
+  datatypename?: string;
+
+  @IsString()
+  @IsOptional()
+  datatypeversion?: string;
 }
 
 export class BroadcastBlob extends BaseMessageFields {
@@ -59,6 +77,14 @@ export class PrivateValue extends BaseMessageFields {
   @IsObject()
   @IsOptional()
   jsonValue?: any;
+
+  @IsString()
+  @IsOptional()
+  datatypename?: string;
+
+  @IsString()
+  @IsOptional()
+  datatypeversion?: string;
 }
 
 export class PrivateBlob extends BaseMessageFields {

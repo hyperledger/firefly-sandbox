@@ -94,8 +94,9 @@ export const MiddlePane = () => {
 
   useEffect(() => {
     if (template && templateName === activeForm && jsonPayload) {
-      if (activeForm.includes('private') && !(jsonPayload as any).recipients)
+      if (activeForm.includes('private') && !(jsonPayload as any).recipients) {
         return;
+      }
       buildCodeBlock(template);
     }
   }, [template, templateName, jsonPayload]);

@@ -37,9 +37,11 @@ interface Props {
   jsonValue: string | undefined;
   recipients?: string[] | undefined;
   fileName?: string;
+  datatype?: IDatatype | undefined;
   onSetMessage: any;
   onSetFileName?: any;
   onSetJsonValue: any;
+  onSetDatatype?: any;
   noUndefined?: boolean;
 }
 
@@ -48,10 +50,12 @@ export const MessageTypeGroup: React.FC<Props> = ({
   message,
   jsonValue,
   fileName,
+  datatype,
   recipients,
   onSetMessage,
   onSetFileName,
   onSetJsonValue,
+  onSetDatatype,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
@@ -59,7 +63,6 @@ export const MessageTypeGroup: React.FC<Props> = ({
   );
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
-  const [datatype, setDatatype] = useState<IDatatype | undefined>();
   const { activeForm, setActiveForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
 
@@ -111,7 +114,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         .then((dtRes: IDatatype[]) => {
           setDatatypes(dtRes);
           if (dtRes.length > 0) {
-            setDatatype(dtRes[0]);
+            onSetDatatype(dtRes[0]);
             setDatatypeBasedJson();
             return;
           }
@@ -123,7 +126,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
         onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
       }
     } else {
-      setDatatype(undefined);
+      onSetDatatype(undefined);
+      onSetJsonValue(undefined);
     }
   };
 
@@ -165,10 +169,10 @@ export const MessageTypeGroup: React.FC<Props> = ({
         }
         return;
       case POST_BODY_TYPE.STRING:
-        onSetJsonValue(undefined);
         checkMissingFields();
+        onSetDatatype(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
-        setDatatype(undefined);
+        onSetJsonValue(undefined);
         if (activeForm.includes('blob')) {
           setActiveForm(activeForm.replace('blob', ''));
         }
@@ -185,7 +189,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         onSetMessage(undefined);
         onSetJsonValue(undefined);
         onSetFileName('');
-        setDatatype(undefined);
+        onSetDatatype(undefined);
         setActiveForm(
           activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
         );
@@ -249,7 +253,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
                           datatypes.length ? t('datatypes') : t('noDatatypes')
                         }
                         onChange={(e) =>
-                          setDatatype(
+                          onSetDatatype(
                             datatypes.find((t) => t.id === e.target.value)
                           )
                         }

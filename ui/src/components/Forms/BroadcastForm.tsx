@@ -2,6 +2,7 @@ import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { IDatatype } from '../../interfaces/api';
 import { DEFAULT_SPACING } from '../../theme';
 import { isJsonString } from '../../utils/strings';
 import {
@@ -19,6 +20,7 @@ export const BroadcastForm: React.FC = () => {
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
   const [jsonValue, setJsonValue] = useState<string | undefined>();
+  const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
   useEffect(() => {
     if (!activeForm.includes('broadcast')) return;
@@ -27,20 +29,25 @@ export const BroadcastForm: React.FC = () => {
       topic: topics,
       tag,
       value: message,
-      jsonValue: jsonValue ? jsonCurValue : null,
+      jsonValue: jsonValue && !message ? jsonCurValue : null,
       filename: fileName,
+      datatypename: datatype?.name ?? '',
+      datatypeversion: datatype?.version ?? '',
     });
-  }, [message, tag, topics, fileName, activeForm]);
+  }, [message, tag, topics, fileName, activeForm, datatype]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
+      setMessage('');
       setJsonPayload({
         topic: topics,
         tag,
         jsonValue: JSON.parse(jsonValue),
         value: message,
         filename: fileName,
+        datatypename: datatype?.name ?? '',
+        datatypeversion: datatype?.version ?? '',
       });
     }
   }, [jsonValue]);
@@ -68,6 +75,7 @@ export const BroadcastForm: React.FC = () => {
           {/* Message */}
           <MessageTypeGroup
             noUndefined
+            datatype={datatype}
             message={message}
             jsonValue={jsonValue}
             onSetMessage={(msg: string) => {
@@ -78,6 +86,9 @@ export const BroadcastForm: React.FC = () => {
             }}
             onSetJsonValue={(json: string) => {
               setJsonValue(json);
+            }}
+            onSetDatatype={(dt: IDatatype) => {
+              setDatatype(dt);
             }}
           />
           <Grid container item justifyContent="space-between" spacing={1}>

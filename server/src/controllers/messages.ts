@@ -3,7 +3,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q, FormDataSchema } from '../utils';
+import { formatTemplate, quoteAndEscape as q, FormDataSchema, getMessageBody } from '../utils';
 import {
   BroadcastBlob,
   BroadcastValue,
@@ -24,12 +24,13 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
   async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
+    const dataBody = getMessageBody(body);
     const message = await firefly.sendBroadcast({
       header: {
         tag: body.tag || undefined,
         topics: body.topic ? [body.topic] : undefined,
       },
-      data: [{ value: body.value || body.jsonValue }],
+      data: [dataBody],
     });
     return { type: 'message', id: message.header.id };
   }
@@ -62,6 +63,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
   async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
+    const dataBody = getMessageBody(body);
     const message = await firefly.sendPrivateMessage({
       header: {
         tag: body.tag || undefined,
@@ -70,7 +72,7 @@ export class MessagesController {
       group: {
         members: body.recipients.map((r) => ({ identity: r })),
       },
-      data: [{ value: body.value || body.jsonValue }],
+      data: [dataBody],
     });
     return { type: 'message', id: message.header.id };
   }
@@ -117,10 +119,24 @@ export class MessagesTemplateController {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
         },
-        data: [{value: <%= jsonValue ? ${q('jsonValue', {
-          isObject: true,
-          truncate: true,
-        })} : ${q('value')}%>}],
+        data: [<% if(jsonValue) { %>
+          {
+            datatype: { 
+              name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
+              version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+            },
+            value: <%= jsonValue ? ${q('jsonValue', {
+              isObject: true,
+              truncate: true,
+            })} : ${q('value')}%>
+          }
+            <% } else { %>
+              { value: <%= jsonValue ? ${q('jsonValue', {
+                isObject: true,
+                truncate: true,
+              })} : ${q('value')}%> }
+          <%} 
+        %>],
       });
       return { type: 'message', id: message.header.id };
     `);
@@ -155,10 +171,24 @@ export class MessagesTemplateController {
         group: {
           members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
         },
-        data: [{value: <%= jsonValue ? ${q('jsonValue', {
-          isObject: true,
-          truncate: true,
-        })} : ${q('value')}%>}],
+        data: [<% if(jsonValue) { %>
+          {
+            datatype: { 
+              name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
+              version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+            },
+            value: <%= jsonValue ? ${q('jsonValue', {
+              isObject: true,
+              truncate: true,
+            })} : ${q('value')}%>
+          }
+            <% } else { %>
+              { value: <%= jsonValue ? ${q('jsonValue', {
+                isObject: true,
+                truncate: true,
+              })} : ${q('value')}%> }
+          <%} 
+        %>],
       });
       return { type: 'message', id: message.header.id };
     `);

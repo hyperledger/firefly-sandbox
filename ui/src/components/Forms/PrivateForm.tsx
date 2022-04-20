@@ -13,6 +13,7 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { IDatatype } from '../../interfaces/api';
 import { DEFAULT_SPACING } from '../../theme';
 import { isJsonString } from '../../utils/strings';
 import {
@@ -27,7 +28,7 @@ interface NetworkIdentity {
 }
 
 export const PrivateForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
+  const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
@@ -35,6 +36,7 @@ export const PrivateForm: React.FC = () => {
   const [recipients, setRecipients] = useState<string[]>([]);
   const [fileName, setFileName] = useState<string>('');
   const [jsonValue, setJsonValue] = useState<string | undefined>();
+  const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
@@ -61,20 +63,33 @@ export const PrivateForm: React.FC = () => {
     if (!activeForm.includes('private')) {
       return;
     }
+    setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
       tag,
       value: message,
-      jsonValue: jsonValue ? jsonCurValue : null,
+      jsonValue: jsonValue && !message ? jsonCurValue : null,
       filename: fileName,
       recipients,
+      datatypename: datatype?.name ?? '',
+      datatypeversion: datatype?.version ?? '',
     });
-  }, [message, recipients, tag, topics, fileName, activeForm]);
+  }, [
+    message,
+    recipients,
+    tag,
+    topics,
+    fileName,
+    activeForm,
+    datatype,
+    jsonValue,
+  ]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
+      setMessage('');
       setJsonPayload({
         topic: topics,
         tag,
@@ -82,6 +97,8 @@ export const PrivateForm: React.FC = () => {
         value: message,
         filename: fileName,
         recipients,
+        datatypename: datatype?.name ?? '',
+        datatypeversion: datatype?.version ?? '',
       });
     }
   }, [jsonValue]);
@@ -116,6 +133,7 @@ export const PrivateForm: React.FC = () => {
       <Grid container spacing={DEFAULT_SPACING}>
         <MessageTypeGroup
           noUndefined
+          datatype={datatype}
           message={message}
           jsonValue={jsonValue}
           fileName={fileName}
@@ -126,6 +144,9 @@ export const PrivateForm: React.FC = () => {
           }}
           onSetJsonValue={(json: string) => {
             setJsonValue(json);
+          }}
+          onSetDatatype={(dt: IDatatype) => {
+            setDatatype(dt);
           }}
         />
         <Grid container item justifyContent="space-between" spacing={1}>

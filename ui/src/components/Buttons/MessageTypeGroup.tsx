@@ -67,17 +67,18 @@ export const MessageTypeGroup: React.FC<Props> = ({
     useContext(ApplicationContext);
 
   useEffect(() => {
+    if (getTemplateCategory(activeForm) !== 'messages') return;
     if (activeForm.indexOf('blob') < 0) {
       if (!message && !jsonValue) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
       setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
+      setDefaultJsonDatatype();
       checkMissingFields();
     } else {
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(!file.files[0] ? true : false);
     }
-    setDefaultJsonDatatype();
   }, [activeForm, messageType]);
 
   useEffect(() => {

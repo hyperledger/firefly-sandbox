@@ -27,19 +27,19 @@ export const MintForm: React.FC = () => {
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<string>('0');
 
   const [message] = useState<string | object | undefined>(
     DEFAULT_MESSAGE_STRING
   );
 
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>(1);
+  const [amount, setAmount] = useState<string>('1');
   const [refresh, setRefresh] = useState<number>(0);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.MINT) {
-      setAmount(1);
+      setAmount('1');
       return;
     }
     setPayloadMissingFields(!amount || !pool);
@@ -101,9 +101,7 @@ export const MintForm: React.FC = () => {
   }, [pool, refresh]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (parseInt(event.target.value)) {
-      setAmount(parseInt(event.target.value));
-    }
+    setAmount(event.target.value);
   };
 
   return (

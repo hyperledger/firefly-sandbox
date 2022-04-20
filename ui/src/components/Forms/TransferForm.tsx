@@ -28,16 +28,16 @@ export const TransferForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>(1);
+  const [amount, setAmount] = useState<string>('1');
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
-  const [refresh, setRefresh] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<string>('0');
+  const [refresh, setRefresh] = useState<string>('0');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.TRANSFER) {
-      setAmount(1);
+      setAmount('1');
       return;
     }
     setPayloadMissingFields(
@@ -80,7 +80,7 @@ export const TransferForm: React.FC = () => {
 
   useEffect(() => {
     if (!isFungible()) {
-      setAmount(1);
+      setAmount('1');
     }
   }, [pool, amount]);
 
@@ -112,9 +112,7 @@ export const TransferForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (parseInt(event.target.value)) {
-      setAmount(parseInt(event.target.value));
-    }
+    setAmount(event.target.value);
   };
 
   const handleTokenIndexChange = (

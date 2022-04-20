@@ -27,10 +27,10 @@ export const BurnForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<string>('0');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [refresh, setRefresh] = useState<number>(0);
-  const [tokenBalance, setTokenBalance] = useState<number>(0);
+  const [tokenBalance, setTokenBalance] = useState<string>('0');
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.BURN) return;
@@ -80,7 +80,7 @@ export const BurnForm: React.FC = () => {
 
   useEffect(() => {
     if (!isFungible()) {
-      setAmount(1);
+      setAmount('1');
     }
   }, [pool, amount]);
 
@@ -96,9 +96,7 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (parseInt(event.target.value)) {
-      setAmount(parseInt(event.target.value));
-    }
+    setAmount(event.target.value);
   };
 
   return (

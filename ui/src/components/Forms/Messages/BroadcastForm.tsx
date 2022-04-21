@@ -14,8 +14,7 @@ import {
 
 export const BroadcastForm: React.FC = () => {
   const { jsonPayload, setJsonPayload } = useContext(ApplicationContext);
-  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [fileName, setFileName] = useState<string>('');

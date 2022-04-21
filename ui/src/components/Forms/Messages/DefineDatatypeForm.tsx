@@ -40,8 +40,7 @@ const DEFAULT_DATATYPE_SCHEMA = {
 export const DefineDatatypeForm: React.FC = () => {
   const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
 
   const [name, setName] = useState<string>('');

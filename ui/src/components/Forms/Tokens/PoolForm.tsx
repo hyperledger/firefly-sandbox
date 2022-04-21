@@ -17,8 +17,7 @@ export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
   const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID } = useContext(FormContext);
   const [name, setName] = useState<string>('');
   const [symbol, setSymbol] = useState<string>('');
   const [address, setAddress] = useState<string | undefined>();

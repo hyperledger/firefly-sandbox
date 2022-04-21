@@ -24,8 +24,7 @@ import { DEFAULT_MESSAGE_STRING } from '../../Buttons/MessageTypeGroup';
 export const MintForm: React.FC = () => {
   const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 

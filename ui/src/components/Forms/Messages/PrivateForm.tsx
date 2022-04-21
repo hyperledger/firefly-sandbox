@@ -32,8 +32,7 @@ interface NetworkIdentity {
 export const PrivateForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [identities, setIdentities] = useState<NetworkIdentity[]>([]);

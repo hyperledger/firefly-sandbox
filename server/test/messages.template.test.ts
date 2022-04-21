@@ -25,7 +25,7 @@ describe('Templates: Messages', () => {
             const message = await firefly.sendBroadcast({
               header: {
                 tag: undefined,
-                topics: undefined,
+                topics: [],
               },
               data: [
                     { value: '' }
@@ -144,7 +144,7 @@ describe('Templates: Messages', () => {
             const message = await firefly.sendPrivateMessage({
               header: {
                 tag: undefined,
-                topics: undefined,
+                topics: [],
               },
               group: {
                 members: [],

@@ -24,7 +24,7 @@ describe('Templates: Tokens', () => {
               symbol: 'P1',
               type: 'fungible',
               config: {
-                address: 'undefined'
+                address: undefined,
               }
             });
             return { type: 'token_pool', id: pool.id };
@@ -103,35 +103,6 @@ describe('Templates: Tokens', () => {
               tokenIndex: '1',
             });
             return { type: 'token_transfer', id: transfer.localId };
-        `),
-        );
-      });
-  });
-
-  test('Balances template', () => {
-    return request(server)
-      .get('/api/tokens/template/balances')
-      .expect(200)
-      .expect((resp) => {
-        const compiled = _.template(resp.body);
-        expect(
-          compiled({
-            pool: 'pool1',
-            key: '0x111',
-          }),
-        ).toBe(
-          formatTemplate(`
-            const balances = await firefly.getTokenBalances({
-              pool: 'pool1',
-              key: '0x111',
-              balance: '>0',
-            });
-            return balances.map((b) => ({
-              pool: b.pool,
-              key: b.key,
-              balance: b.balance,
-              tokenIndex: b.tokenIndex,
-            }));
         `),
         );
       });

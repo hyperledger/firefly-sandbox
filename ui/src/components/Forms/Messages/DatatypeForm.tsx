@@ -3,8 +3,10 @@ import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { DEFAULT_SPACING } from '../../../theme';
-import { TUTORIALS } from '../../../constants/TutorialSections';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { isJsonString } from '../../../utils/strings';
+import { FormContext } from '../../../contexts/FormContext';
+import { MAX_FORM_ROWS } from '../../../App';
 
 const DEFAULT_DATATYPE_SCHEMA = {
   $id: 'https://example.com/person.schema.json',
@@ -36,9 +38,10 @@ const DEFAULT_DATATYPE_SCHEMA = {
   },
 };
 
-export const DefineDatatypeForm: React.FC = () => {
-  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+export const DatatypeForm: React.FC = () => {
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
 
   const [name, setName] = useState<string>('');
@@ -49,7 +52,7 @@ export const DefineDatatypeForm: React.FC = () => {
   );
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.DATATYPE) {
+    if (formID !== TUTORIAL_FORMS.DATATYPE) {
       setName('');
       setVersion('');
       return;
@@ -60,7 +63,7 @@ export const DefineDatatypeForm: React.FC = () => {
       version,
       schema,
     });
-  }, [schema, name, version, activeForm]);
+  }, [schema, name, version, formID]);
 
   useEffect(() => {
     if (isJsonString(schemaString)) {
@@ -105,7 +108,7 @@ export const DefineDatatypeForm: React.FC = () => {
             multiline
             required
             fullWidth
-            maxRows={40}
+            maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
           />

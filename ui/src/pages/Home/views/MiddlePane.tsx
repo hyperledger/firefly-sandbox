@@ -8,112 +8,77 @@ import SyntaxHighlighter from 'react-syntax-highlighter';
 import { tomorrowNightBright } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import * as _ from 'underscore';
 import { RunButton } from '../../../components/Buttons/RunButton';
-import { FF_Paths } from '../../../constants/FF_Paths';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
 import {
-  TutorialSections,
   TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
 } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import {
   DEFAULT_BORDER_RADIUS,
   DEFAULT_PADDING,
   FFColors,
 } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
 import { isSuccessfulResponse } from '../../../utils/strings';
 
-const getTutorials = (tutorialTitle: string) => {
-  return TutorialSections.find((t) => t.title === tutorialTitle)?.tutorials.map(
-    (tu) => tu.id
-  );
-};
-
-export const getTemplateCategory = (activeForm: string) => {
-  if (activeForm === 'datatypes') {
-    return 'datatypes';
-  }
-  const messagingForms = getTutorials(TUTORIAL_CATEGORIES.MESSAGING);
-  if (messagingForms?.includes(activeForm)) {
-    return 'messages';
-  }
-  const tokenForms = getTutorials(TUTORIAL_CATEGORIES.TOKENS);
-  if (tokenForms?.includes(activeForm)) {
-    return 'tokens';
-  }
-  const contractsForms = getTutorials(TUTORIAL_CATEGORIES.CONTRACTS);
-  if (contractsForms?.includes(activeForm)) {
-    return 'contracts';
-  }
-  return 'messages';
-};
-
 export const MiddlePane = () => {
-  const {
-    jsonPayload,
-    apiResponse,
-    apiStatus,
-    activeForm,
-    setApiResponse,
-    setApiStatus,
-  } = useContext(ApplicationContext);
+  const { jsonPayload, apiResponse, apiStatus, setApiResponse, setApiStatus } =
+    useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
+  const { formID, formObject, categoryID } = useContext(FormContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
-  const [templateName, setTemplateName] = useState<string>('broadcast');
-
-  const endpoints = FF_Paths as any;
 
   useEffect(() => {
-    if (activeForm === 'deploycontract') {
-      setCodeBlock('/*\nFollow steps outlined in the instructions\n*/');
+    if (formID === TUTORIAL_FORMS.DEPLOY_CONTRACT) {
+      setCodeBlock(`/*\n${t('followStepsInInstructions')}\n*/`);
       setApiResponse({});
       setApiStatus(undefined);
       return;
     }
-    const templateCategory = getTemplateCategory(activeForm);
-    const templateEndpoint = `/api/${templateCategory}/template${
-      activeForm !== 'datatypes' ? `/${activeForm}` : ''
-    }`;
-    fetch(templateEndpoint, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setTemplate(data);
-        setTemplateName(activeForm);
-      })
-      .catch((e) => {
-        reportFetchError(e);
-      });
-  }, [activeForm]);
+    categoryID &&
+      formID &&
+      fetchCatcher(SDK_PATHS.template(categoryID, formID))
+        .then((template: string) => {
+          setTemplate(template);
+        })
+        .catch((e) => {
+          reportFetchError(e);
+        });
+  }, [categoryID, formID]);
 
   useEffect(() => {
-    if (template && templateName === activeForm && jsonPayload) {
+    if (template && jsonPayload && formID) {
       const { recipients, messagingMethod, value, jsonValue } =
         jsonPayload as any;
       if (
-        (activeForm.includes('private') && !recipients) ||
-        (getTemplateCategory(activeForm) === 'tokens' &&
+        (formID === TUTORIAL_FORMS.PRIVATE && !recipients) ||
+        (categoryID === TUTORIAL_CATEGORIES.TOKENS &&
           messagingMethod &&
           !value &&
           !jsonValue)
       ) {
         return;
       }
-      buildCodeBlock(template);
+      const codeBlock: string | undefined = getCodeBlock(template);
+      codeBlock && setCodeBlock(codeBlock);
     }
-  }, [template, templateName, jsonPayload]);
+  }, [template, jsonPayload, formID]);
 
-  const buildCodeBlock = (codeTemplate: string) => {
-    if (Object.keys(jsonPayload).length < 1) return;
-    const compiled = _.template(codeTemplate);
-    const result = compiled(jsonPayload);
-    setCodeBlock(result);
+  const getCodeBlock = (codeTemplate: string) => {
+    // Wrap in try/catch to prevent compiling different jsonPayload and template together
+    try {
+      if (Object.keys(jsonPayload).length < 1) return;
+      const compiled = _.template(codeTemplate);
+      const result = compiled(jsonPayload);
+
+      return result;
+    } catch {
+      return undefined;
+    }
   };
 
   const getApiStatusColor = () => {
@@ -130,7 +95,7 @@ export const MiddlePane = () => {
       <Grid container item p={DEFAULT_PADDING}>
         <Typography variant="h5" sx={{ fontWeight: 600 }}>
           {t('serverCode')}
-        </Typography>{' '}
+        </Typography>
         <Button
           variant="text"
           disableRipple
@@ -142,7 +107,7 @@ export const MiddlePane = () => {
             );
           }}
         >
-          <LinkIcon />{' '}
+          <LinkIcon />
         </Button>
         <Typography variant="subtitle1" sx={{ paddingTop: '16px' }}>
           {t('serverCodeInfo')}
@@ -188,8 +153,8 @@ export const MiddlePane = () => {
             </Grid>
             <Grid container item xs={6} justifyContent="flex-end">
               <RunButton
-                disabled={activeForm === 'deploycontract'}
-                endpoint={endpoints[activeForm]}
+                disabled={formObject ? !formObject.runnable : true}
+                endpoint={formObject?.endpoint ?? ''}
                 payload={jsonPayload}
               />
             </Grid>

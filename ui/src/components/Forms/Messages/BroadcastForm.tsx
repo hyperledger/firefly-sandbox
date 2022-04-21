@@ -1,14 +1,16 @@
 import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { IDatatype } from '../../interfaces/api';
-import { DEFAULT_SPACING } from '../../theme';
-import { isJsonString } from '../../utils/strings';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { IDatatype } from '../../../interfaces/api';
+import { DEFAULT_SPACING } from '../../../theme';
+import { isJsonString } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
-} from '../Buttons/MessageTypeGroup';
+} from '../../Buttons/MessageTypeGroup';
 
 interface Props {
   tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
@@ -21,9 +23,8 @@ export const BroadcastForm: React.FC<Props> = ({
   tokenBody,
   tokenMissingFields,
 }) => {
-  const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
-
+  const { jsonPayload, setJsonPayload } = useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [fileName, setFileName] = useState<string>('');
@@ -35,7 +36,7 @@ export const BroadcastForm: React.FC<Props> = ({
   console.log(jsonPayload);
 
   useEffect(() => {
-    if (!activeForm.includes('broadcast') && !tokenOperation) return;
+    if (formID !== TUTORIAL_FORMS.BROADCAST && !tokenOperation) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     const body = {
       topic: topics,
@@ -47,7 +48,7 @@ export const BroadcastForm: React.FC<Props> = ({
       datatypeversion: datatype?.version ?? '',
     };
     setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
-  }, [message, tag, topics, fileName, activeForm, datatype]);
+  }, [message, tag, topics, fileName, formID, datatype]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {

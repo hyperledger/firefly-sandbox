@@ -9,7 +9,7 @@
     "prepare": "npm run build",
     "start": "node .",
     "start:dev": "tsnd --respawn ./src/index.ts",
-    "test": "jest --verbose --silent",
+    "test": "jest --verbose",
     "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint:fix": "eslint \"src/**/*.ts\" \"test/**/*.ts\" --fix",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",

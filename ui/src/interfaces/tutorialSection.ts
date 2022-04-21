@@ -1,13 +1,15 @@
 export interface ITutorialSection {
-  title: string;
+  category: string;
+  icon: JSX.Element;
   tutorials: ITutorial[];
 }
 
 export interface ITutorial {
+  formID: string;
   docsURL: string;
-  endpoint: string;
+  endpoint?: string;
   form: JSX.Element;
-  id: string;
+  runnable: boolean;
   shortInfo: string;
   title: string;
 }

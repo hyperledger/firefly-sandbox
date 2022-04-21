@@ -1,3 +1,4 @@
+import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Autocomplete,
   Button,
@@ -11,32 +12,41 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { ITokenPool, IVerifiers } from '../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
-import { fetchCatcher } from '../../utils/fetches';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { TUTORIALS } from '../../constants/TutorialSections';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { ITokenPool, IVerifier } from '../../../interfaces/api';
+import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
 
 export const TransferForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
-  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
+  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const [refresh, setRefresh] = useState<string>('0');
 
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    if (activeForm !== TUTORIALS.TRANSFER) {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (formID !== TUTORIAL_FORMS.TRANSFER) {
       setAmount('1');
       return;
     }
@@ -50,33 +60,39 @@ export const TransferForm: React.FC = () => {
       to: recipient,
     });
     return;
-  }, [pool, amount, recipient, tokenIndex, activeForm]);
+  }, [pool, amount, recipient, tokenIndex, formID]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.pools}${qParams}`)
-      .then((poolRes: ITokenPool[]) => {
-        setTokenPools(poolRes);
-        if (poolRes.length > 0) {
-          setPool(poolRes[0]);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
+    if (isMounted) {
+      fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
+        .then((poolRes: ITokenPool[]) => {
+          if (isMounted) {
+            setTokenPools(poolRes);
+            if (poolRes.length > 0) {
+              setPool(poolRes[0]);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
 
-    fetchCatcher(`${FF_Paths.verifiers}`)
-      .then((verifiersRes: IVerifiers[]) => {
-        const verifiers = verifiersRes;
-        setTokenVerifiers(verifiers);
-        if (verifiers.length > 0) {
-          setRecipient(verifiers[0].value);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [activeForm]);
+      fetchCatcher(`${SDK_PATHS.verifiers}`)
+        .then((verifiersRes: IVerifier[]) => {
+          if (isMounted) {
+            const verifiers = verifiersRes;
+            setTokenVerifiers(verifiers);
+            if (verifiers.length > 0) {
+              setRecipient(verifiers[0].value);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+    }
+  }, [formID, isMounted]);
 
   useEffect(() => {
     if (!isFungible()) {
@@ -87,24 +103,27 @@ export const TransferForm: React.FC = () => {
   useEffect(() => {
     if (!pool?.id) return;
     const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    fetchCatcher(`${FF_Paths.tokenBalances}${qParams}`)
-      .then((balanceRes: any) => {
-        if (pool.type === 'nonfungible') {
-          setTokenBalance(balanceRes.length);
-        } else {
-          setTokenBalance(
-            balanceRes.length > 0
-              ? balanceRes.find(
-                  (b: any) => b.key === selfIdentity?.ethereum_address
-                ).balance
-              : 0
-          );
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [pool, refresh]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
+        .then((balanceRes: any) => {
+          if (isMounted) {
+            if (pool.type === 'nonfungible') {
+              setTokenBalance(balanceRes.length);
+            } else {
+              setTokenBalance(
+                balanceRes.length > 0
+                  ? balanceRes.find(
+                      (b: any) => b.key === selfIdentity?.ethereum_address
+                    ).balance
+                  : 0
+              );
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [pool, refresh, isMounted]);
 
   const isFungible = () => {
     const selectedPool = tokenPools.find((p) => p.name === pool?.name);

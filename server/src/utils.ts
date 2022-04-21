@@ -60,28 +60,42 @@ export function formatTemplate(template: string) {
   return stripIndent(template).trim();
 }
 
+export enum EmptyVal {
+  UNDEFINED = 0, // replace empty values with 'undefined'
+  OMIT, // replace empty values with ''
+  STRING, // replace empty values with an empty string "''"
+}
 export interface QuoteOptions {
   isObject?: boolean;
   truncate?: boolean;
+  empty?: EmptyVal;
 }
 
 export function quoteAndEscape(varName: string, options?: QuoteOptions) {
+  let result = varName;
   if (options?.isObject) {
-    varName = `JSON.stringify(${varName})`;
+    result = `JSON.stringify(${result})`;
   } else {
-    varName = `new String(${varName})`;
+    result = `new String(${result})`;
   }
   if (options?.truncate) {
     const maxLength = 20;
     const halfLength = maxLength / 2;
-    varName = `(${varName}.length > ${maxLength}
-      ? ${varName}.substring(0, ${halfLength}) + ' ... ' + ${varName}.substring(${varName}.length - ${halfLength})
-      : ${varName})`;
+    result = `(${result}.length > ${maxLength}
+      ? ${result}.substring(0, ${halfLength}) + ' ... ' + ${result}.substring(${result}.length - ${halfLength})
+      : ${result})`;
   }
   if (!options?.isObject) {
-    varName = `"'" + ${varName}.replaceAll("'", "\\\\'") + "'"`;
+    result = `"'" + ${result}.replaceAll("'", "\\\\'") + "'"`;
   }
-  return varName;
+  const emptyVal =
+    options?.empty === EmptyVal.OMIT
+      ? "''"
+      : options?.empty === EmptyVal.STRING
+      ? '"\'\'"'
+      : "'undefined'";
+  result = `(${varName} ? (${result}) : ${emptyVal})`;
+  return result;
 }
 
 export function getMessageBody(body: any) {

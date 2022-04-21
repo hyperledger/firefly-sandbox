@@ -63,12 +63,6 @@ export const LeftPane = () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (formID + 'blob' !== activeForm && formID !== activeForm) {
-  //     setExpanded(false);
-  //   }
-  // }, [activeForm]);
-
   return (
     <>
       <Grid container direction="column">

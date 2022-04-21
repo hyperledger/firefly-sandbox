@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Navigate,
   Outlet,
@@ -12,6 +12,7 @@ import {
   TUTORIAL_CATEGORIES,
   TUTORIAL_FORMS,
 } from './constants/TutorialSections';
+import { ApplicationContext } from './contexts/ApplicationContext';
 import { EventContext } from './contexts/EventContext';
 import { FormContext } from './contexts/FormContext';
 import { IEvent } from './interfaces/api';
@@ -44,6 +45,7 @@ export const DEFAULT_ACTION = [
 export const AppWrapper: React.FC = () => {
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { setPayloadMissingFields } = useContext(ApplicationContext);
   const [action, setAction] = useState<string | null>(null);
   const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
   const [formID, setFormID] = useState<string | undefined>(undefined);
@@ -93,6 +95,7 @@ export const AppWrapper: React.FC = () => {
     searchParams.set(ACTION_QUERY_KEY, newAction);
     setSearchParams(searchParams, { replace: true });
     setAction(newAction);
+    setPayloadMissingFields(false);
   };
 
   const isValidAction = (action: string) => {

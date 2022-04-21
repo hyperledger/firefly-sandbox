@@ -10,6 +10,7 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { DEFAULT_ACTION } from '../../../AppWrapper';
 import { ContractStateAccordion } from '../../../components/Accordion/ContractStateAccordion';
 import { FFAccordionHeader } from '../../../components/Accordion/FFAccordionHeader';
 import { FFAccordionText } from '../../../components/Accordion/FFAccordionText';
@@ -28,8 +29,7 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 export const LeftPane = () => {
   const { t } = useTranslation();
   const { setPayloadMissingFields } = useContext(ApplicationContext);
-  const { formID, setFormParam, categoryID, setCategoryParam } =
-    useContext(FormContext);
+  const { formID, categoryID, setActionParam } = useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
 
   // Set tab index when category ID changes
@@ -40,7 +40,7 @@ export const LeftPane = () => {
       );
       if (tabIdx === -1) {
         // Category not found, set to default
-        setCategoryParam(TutorialSections[0].category);
+        setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
         setTabIdx(0);
       } else {
         setTabIdx(tabIdx);
@@ -54,11 +54,12 @@ export const LeftPane = () => {
     );
 
     if (selectedTutorial) {
-      setCategoryParam(selectedTutorial.category);
-      setFormParam(selectedTutorial.tutorials[0].formID);
+      setActionParam(
+        selectedTutorial.category,
+        selectedTutorial.tutorials[0].formID
+      );
     } else {
-      setCategoryParam(TutorialSections[0].category);
-      setFormParam(TutorialSections[0].tutorials[0].formID);
+      setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
     }
   };
 
@@ -121,7 +122,7 @@ export const LeftPane = () => {
                               }}
                               expanded={formID === tutorial.formID}
                               onChange={() => {
-                                setFormParam(tutorial.formID);
+                                setActionParam(ts.category, tutorial.formID);
                                 setPayloadMissingFields(false);
                               }}
                             >

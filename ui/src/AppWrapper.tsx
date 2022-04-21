@@ -34,15 +34,21 @@ export const setDumbAwaitedEventId = (eventId: string | undefined) => {
   dumbAwaitedEventID = eventId;
 };
 
-export const FORM_QUERY_KEY = 'form';
-export const CATEGORY_QUERY_KEY = 'category';
+export const ACTION_QUERY_KEY = 'action';
+export const ACTION_DELIM = '.';
+export const DEFAULT_ACTION = [
+  TUTORIAL_CATEGORIES.MESSAGES,
+  TUTORIAL_FORMS.BROADCAST,
+];
 
 export const AppWrapper: React.FC = () => {
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [formID, setFormID] = useState<string | null>(null);
+  const [action, setAction] = useState<string | null>(null);
+  const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
+  const [formID, setFormID] = useState<string | undefined>(undefined);
+
   const [formObject, setFormObject] = useState<ITutorial>();
-  const [categoryID, setCategoryID] = useState<string | null>(null);
   const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
     new Map()
   );
@@ -52,45 +58,74 @@ export const AppWrapper: React.FC = () => {
     initializeFocusedForm();
   }, [pathname, search]);
 
+  // Set form object based on action
   useEffect(() => {
-    if (formID && formID.length && categoryID && categoryID.length) {
-      const section = TutorialSections.find((ts) => ts.category === categoryID);
+    if (action && isValidAction(action)) {
+      const section = TutorialSections.find(
+        (ts) => ts.category === getValidAction(action)[0]
+      );
       if (section) {
-        const action = section.tutorials.find((t) => t.formID === formID);
-        action && setFormObject(action);
+        const tutorial = section.tutorials.find(
+          (t) => t.formID === getValidAction(action)[1]
+        );
+        setFormObject(tutorial);
       }
     }
-  }, [formID, categoryID]);
+  }, [action]);
 
   const initializeFocusedForm = () => {
-    const existingCategory = searchParams.get(CATEGORY_QUERY_KEY);
-    setCategoryParam(existingCategory);
-    const existingAction = searchParams.get(FORM_QUERY_KEY);
-    setFormParam(existingAction);
-  };
+    const existingAction = searchParams.get(ACTION_QUERY_KEY);
 
-  const setCategoryParam = (categoryID: string | null) => {
-    if (categoryID === null || categoryID === '') {
-      searchParams.set(CATEGORY_QUERY_KEY, TUTORIAL_CATEGORIES.MESSAGES);
-      setSearchParams(searchParams, { replace: true });
-      setCategoryID(TUTORIAL_CATEGORIES.MESSAGES);
+    if (existingAction === null) {
+      setCategoryID(DEFAULT_ACTION[0]);
+      setFormID(DEFAULT_ACTION[1]);
+      setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
     } else {
-      searchParams.set(CATEGORY_QUERY_KEY, categoryID);
-      setSearchParams(searchParams, { replace: true });
-      setCategoryID(categoryID);
+      const validAction: string[] = getValidAction(existingAction);
+      setCategoryID(validAction[0]);
+      setFormID(validAction[1]);
+      setActionParam(validAction[0], validAction[1]);
     }
   };
 
-  const setFormParam = (actionID: string | null) => {
-    if (actionID === null || actionID === '') {
-      searchParams.set(FORM_QUERY_KEY, TUTORIAL_FORMS.BROADCAST);
-      setSearchParams(searchParams, { replace: true });
-      setFormID(TUTORIAL_FORMS.BROADCAST);
-    } else {
-      searchParams.set(FORM_QUERY_KEY, actionID);
-      setSearchParams(searchParams, { replace: true });
-      setFormID(actionID);
+  const setActionParam = (categoryID: string, formID: string) => {
+    const newAction = `${categoryID}.${formID}`;
+    searchParams.set(ACTION_QUERY_KEY, newAction);
+    setSearchParams(searchParams, { replace: true });
+    setAction(newAction);
+  };
+
+  const isValidAction = (action: string) => {
+    const validAction = action.split(ACTION_DELIM);
+
+    // If valid action is not delimited correctly
+    if (validAction.length !== 2) {
+      return false;
     }
+    // If category ID is invalid
+    const categoryID = validAction[0];
+    if (
+      !Object.values(TUTORIAL_CATEGORIES).includes(
+        categoryID as TUTORIAL_CATEGORIES
+      )
+    ) {
+      return false;
+    }
+    // If formID is invalid
+    const category = TutorialSections.find((ts) => ts.category === categoryID);
+    if (!category?.tutorials.find((t) => t.formID === validAction[1])) {
+      return false;
+    }
+
+    return true;
+  };
+
+  const getValidAction = (action: string) => {
+    if (!isValidAction(action)) {
+      return DEFAULT_ACTION;
+    }
+
+    return action.split(ACTION_DELIM);
   };
 
   useEffect(() => {
@@ -170,11 +205,11 @@ export const AppWrapper: React.FC = () => {
         >
           <FormContext.Provider
             value={{
-              formID,
-              setFormParam,
-              formObject,
+              action,
+              setActionParam,
               categoryID,
-              setCategoryParam,
+              formID,
+              formObject,
               searchParams,
             }}
           >

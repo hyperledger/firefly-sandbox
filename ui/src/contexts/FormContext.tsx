@@ -18,11 +18,11 @@ import { createContext } from 'react';
 import { ITutorial } from '../interfaces/tutorialSection';
 
 export interface IFormContext {
-  formID: string | null;
-  setFormParam: (formID: string | null) => void;
+  action: string | null;
+  setActionParam: (categoryID: string, formID: string) => void;
+  categoryID: string | undefined;
+  formID: string | undefined;
   formObject: ITutorial | undefined;
-  categoryID: string | null;
-  setCategoryParam: (categoryID: string | null) => void;
   searchParams: URLSearchParams;
 }
 

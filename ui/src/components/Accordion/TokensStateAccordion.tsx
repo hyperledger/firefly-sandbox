@@ -10,7 +10,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon from 'react-jazzicon';
-import { FF_Paths } from '../../constants/FF_Paths';
+import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
@@ -32,34 +32,45 @@ export const TokenStateAccordion: React.FC = () => {
     new Date().toISOString()
   );
 
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    fetchCatcher(`${FF_Paths.tokenBalances}`)
-      .then((balanceRes: ITokenBalance[]) => {
-        setTokenBalances(
-          balanceRes.filter((b) => b.key === selfIdentity?.ethereum_address)
-        );
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
-        let balanceMap: {
-          [key: string]: { balances: ITokenBalance[] };
-        } = {};
-        balanceRes.forEach((b) => {
-          if (b.key !== selfIdentity?.ethereum_address) {
-            return;
+  useEffect(() => {
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensBalances}`)
+        .then((balanceRes: ITokenBalance[]) => {
+          if (isMounted) {
+            setTokenBalances(
+              balanceRes.filter((b) => b.key === selfIdentity?.ethereum_address)
+            );
+
+            let balanceMap: {
+              [key: string]: { balances: ITokenBalance[] };
+            } = {};
+            balanceRes.forEach((b) => {
+              if (b.key !== selfIdentity?.ethereum_address) {
+                return;
+              }
+              const balanceArr = balanceMap[b.poolName]?.balances ?? [];
+              balanceMap = {
+                ...balanceMap,
+                [b.poolName]: {
+                  balances: [...balanceArr, b],
+                },
+              };
+            });
+            setTokenBalanceMap(balanceMap);
           }
-          const balanceArr = balanceMap[b.poolName]?.balances ?? [];
-          balanceMap = {
-            ...balanceMap,
-            [b.poolName]: {
-              balances: [...balanceArr, b],
-            },
-          };
+        })
+        .catch((err) => {
+          reportFetchError(err);
         });
-        setTokenBalanceMap(balanceMap);
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [lastRefreshTime]);
+  }, [lastRefreshTime, isMounted]);
 
   const makeNonFungibleString = (balances: ITokenBalance[]): string => {
     return `${t('total')}: ${balances.length} (${balances

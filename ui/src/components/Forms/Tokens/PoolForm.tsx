@@ -8,22 +8,23 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { TUTORIALS } from '../../constants/TutorialSections';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { DEFAULT_SPACING } from '../../theme';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { DEFAULT_SPACING } from '../../../theme';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
-  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-
+  const { formID } = useContext(FormContext);
   const [name, setName] = useState<string>('');
   const [symbol, setSymbol] = useState<string>('');
   const [address, setAddress] = useState<string | undefined>();
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.POOL) {
+    if (formID !== TUTORIAL_FORMS.POOL) {
       setName('');
       setSymbol('');
       setAddress('');
@@ -36,7 +37,7 @@ export const PoolForm: React.FC = () => {
       type,
       address,
     });
-  }, [name, symbol, type, address, activeForm]);
+  }, [name, symbol, type, address, formID]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.indexOf(' ') < 0) {

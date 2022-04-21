@@ -214,4 +214,15 @@ export class MessagesTemplateController {
       return { type: 'message', id: message.header.id };
     `);
   }
+
+  @Get('/datatypes')
+  createDatatypeTemplate() {
+    return formatTemplate(`
+      const datatype = await firefly.createDatatype({
+        name: <%= ${q('name')}  %>,
+        version: <%=  ${q('version')} %>,
+      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
+      return { type: 'datatype', id: datatype.id };
+    `);
+  }
 }

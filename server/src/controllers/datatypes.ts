@@ -9,7 +9,6 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q } from '../utils';
 import { AsyncResponse, DatatypeInterface } from '../interfaces';
 
 /**
@@ -57,25 +56,5 @@ export class DatatypesController {
       value: body.schema,
     });
     return { type: 'datatype', id: datatype.id };
-  }
-}
-
-/**
- * Datatypes - Code Templates
- * Allows the frontend to display representative code snippets for backend operations.
- * For demonstration purposes only.
- */
-@JsonController('/datatypes/template')
-@OpenAPI({ tags: ['Datatypes'] })
-export class DatatypesTemplateController {
-  @Get('')
-  createDatatypeTemplate() {
-    return formatTemplate(`
-      const datatype = await firefly.createDatatype({
-        name: <%= ${q('name')}  %>,
-        version: <%=  ${q('version')} %>,
-      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
-      return { type: 'datatype', id: datatype.id };
-    `);
   }
 }

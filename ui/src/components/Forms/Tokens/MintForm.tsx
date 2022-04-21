@@ -11,18 +11,20 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
-import { TUTORIALS } from '../../constants/TutorialSections';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { ITokenPool } from '../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
-import { fetchCatcher } from '../../utils/fetches';
-import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { ITokenPool } from '../../../interfaces/api';
+import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
+import { DEFAULT_MESSAGE_STRING } from '../../Buttons/MessageTypeGroup';
 
 export const MintForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -37,8 +39,16 @@ export const MintForm: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
   const [refresh, setRefresh] = useState<number>(0);
 
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    if (activeForm !== TUTORIALS.MINT) {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (formID !== TUTORIAL_FORMS.MINT) {
       setAmount('1');
       return;
     }
@@ -61,44 +71,50 @@ export const MintForm: React.FC = () => {
         ],
       },
     });
-  }, [pool, amount, message, activeForm]);
+  }, [pool, amount, message, formID]);
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.MINT) return;
+    if (formID !== TUTORIAL_FORMS.MINT) return;
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.pools}${qParams}`)
-      .then((poolRes: ITokenPool[]) => {
-        setTokenPools(poolRes);
-        if (poolRes.length > 0) {
-          setPool(poolRes[0]);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [activeForm]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
+        .then((poolRes: ITokenPool[]) => {
+          if (isMounted) {
+            setTokenPools(poolRes);
+            if (poolRes.length > 0) {
+              setPool(poolRes[0]);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [formID, isMounted]);
 
   useEffect(() => {
     if (!pool?.id) return;
     const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    fetchCatcher(`${FF_Paths.tokenBalances}${qParams}`)
-      .then((balanceRes: any) => {
-        if (pool.type === 'nonfungible') {
-          setTokenBalance(balanceRes.length);
-        } else {
-          setTokenBalance(
-            balanceRes.length > 0
-              ? balanceRes.find(
-                  (b: any) => b.key === selfIdentity?.ethereum_address
-                ).balance
-              : 0
-          );
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [pool, refresh]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
+        .then((balanceRes: any) => {
+          if (isMounted) {
+            if (pool.type === 'nonfungible') {
+              setTokenBalance(balanceRes.length);
+            } else {
+              setTokenBalance(
+                balanceRes.length > 0
+                  ? balanceRes.find(
+                      (b: any) => b.key === selfIdentity?.ethereum_address
+                    ).balance
+                  : 0
+              );
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [pool, refresh, isMounted]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);

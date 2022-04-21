@@ -34,7 +34,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     justSubmitted,
     setJustSubmitted,
   } = useContext(EventContext);
-  const { formID, categoryID } = useContext(FormContext);
+  const { formID, categoryID, isBlob } = useContext(FormContext);
 
   useEffect(() => {
     setJustSubmitted(false);
@@ -55,18 +55,15 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const handlePost = () => {
     setApiStatus(undefined);
     setApiResponse({});
-    const blobUpload = formID?.includes('blob');
     managePayload();
     const reqDetails: any = {
       method: 'POST',
-      body: blobUpload
-        ? buildFormData(payload, endpoint)
-        : JSON.stringify(payload),
+      body: isBlob ? buildFormData(payload, endpoint) : JSON.stringify(payload),
     };
-    if (!blobUpload) {
+    if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(endpoint, reqDetails)
+    fetch(isBlob ? endpoint + 'blob' : endpoint, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,
@@ -93,8 +90,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   };
 
   const managePayload = () => {
-    const blobUpload = formID?.includes('blob');
-    if (!blobUpload) {
+    if (!isBlob) {
       delete payload['filename'];
     }
     if (categoryID === TUTORIAL_CATEGORIES.TOKENS) {

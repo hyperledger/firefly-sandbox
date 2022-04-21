@@ -49,7 +49,7 @@ export const AppWrapper: React.FC = () => {
   const [action, setAction] = useState<string | null>(null);
   const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
   const [formID, setFormID] = useState<string | undefined>(undefined);
-
+  const [isBlob, setIsBlob] = useState<boolean>(false);
   const [formObject, setFormObject] = useState<ITutorial>();
   const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
     new Map()
@@ -71,6 +71,7 @@ export const AppWrapper: React.FC = () => {
           (t) => t.formID === getValidAction(action)[1]
         );
         setFormObject(tutorial);
+        setPayloadMissingFields(false);
       }
     }
   }, [action]);
@@ -213,6 +214,8 @@ export const AppWrapper: React.FC = () => {
               categoryID,
               formID,
               formObject,
+              isBlob,
+              setIsBlob,
               searchParams,
             }}
           >

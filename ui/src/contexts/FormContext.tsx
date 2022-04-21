@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createContext } from 'react';
+import { createContext, Dispatch, SetStateAction } from 'react';
 import { ITutorial } from '../interfaces/tutorialSection';
 
 export interface IFormContext {
@@ -23,6 +23,8 @@ export interface IFormContext {
   categoryID: string | undefined;
   formID: string | undefined;
   formObject: ITutorial | undefined;
+  isBlob: boolean;
+  setIsBlob: Dispatch<SetStateAction<boolean>>;
   searchParams: URLSearchParams;
 }
 

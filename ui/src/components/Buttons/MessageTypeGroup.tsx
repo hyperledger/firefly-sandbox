@@ -66,14 +66,14 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
-  const { formID } = useContext(FormContext);
+  const { formID, isBlob, setIsBlob } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
   const { setPayloadMissingFields } = useContext(ApplicationContext);
 
   useEffect(() => {
     if (formID !== TUTORIAL_CATEGORIES.MESSAGES) return;
-    if (formID.indexOf('blob') < 0) {
+    if (!isBlob) {
       if (!message && !jsonValue) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
@@ -162,28 +162,32 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
-    newAlignment: POST_BODY_TYPE
+    messageType: POST_BODY_TYPE
   ) => {
-    if (!newAlignment) {
+    if (!messageType) {
       return;
     }
-    setMessageType(newAlignment);
-    switch (newAlignment) {
+    setMessageType(messageType);
+    switch (messageType) {
       case POST_BODY_TYPE.NONE:
+        setIsBlob(false);
         onSetMessage(undefined);
         return;
       case POST_BODY_TYPE.STRING:
+        setIsBlob(false);
         checkMissingFields();
         onSetDatatype(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         onSetJsonValue(undefined);
         return;
       case POST_BODY_TYPE.JSON:
+        setIsBlob(false);
         onSetMessage(undefined);
         checkMissingFields();
         setDefaultJsonDatatype();
         return;
       case POST_BODY_TYPE.FILE:
+        setIsBlob(true);
         onSetMessage(undefined);
         onSetJsonValue(undefined);
         onSetFileName('');

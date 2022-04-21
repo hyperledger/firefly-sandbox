@@ -129,16 +129,16 @@ export class MessagesTemplateController {
           {
             datatype: { 
               name: <%= ${q('datatypename')} %>,
-              version: <%= ${q('datatypeversion')} %>
+              version: <%= ${q('datatypeversion')} %>,
             },
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
-            })} %>
-          }
-            <% } else { %>
-              { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> }
-          <%} 
+            })} %>,
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };
@@ -178,16 +178,16 @@ export class MessagesTemplateController {
           {
             datatype: { 
               name: <%= ${q('datatypename')} %>,
-              version: <%= ${q('datatypeversion')} %>
+              version: <%= ${q('datatypeversion')} %>,
             },
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
             })} %>
-          }
-            <% } else { %>
-              { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> }
-          <%} 
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };

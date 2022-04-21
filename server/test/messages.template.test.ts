@@ -28,8 +28,8 @@ describe('Templates: Messages', () => {
                 topics: [],
               },
               data: [
-                    { value: '' }
-                ],
+                { value: '' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -52,8 +52,8 @@ describe('Templates: Messages', () => {
                 topics: ['test-topic'],
               },
               data: [
-                    { value: '\\'Hello\\'' }
-                ],
+                { value: '\\'Hello\\'' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -79,11 +79,11 @@ describe('Templates: Messages', () => {
               {
                 datatype: { 
                   name: undefined,
-                  version: undefined
+                  version: undefined,
                 },
-                value: {"val1":"f ... l2":"bar"}
-              }
-                ],
+                value: {"val1":"f ... l2":"bar"},
+              },
+            ],
           });
           return { type: 'message', id: message.header.id };
       `),
@@ -150,8 +150,8 @@ describe('Templates: Messages', () => {
                 members: [],
               },
               data: [
-                    { value: '' }
-                ],
+                { value: '' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -178,8 +178,8 @@ describe('Templates: Messages', () => {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
               data: [
-                    { value: '\\'Hello\\'' }
-                ],
+                { value: '\\'Hello\\'' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -209,11 +209,11 @@ describe('Templates: Messages', () => {
                 {
                   datatype: { 
                     name: undefined,
-                    version: undefined
+                    version: undefined,
                   },
                   value: {"val1":"f ... l2":"bar"}
-                }
-                  ],
+                },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),

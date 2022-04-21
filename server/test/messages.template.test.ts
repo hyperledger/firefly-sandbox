@@ -25,11 +25,11 @@ describe('Templates: Messages', () => {
             const message = await firefly.sendBroadcast({
               header: {
                 tag: undefined,
-                topics: undefined,
+                topics: [],
               },
               data: [
-                    { value: '' }
-                ],
+                { value: '' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -52,8 +52,8 @@ describe('Templates: Messages', () => {
                 topics: ['test-topic'],
               },
               data: [
-                    { value: '\\'Hello\\'' }
-                ],
+                { value: '\\'Hello\\'' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -79,11 +79,11 @@ describe('Templates: Messages', () => {
               {
                 datatype: { 
                   name: undefined,
-                  version: undefined
+                  version: undefined,
                 },
-                value: {"val1":"f ... l2":"bar"}
-              }
-                ],
+                value: {"val1":"f ... l2":"bar"},
+              },
+            ],
           });
           return { type: 'message', id: message.header.id };
       `),
@@ -144,14 +144,14 @@ describe('Templates: Messages', () => {
             const message = await firefly.sendPrivateMessage({
               header: {
                 tag: undefined,
-                topics: undefined,
+                topics: [],
               },
               group: {
                 members: [],
               },
               data: [
-                    { value: '' }
-                ],
+                { value: '' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -178,8 +178,8 @@ describe('Templates: Messages', () => {
                 members: [{ identity: 'alpha' }, { identity: 'beta' }],
               },
               data: [
-                    { value: '\\'Hello\\'' }
-                ],
+                { value: '\\'Hello\\'' },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),
@@ -209,11 +209,11 @@ describe('Templates: Messages', () => {
                 {
                   datatype: { 
                     name: undefined,
-                    version: undefined
+                    version: undefined,
                   },
                   value: {"val1":"f ... l2":"bar"}
-                }
-                  ],
+                },
+              ],
             });
             return { type: 'message', id: message.header.id };
         `),

@@ -10,14 +10,12 @@ import {
   MessageSnackbar,
   SnackbarMessageType,
 } from './components/Snackbar/MessageSnackbar';
+import { SDK_PATHS } from './constants/SDK_PATHS';
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
-import { IApiStatus, ISelfIdentity } from './interfaces/api';
+import { IApiStatus, ISelfIdentity, IVerifier } from './interfaces/api';
 import { themeOptions } from './theme';
-import { summarizeFetchError } from './utils/fetches';
-
-// TODO: Make dynamic
-export const SELECTED_NS = 'default';
+import { fetchCatcher, summarizeFetchError } from './utils/fetches';
 
 function App() {
   const [initialized, setInitialized] = useState(true);
@@ -35,37 +33,23 @@ function App() {
   });
 
   useEffect(() => {
-    fetch(`/api/common/organizations/self`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((org) => {
-        fetch(`/api/common/verifiers`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        })
-          .then((response) => {
-            return response.json();
-          })
-          .then((data) => {
+    fetchCatcher(`${SDK_PATHS.organizations}/self`)
+      .then((org: ISelfIdentity) => {
+        fetchCatcher(SDK_PATHS.verifiers)
+          .then((verifierRes: IVerifier[]) => {
             setSelfIdentity({
               ...org,
-              ethereum_address: data.find((d: any) => d.did === org.did).value,
+              ethereum_address: verifierRes.find(
+                (verifier: IVerifier) => verifier.did === org.did
+              )?.value,
             });
           })
-          .catch(() => {
-            return null;
+          .catch((err) => {
+            reportFetchError(err);
           });
       })
-      .catch(() => {
-        return null;
+      .catch((err) => {
+        reportFetchError(err);
       })
       .finally(() => {
         setInitialized(true);

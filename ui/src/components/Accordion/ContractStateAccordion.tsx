@@ -29,32 +29,44 @@ export const ContractStateAccordion: React.FC = () => {
     new Date().toISOString()
   );
 
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    fetchCatcher(`${SDK_PATHS.contractsApi}`)
-      .then((apiRes: IContractApi[]) => {
-        setContractApis(apiRes);
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [lastRefreshTime]);
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   useEffect(() => {
-    setContractListeners([]);
-    contractApis?.map((api) => {
-      fetchCatcher(SDK_PATHS.contractsListenerByApiName(api.name))
-        .then((listenerRes: IContractListener[]) => {
-          setContractListeners((prevListeners) => {
-            return prevListeners
-              ? [...prevListeners, ...listenerRes]
-              : listenerRes;
-          });
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.contractsApi}`)
+        .then((apiRes: IContractApi[]) => {
+          isMounted && setContractApis(apiRes);
         })
         .catch((err) => {
           reportFetchError(err);
         });
+  }, [lastRefreshTime, isMounted]);
+
+  useEffect(() => {
+    setContractListeners([]);
+    contractApis?.map((api) => {
+      isMounted &&
+        fetchCatcher(SDK_PATHS.contractsListenerByApiName(api.name))
+          .then((listenerRes: IContractListener[]) => {
+            if (isMounted) {
+              setContractListeners((prevListeners) => {
+                return prevListeners
+                  ? [...prevListeners, ...listenerRes]
+                  : listenerRes;
+              });
+            }
+          })
+          .catch((err) => {
+            reportFetchError(err);
+          });
     });
-  }, [contractApis]);
+  }, [contractApis, isMounted]);
 
   return (
     <Accordion

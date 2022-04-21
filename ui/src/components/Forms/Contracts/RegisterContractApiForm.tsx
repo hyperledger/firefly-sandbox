@@ -33,6 +33,14 @@ export const RegisterContractApiForm: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.REGISTER_CONTRACT_API) {
       return;
@@ -47,17 +55,20 @@ export const RegisterContractApiForm: React.FC = () => {
   }, [name, contractInterfaceIdx, contractAddress, formID]);
 
   useEffect(() => {
-    fetchCatcher(`${SDK_PATHS.contractsInterface}`)
-      .then((interfacesRes: IContractInterface[]) => {
-        setContractInterfaces(interfacesRes);
-        if (interfacesRes.length > 0) {
-          setContractInterfaceIdx(0);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [formID]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.contractsInterface}`)
+        .then((interfacesRes: IContractInterface[]) => {
+          if (isMounted) {
+            setContractInterfaces(interfacesRes);
+            if (interfacesRes.length > 0) {
+              setContractInterfaceIdx(0);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [formID, isMounted]);
 
   return (
     <Grid container>

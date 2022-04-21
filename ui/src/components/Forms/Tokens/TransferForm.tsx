@@ -17,7 +17,7 @@ import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
-import { ITokenPool, IVerifiers } from '../../../interfaces/api';
+import { ITokenPool, IVerifier } from '../../../interfaces/api';
 import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 
@@ -31,11 +31,19 @@ export const TransferForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
-  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifiers[]>([]);
+  const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const [refresh, setRefresh] = useState<string>('0');
+
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.TRANSFER) {
@@ -56,29 +64,35 @@ export const TransferForm: React.FC = () => {
 
   useEffect(() => {
     const qParams = `?limit=25`;
-    fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
-      .then((poolRes: ITokenPool[]) => {
-        setTokenPools(poolRes);
-        if (poolRes.length > 0) {
-          setPool(poolRes[0]);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
+    if (isMounted) {
+      fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
+        .then((poolRes: ITokenPool[]) => {
+          if (isMounted) {
+            setTokenPools(poolRes);
+            if (poolRes.length > 0) {
+              setPool(poolRes[0]);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
 
-    fetchCatcher(`${SDK_PATHS.commonVerifiers}`)
-      .then((verifiersRes: IVerifiers[]) => {
-        const verifiers = verifiersRes;
-        setTokenVerifiers(verifiers);
-        if (verifiers.length > 0) {
-          setRecipient(verifiers[0].value);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [formID]);
+      fetchCatcher(`${SDK_PATHS.verifiers}`)
+        .then((verifiersRes: IVerifier[]) => {
+          if (isMounted) {
+            const verifiers = verifiersRes;
+            setTokenVerifiers(verifiers);
+            if (verifiers.length > 0) {
+              setRecipient(verifiers[0].value);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+    }
+  }, [formID, isMounted]);
 
   useEffect(() => {
     if (!isFungible()) {
@@ -89,24 +103,27 @@ export const TransferForm: React.FC = () => {
   useEffect(() => {
     if (!pool?.id) return;
     const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
-      .then((balanceRes: any) => {
-        if (pool.type === 'nonfungible') {
-          setTokenBalance(balanceRes.length);
-        } else {
-          setTokenBalance(
-            balanceRes.length > 0
-              ? balanceRes.find(
-                  (b: any) => b.key === selfIdentity?.ethereum_address
-                ).balance
-              : 0
-          );
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [pool, refresh]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
+        .then((balanceRes: any) => {
+          if (isMounted) {
+            if (pool.type === 'nonfungible') {
+              setTokenBalance(balanceRes.length);
+            } else {
+              setTokenBalance(
+                balanceRes.length > 0
+                  ? balanceRes.find(
+                      (b: any) => b.key === selfIdentity?.ethereum_address
+                    ).balance
+                  : 0
+              );
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [pool, refresh, isMounted]);
 
   const isFungible = () => {
     const selectedPool = tokenPools.find((p) => p.name === pool?.name);

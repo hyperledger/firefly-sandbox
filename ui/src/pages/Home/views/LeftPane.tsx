@@ -34,7 +34,7 @@ export const LeftPane = () => {
 
   // Set tab index when category ID changes
   useEffect(() => {
-    if (categoryID !== null && categoryID !== '') {
+    if (formID && categoryID) {
       const tabIdx = TutorialSections.findIndex(
         (t) => t.category === categoryID
       );

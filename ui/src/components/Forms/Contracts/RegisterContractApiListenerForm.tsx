@@ -33,6 +33,14 @@ export const RegisterContractApiListenerForm: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [topic, setTopic] = useState<string>('');
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.REGISTER_CONTRACT_API_LISTENER) {
       return;
@@ -48,33 +56,37 @@ export const RegisterContractApiListenerForm: React.FC = () => {
   }, [name, topic, contractApi, eventPath, formID]);
 
   useEffect(() => {
-    fetchCatcher(`${SDK_PATHS.contractsApi}`)
-      .then((apiRes: IContractApi[]) => {
-        setContractApis(apiRes);
-        if (apiRes.length > 0) {
-          setContractApi(apiRes[0].name);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [formID]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.contractsApi}`)
+        .then((apiRes: IContractApi[]) => {
+          if (isMounted) {
+            setContractApis(apiRes);
+            if (apiRes.length > 0) {
+              setContractApi(apiRes[0].name);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [formID, isMounted]);
 
   useEffect(() => {
-    fetchCatcher(`${SDK_PATHS.contractsApiByName(contractApi)}`)
-      .then((apiRes: IContractApi) => {
-        if (apiRes?.events) {
-          const eventNames = apiRes.events.map((e: any) => e.pathname);
-          setEvents(eventNames);
-          if (eventNames.length > 0) {
-            setEventPath(eventNames[0]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.contractsApiByName(contractApi)}`)
+        .then((apiRes: IContractApi) => {
+          if (apiRes?.events && isMounted) {
+            const eventNames = apiRes.events.map((e: any) => e.pathname);
+            setEvents(eventNames);
+            if (eventNames.length > 0) {
+              setEventPath(eventNames[0]);
+            }
           }
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [contractApi]);
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [contractApi, isMounted]);
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>

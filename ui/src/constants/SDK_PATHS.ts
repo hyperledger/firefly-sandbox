@@ -1,6 +1,7 @@
 export const SDK_PATHS = {
   // Common
-  commonVerifiers: '/api/common/verifiers',
+  organizations: '/api/common/organizations',
+  verifiers: '/api/common/verifiers',
   // Contracts
   contractsApi: '/api/contracts/api',
   contractsApiByName: (apiName: string) => `/api/contracts/api/${apiName}`,

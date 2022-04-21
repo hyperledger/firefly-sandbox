@@ -55,15 +55,22 @@ export const MiddlePane = () => {
       ) {
         return;
       }
-      buildCodeBlock(template);
+      const codeBlock: string | undefined = getCodeBlock(template);
+      codeBlock && setCodeBlock(codeBlock);
     }
-  }, [template, formID]);
+  }, [template, jsonPayload, formID]);
 
-  const buildCodeBlock = (codeTemplate: string) => {
-    if (Object.keys(jsonPayload).length < 1) return;
-    const compiled = _.template(codeTemplate);
-    const result = compiled(jsonPayload);
-    setCodeBlock(result);
+  const getCodeBlock = (codeTemplate: string) => {
+    // Wrap in try/catch to prevent compiling different jsonPayload and template together
+    try {
+      if (Object.keys(jsonPayload).length < 1) return;
+      const compiled = _.template(codeTemplate);
+      const result = compiled(jsonPayload);
+
+      return result;
+    } catch {
+      return undefined;
+    }
   };
 
   const getApiStatusColor = () => {

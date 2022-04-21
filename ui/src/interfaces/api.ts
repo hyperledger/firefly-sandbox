@@ -154,7 +154,7 @@ export interface ISelfIdentity {
   id: string;
   name: string;
   did: string;
-  ethereum_address: string;
+  ethereum_address?: string | undefined;
 }
 
 export interface INetworkIdentity {
@@ -240,7 +240,7 @@ export interface ITokenConnector {
   name: string;
 }
 
-export interface IVerifiers {
+export interface IVerifier {
   did: string;
   type: string;
   value: string;

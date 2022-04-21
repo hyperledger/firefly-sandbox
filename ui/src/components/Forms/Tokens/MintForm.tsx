@@ -39,6 +39,14 @@ export const MintForm: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
   const [refresh, setRefresh] = useState<number>(0);
 
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
+
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) {
       setAmount('1');
@@ -68,39 +76,45 @@ export const MintForm: React.FC = () => {
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
     const qParams = `?limit=25`;
-    fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
-      .then((poolRes: ITokenPool[]) => {
-        setTokenPools(poolRes);
-        if (poolRes.length > 0) {
-          setPool(poolRes[0]);
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [formID]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
+        .then((poolRes: ITokenPool[]) => {
+          if (isMounted) {
+            setTokenPools(poolRes);
+            if (poolRes.length > 0) {
+              setPool(poolRes[0]);
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [formID, isMounted]);
 
   useEffect(() => {
     if (!pool?.id) return;
     const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
-      .then((balanceRes: any) => {
-        if (pool.type === 'nonfungible') {
-          setTokenBalance(balanceRes.length);
-        } else {
-          setTokenBalance(
-            balanceRes.length > 0
-              ? balanceRes.find(
-                  (b: any) => b.key === selfIdentity?.ethereum_address
-                ).balance
-              : 0
-          );
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-  }, [pool, refresh]);
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
+        .then((balanceRes: any) => {
+          if (isMounted) {
+            if (pool.type === 'nonfungible') {
+              setTokenBalance(balanceRes.length);
+            } else {
+              setTokenBalance(
+                balanceRes.length > 0
+                  ? balanceRes.find(
+                      (b: any) => b.key === selfIdentity?.ethereum_address
+                    ).balance
+                  : 0
+              );
+            }
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [pool, refresh, isMounted]);
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);

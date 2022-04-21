@@ -12,11 +12,14 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { IDatatype } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
 import { isJsonString } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
@@ -33,6 +36,7 @@ export const PrivateForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
+  const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [identities, setIdentities] = useState<NetworkIdentity[]>([]);
@@ -40,27 +44,27 @@ export const PrivateForm: React.FC = () => {
   const [fileName, setFileName] = useState<string>('');
   const [jsonValue, setJsonValue] = useState<string | undefined>();
   const [datatype, setDatatype] = useState<IDatatype | undefined>();
-
   const [tag, setTag] = useState<string>();
   const [topics, setTopics] = useState<string>();
 
+  const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
-    fetch(`/api/common/organizations?exclude_self=false`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setIdentities(data);
-      })
-      .catch(() => {
-        return null;
-      });
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
   }, []);
+
+  useEffect(() => {
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.organizations}?exclude_self=false`)
+        .then((identityRes: NetworkIdentity[]) => {
+          isMounted && setIdentities(identityRes);
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [isMounted]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.PRIVATE) return;

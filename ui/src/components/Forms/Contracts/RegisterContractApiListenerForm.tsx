@@ -9,17 +9,20 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../../constants/FF_Paths';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { IContractApi } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import { TUTORIALS } from '../../../constants/TutorialSections';
-import { IContractApi } from '../../../interfaces/api';
 
 export const RegisterContractApiListenerForm: React.FC = () => {
-  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
+    useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -32,7 +35,7 @@ export const RegisterContractApiListenerForm: React.FC = () => {
   const [topic, setTopic] = useState<string>('');
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.REGISTER_CONTRACT_API_LISTENER) {
+    if (formID !== TUTORIAL_FORMS.REGISTER_CONTRACT_API_LISTENER) {
       return;
     }
     if (!topic || !eventPath) setPayloadMissingFields(true);
@@ -43,10 +46,10 @@ export const RegisterContractApiListenerForm: React.FC = () => {
       apiName: contractApi,
       eventPath,
     });
-  }, [name, topic, contractApi, eventPath, activeForm]);
+  }, [name, topic, contractApi, eventPath, formID]);
 
   useEffect(() => {
-    fetchCatcher(`${FF_Paths.api}`)
+    fetchCatcher(`${SDK_PATHS.contractsApi}`)
       .then((apiRes: IContractApi[]) => {
         setContractApis(apiRes);
         if (apiRes.length > 0) {
@@ -56,10 +59,10 @@ export const RegisterContractApiListenerForm: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, [activeForm]);
+  }, [formID]);
 
   useEffect(() => {
-    fetchCatcher(`${FF_Paths.api}/${contractApi}`)
+    fetchCatcher(`${SDK_PATHS.contractsApiByName(contractApi)}`)
       .then((apiRes: IContractApi) => {
         if (apiRes?.events) {
           const eventNames = apiRes.events.map((e: any) => e.pathname);

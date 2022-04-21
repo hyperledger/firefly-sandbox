@@ -9,8 +9,7 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { SELECTED_NS } from '../../App';
-import { FF_Paths } from '../../constants/FF_Paths';
+import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { IContractApi, IContractListener } from '../../interfaces/api';
 import { fetchCatcher } from '../../utils/fetches';
@@ -31,7 +30,7 @@ export const ContractStateAccordion: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchCatcher(`${FF_Paths.api}`)
+    fetchCatcher(`${SDK_PATHS.contractsApi}`)
       .then((apiRes: IContractApi[]) => {
         setContractApis(apiRes);
       })
@@ -43,7 +42,7 @@ export const ContractStateAccordion: React.FC = () => {
   useEffect(() => {
     setContractListeners([]);
     contractApis?.map((api) => {
-      fetchCatcher(FF_Paths.listenerByApiName(api.name))
+      fetchCatcher(SDK_PATHS.contractsListenerByApiName(api.name))
         .then((listenerRes: IContractListener[]) => {
           setContractListeners((prevListeners) => {
             return prevListeners
@@ -107,7 +106,7 @@ export const ContractStateAccordion: React.FC = () => {
                     <Grid container item>
                       <Grid item xs={8} container pt={1}>
                         <HashPopover
-                          address={`${FF_Paths.nsPrefix}/${SELECTED_NS}/apis/${api.name}`}
+                          address={`${SDK_PATHS.contractsApiByName(api.name)}}`}
                           fullLength
                         />
                       </Grid>
@@ -143,7 +142,7 @@ export const ContractStateAccordion: React.FC = () => {
                                 <FFAccordionText
                                   text={`${t('listener')}: ${l.eventName}; ${t(
                                     'topic'
-                                  )}:${l.topic}`}
+                                  )}: ${l.topic}`}
                                   color="secondary"
                                 />
                               </Grid>

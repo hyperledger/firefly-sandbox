@@ -10,7 +10,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon from 'react-jazzicon';
-import { FF_Paths } from '../../constants/FF_Paths';
+import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
@@ -33,7 +33,7 @@ export const TokenStateAccordion: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchCatcher(`${FF_Paths.tokenBalances}`)
+    fetchCatcher(`${SDK_PATHS.tokensBalances}`)
       .then((balanceRes: ITokenBalance[]) => {
         setTokenBalances(
           balanceRes.filter((b) => b.key === selfIdentity?.ethereum_address)

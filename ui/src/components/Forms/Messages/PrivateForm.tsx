@@ -12,14 +12,16 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { IDatatype } from '../../interfaces/api';
-import { DEFAULT_SPACING } from '../../theme';
-import { isJsonString } from '../../utils/strings';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { IDatatype } from '../../../interfaces/api';
+import { DEFAULT_SPACING } from '../../../theme';
+import { isJsonString } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
-} from '../Buttons/MessageTypeGroup';
+} from '../../Buttons/MessageTypeGroup';
 
 interface NetworkIdentity {
   did: string;
@@ -28,8 +30,10 @@ interface NetworkIdentity {
 }
 
 export const PrivateForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
+    useContext(FormContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [identities, setIdentities] = useState<NetworkIdentity[]>([]);
@@ -60,9 +64,7 @@ export const PrivateForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!activeForm.includes('private')) {
-      return;
-    }
+    if (formID !== TUTORIAL_FORMS.PRIVATE) return;
     setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
@@ -75,16 +77,7 @@ export const PrivateForm: React.FC = () => {
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
     });
-  }, [
-    message,
-    recipients,
-    tag,
-    topics,
-    fileName,
-    activeForm,
-    datatype,
-    jsonValue,
-  ]);
+  }, [message, recipients, tag, topics, fileName, formID, datatype, jsonValue]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {

@@ -19,9 +19,6 @@ import { IApiStatus, ISelfIdentity } from '../interfaces/api';
 
 export interface IApplicationContext {
   selfIdentity: ISelfIdentity | undefined;
-  // Active form
-  activeForm: string;
-  setActiveForm: Dispatch<SetStateAction<string>>;
   // Json Payload
   jsonPayload: object;
   setJsonPayload: Dispatch<SetStateAction<object>>;

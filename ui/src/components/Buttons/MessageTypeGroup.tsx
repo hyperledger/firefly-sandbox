@@ -18,12 +18,16 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
+import { SDK_PATHS } from '../../constants/SDK_PATHS';
+import {
+  TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
+} from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { FormContext } from '../../contexts/FormContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
 import { IDatatype } from '../../interfaces/api';
-import { getTemplateCategory } from '../../pages/Home/views/MiddlePane';
 import { DEFAULT_PADDING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 
@@ -61,14 +65,14 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
+  const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
-  const { activeForm, setActiveForm, setPayloadMissingFields } =
-    useContext(ApplicationContext);
+  const { setPayloadMissingFields } = useContext(ApplicationContext);
 
   useEffect(() => {
-    if (getTemplateCategory(activeForm) !== 'messages') return;
-    if (activeForm.indexOf('blob') < 0) {
+    if (formID !== TUTORIAL_CATEGORIES.MESSAGES) return;
+    if (formID.indexOf('blob') < 0) {
       if (!message && !jsonValue) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
@@ -79,16 +83,16 @@ export const MessageTypeGroup: React.FC<Props> = ({
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(!file.files[0] ? true : false);
     }
-  }, [activeForm, messageType]);
+  }, [formID, messageType]);
 
   useEffect(() => {
-    if (getTemplateCategory(activeForm) !== 'messages') return;
+    if (formID !== TUTORIAL_CATEGORIES.MESSAGES) return;
     checkMissingFields();
   }, [message, jsonValue, messageType, fileName, recipients]);
 
   const checkMissingFields = () => {
     if (
-      (activeForm.includes('private') && recipients?.length === 0) ||
+      (formID === TUTORIAL_FORMS.PRIVATE && recipients?.length === 0) ||
       (!message && messageType === POST_BODY_TYPE.STRING) ||
       (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
       (messageType === POST_BODY_TYPE.FILE && !fileName)
@@ -101,7 +105,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   useEffect(() => {
     if (
-      getTemplateCategory(activeForm) !== 'messages' ||
+      formID === null ||
+      formID !== TUTORIAL_CATEGORIES.MESSAGES ||
       messageType !== POST_BODY_TYPE.JSON ||
       !datatype
     )
@@ -111,7 +116,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   const setDefaultJsonDatatype = () => {
     if (messageType === POST_BODY_TYPE.JSON) {
-      fetchCatcher(`${FF_Paths.datatypes}`)
+      fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
         .then((dtRes: IDatatype[]) => {
           setDatatypes(dtRes);
           if (dtRes.length > 0) {
@@ -165,35 +170,23 @@ export const MessageTypeGroup: React.FC<Props> = ({
     switch (newAlignment) {
       case POST_BODY_TYPE.NONE:
         onSetMessage(undefined);
-        if (activeForm.includes('blob')) {
-          setActiveForm(activeForm.replace('blob', ''));
-        }
         return;
       case POST_BODY_TYPE.STRING:
         checkMissingFields();
         onSetDatatype(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
         onSetJsonValue(undefined);
-        if (activeForm.includes('blob')) {
-          setActiveForm(activeForm.replace('blob', ''));
-        }
         return;
       case POST_BODY_TYPE.JSON:
         onSetMessage(undefined);
         checkMissingFields();
         setDefaultJsonDatatype();
-        if (activeForm.includes('blob')) {
-          setActiveForm(activeForm.replace('blob', ''));
-        }
         return;
       case POST_BODY_TYPE.FILE:
         onSetMessage(undefined);
         onSetJsonValue(undefined);
         onSetFileName('');
         onSetDatatype(undefined);
-        setActiveForm(
-          activeForm.indexOf('blob') > -1 ? activeForm : activeForm + 'blob'
-        );
         return;
       default:
         onSetMessage(DEFAULT_MESSAGE_STRING);

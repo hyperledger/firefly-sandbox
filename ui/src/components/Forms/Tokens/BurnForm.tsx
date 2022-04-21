@@ -1,4 +1,3 @@
-import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Button,
   FormControl,
@@ -11,62 +10,44 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FF_Paths } from '../../constants/FF_Paths';
-import { TUTORIALS } from '../../constants/TutorialSections';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { SnackbarContext } from '../../contexts/SnackbarContext';
-import { ITokenPool } from '../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../theme';
-import { fetchCatcher } from '../../utils/fetches';
-import { DEFAULT_MESSAGE_STRING } from '../Buttons/MessageTypeGroup';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { ITokenPool } from '../../../interfaces/api';
+import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
+import { FormContext } from '../../../contexts/FormContext';
 
-export const MintForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
+export const BurnForm: React.FC = () => {
+  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
+  const { formID, setFormParam, formObject, categoryID, setCategoryParam } =
+    useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
+  const [pool, setPool] = useState<ITokenPool>();
+  const [amount, setAmount] = useState<string>('0');
+  const [tokenIndex, setTokenIndex] = useState<string | null>('');
+  const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
 
-  const [message] = useState<string | object | undefined>(
-    DEFAULT_MESSAGE_STRING
-  );
-
-  const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<string>('1');
-  const [refresh, setRefresh] = useState<number>(0);
-
   useEffect(() => {
-    if (activeForm !== TUTORIALS.MINT) {
-      setAmount('1');
-      return;
-    }
-    setPayloadMissingFields(!amount || !pool);
-    if (!message) {
-      setJsonPayload({
-        pool: pool?.name,
-        amount: amount.toString(),
-      });
-      return;
-    }
+    if (formID !== TUTORIAL_FORMS.BURN) return;
+    setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
     setJsonPayload({
       pool: pool?.name,
       amount: amount.toString(),
-      message: {
-        data: [
-          {
-            value: message,
-          },
-        ],
-      },
+      tokenIndex: tokenIndex?.toString(),
     });
-  }, [pool, amount, message, activeForm]);
+  }, [pool, amount, tokenIndex, formID]);
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.MINT) return;
     const qParams = `?limit=25`;
-    fetchCatcher(`${FF_Paths.pools}${qParams}`)
+    fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
       .then((poolRes: ITokenPool[]) => {
         setTokenPools(poolRes);
         if (poolRes.length > 0) {
@@ -76,12 +57,12 @@ export const MintForm: React.FC = () => {
       .catch((err) => {
         reportFetchError(err);
       });
-  }, [activeForm]);
+  }, [formID]);
 
   useEffect(() => {
     if (!pool?.id) return;
     const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    fetchCatcher(`${FF_Paths.tokenBalances}${qParams}`)
+    fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
       .then((balanceRes: any) => {
         if (pool.type === 'nonfungible') {
           setTokenBalance(balanceRes.length);
@@ -100,6 +81,23 @@ export const MintForm: React.FC = () => {
       });
   }, [pool, refresh]);
 
+  useEffect(() => {
+    if (!isFungible()) {
+      setAmount('1');
+    }
+  }, [pool, amount]);
+
+  const isFungible = () => {
+    const selectedPool = tokenPools.find((p) => p.name === pool?.name);
+    return selectedPool?.type === 'fungible';
+  };
+
+  const handleTokenIndexChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setTokenIndex(event.target.value);
+  };
+
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);
   };
@@ -107,6 +105,7 @@ export const MintForm: React.FC = () => {
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
+        {/* Token Pools */}
         <Grid container item justifyContent="space-between" spacing={1}>
           <Grid item width="100%">
             <FormControl
@@ -142,7 +141,7 @@ export const MintForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid item xs={12} justifyContent={'space-between'}>
+        <Grid item xs={12}>
           {t('tokenBalance')}: {tokenBalance}
           <Button
             sx={{ marginLeft: DEFAULT_PADDING }}
@@ -161,19 +160,30 @@ export const MintForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
+              value={amount}
+              disabled={!isFungible()}
               type="number"
               label={t('amount')}
-              placeholder={t('exampleAmount')}
-              value={amount}
+              placeholder="ex. 10"
               onChange={handleAmountChange}
             />
           </FormControl>
         </Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-          message={message}
-          onSetMessage={(msg: string) => setMessage(msg)}
-        /> */}
+        {!isFungible() ? (
+          <Grid item xs={4}>
+            <FormControl fullWidth required>
+              <TextField
+                fullWidth
+                label={t('tokenIndex')}
+                placeholder="ex. 1"
+                value={tokenIndex}
+                onChange={handleTokenIndexChange}
+              />
+            </FormControl>
+          </Grid>
+        ) : (
+          <></>
+        )}
       </Grid>
     </Grid>
   );

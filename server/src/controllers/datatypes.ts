@@ -59,23 +59,3 @@ export class DatatypesController {
     return { type: 'datatype', id: datatype.id };
   }
 }
-
-/**
- * Datatypes - Code Templates
- * Allows the frontend to display representative code snippets for backend operations.
- * For demonstration purposes only.
- */
-@JsonController('/datatypes/template')
-@OpenAPI({ tags: ['Datatypes'] })
-export class DatatypesTemplateController {
-  @Get('')
-  createDatatypeTemplate() {
-    return formatTemplate(`
-      const datatype = await firefly.createDatatype({
-        name:  <%= ${q('name')}  %>,
-        version: <%=  ${q('version')} %>,
-      },  <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
-      return { type: 'datatype', id: datatype.id };
-    `);
-  }
-}

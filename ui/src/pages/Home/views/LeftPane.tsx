@@ -1,31 +1,23 @@
-import { Adjust, Description, Message } from '@mui/icons-material';
-import { Divider, Grid, Tab, Tabs } from '@mui/material';
-import React, { useContext, useState } from 'react';
+import { ExpandMore } from '@mui/icons-material';
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Divider,
+  Grid,
+  Tab,
+  Tabs,
+} from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ContractStateAccordion } from '../../../components/Accordion/ContractStateAccordion';
-import { FFAccordion } from '../../../components/Accordion/FFAccordion';
+import { FFAccordionHeader } from '../../../components/Accordion/FFAccordionHeader';
+import { FFAccordionText } from '../../../components/Accordion/FFAccordionText';
 import { TokenStateAccordion } from '../../../components/Accordion/TokensStateAccordion';
-import {
-  TutorialSections,
-  TUTORIAL_CATEGORIES,
-} from '../../../constants/TutorialSections';
+import { TutorialSections } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
-import { DEFAULT_PADDING } from '../../../theme';
-
-const tutorialTabs = [
-  {
-    icon: <Message />,
-    title: TUTORIAL_CATEGORIES.MESSAGING,
-  },
-  {
-    icon: <Adjust />,
-    title: TUTORIAL_CATEGORIES.TOKENS,
-  },
-  {
-    icon: <Description />,
-    title: TUTORIAL_CATEGORIES.CONTRACTS,
-  },
-];
+import { FormContext } from '../../../contexts/FormContext';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING } from '../../../theme';
 
 const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
   0: undefined,
@@ -35,65 +27,131 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 
 export const LeftPane = () => {
   const { t } = useTranslation();
-  const { activeForm, setActiveForm } = useContext(ApplicationContext);
+  const { setPayloadMissingFields } = useContext(ApplicationContext);
+  const { formID, setFormParam, categoryID, setCategoryParam } =
+    useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
 
-  const handleChange = (_: React.SyntheticEvent, newTabIdx: number) => {
-    const tutorials = TutorialSections.find(
-      (t) => t.title === tutorialTabs[newTabIdx].title.toLowerCase()
-    )?.tutorials;
-    setTabIdx(newTabIdx);
-    if (tutorials && tutorials.length > 0) {
-      setActiveForm(tutorials[0].id);
+  // Set tab index when category ID changes
+  useEffect(() => {
+    if (categoryID !== null && categoryID !== '') {
+      const tabIdx = TutorialSections.findIndex(
+        (t) => t.category === categoryID
+      );
+      if (tabIdx === -1) {
+        // Category not found, set to default
+        setCategoryParam(TutorialSections[0].category);
+        setTabIdx(0);
+      } else {
+        setTabIdx(tabIdx);
+      }
+    }
+  }, [formID, categoryID]);
+
+  const handleTabChange = (_: React.SyntheticEvent, newTabIdx: number) => {
+    const selectedTutorial = TutorialSections.find(
+      (t) => t.category === TutorialSections[newTabIdx].category
+    );
+
+    if (selectedTutorial) {
+      setCategoryParam(selectedTutorial.category);
+      setFormParam(selectedTutorial.tutorials[0].formID);
+    } else {
+      setCategoryParam(TutorialSections[0].category);
+      setFormParam(TutorialSections[0].tutorials[0].formID);
     }
   };
+
+  // useEffect(() => {
+  //   if (formID + 'blob' !== activeForm && formID !== activeForm) {
+  //     setExpanded(false);
+  //   }
+  // }, [activeForm]);
 
   return (
     <>
       <Grid container direction="column">
         {/* Tabs */}
-        <Tabs variant="fullWidth" value={tabIdx} onChange={handleChange}>
-          {tutorialTabs.map((tt, idx) => {
+        <Tabs
+          variant="fullWidth"
+          value={tabIdx ?? 0}
+          onChange={handleTabChange}
+        >
+          {TutorialSections.map((section) => {
             return (
               <Tab
                 iconPosition="start"
-                icon={tt.icon}
-                label={t(tt.title)}
-                key={idx}
+                icon={section.icon}
+                label={t(section.category)}
+                key={section.category}
               />
             );
           })}
         </Tabs>
         <Grid container p={DEFAULT_PADDING}>
-          {currentStateMap[tabIdx] && (
-            <Grid pb={1} sx={{ width: '100%' }}>
-              {currentStateMap[tabIdx]}
-              <Divider />
-            </Grid>
-          )}
-          {TutorialSections.filter(
-            (section) => section.title === tutorialTabs[tabIdx].title
-          ).map((ts, idx) => {
-            return (
-              <Grid key={idx} pb={DEFAULT_PADDING} pt={1}>
-                <Grid container item>
-                  {ts.tutorials.map((tutorial, idx) => {
-                    return (
-                      <Grid key={idx} item pb={1} sx={{ width: '100%' }}>
-                        <FFAccordion
-                          title={t(tutorial.title)}
-                          infoText={t(tutorial.shortInfo)}
-                          form={tutorial.form}
-                          type={tutorial.id}
-                          isOpen={activeForm === tutorial.id}
-                        ></FFAccordion>
-                      </Grid>
-                    );
-                  })}
+          {tabIdx !== undefined && formID ? (
+            // Current state of FireFly section
+            <Grid container item wrap="nowrap" direction="column">
+              {currentStateMap[tabIdx] && (
+                <Grid pb={1}>
+                  {currentStateMap[tabIdx]}
+                  <Divider />
                 </Grid>
-              </Grid>
-            );
-          })}
+              )}
+              {/* Tutorial section column */}
+              {TutorialSections.filter(
+                (section) =>
+                  section.category === TutorialSections[tabIdx].category
+              ).map((ts) => {
+                return (
+                  <Grid key={ts.category} pb={DEFAULT_PADDING} pt={1}>
+                    <Grid container item>
+                      {ts.tutorials.map((tutorial) => {
+                        // Tutorial form
+                        return (
+                          <Grid
+                            key={tutorial.formID}
+                            item
+                            pb={1}
+                            sx={{ width: '100%' }}
+                          >
+                            <Accordion
+                              sx={{
+                                borderRadius: DEFAULT_BORDER_RADIUS,
+                              }}
+                              expanded={formID === tutorial.formID}
+                              onChange={() => {
+                                setFormParam(tutorial.formID);
+                                setPayloadMissingFields(false);
+                              }}
+                            >
+                              <AccordionSummary expandIcon={<ExpandMore />}>
+                                <FFAccordionHeader
+                                  content={
+                                    <FFAccordionText
+                                      color="primary"
+                                      text={t(tutorial.title)}
+                                      isHeader
+                                    />
+                                  }
+                                  subText={t(tutorial.shortInfo)}
+                                />
+                              </AccordionSummary>
+                              <AccordionDetails>
+                                {tutorial.form}
+                              </AccordionDetails>
+                            </Accordion>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          ) : (
+            <Grid>Loading</Grid>
+          )}
         </Grid>
       </Grid>
     </>

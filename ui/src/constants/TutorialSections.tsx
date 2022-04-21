@@ -1,147 +1,165 @@
-import { BroadcastForm } from '../components/Forms/BroadcastForm';
-import { BurnForm } from '../components/Forms/BurnForm';
-import { MintForm } from '../components/Forms/MintForm';
-import { PoolForm } from '../components/Forms/PoolForm';
-import { PrivateForm } from '../components/Forms/PrivateForm';
-import { TransferForm } from '../components/Forms/TransferForm';
+import { Adjust, Description, Message } from '@mui/icons-material';
+import { BroadcastForm } from '../components/Forms/Messages/BroadcastForm';
+import { BurnForm } from '../components/Forms/Tokens/BurnForm';
 import { ITutorialSection } from '../interfaces/tutorialSection';
-import { FF_Paths } from './FF_Paths';
 import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
-import { DefineDatatypeForm } from '../components/Forms/Datatypes/DefineDatatypeForm';
+import { DefineDatatypeForm } from '../components/Forms/Messages/DefineDatatypeForm';
+import { SDK_PATHS } from './SDK_PATHS';
+import { PrivateForm } from '../components/Forms/Messages/PrivateForm';
+import { MintForm } from '../components/Forms/Tokens/MintForm';
+import { PoolForm } from '../components/Forms/Tokens/PoolForm';
+import { TransferForm } from '../components/Forms/Tokens/TransferForm';
 
-export enum TUTORIALS {
+export enum TUTORIAL_FORMS {
+  // Messages
   BROADCAST = 'broadcast',
   PRIVATE = 'private',
+  DATATYPE = 'datatypes',
+  // Tokens
   POOL = 'pools',
   MINT = 'mint',
   TRANSFER = 'transfer',
   BURN = 'burn',
+  // Contract
+  DEPLOY_CONTRACT = 'deployContract',
   DEFINE_CONTRACT_INTERFACE = 'interface',
   REGISTER_CONTRACT_API = 'api',
   REGISTER_CONTRACT_API_LISTENER = 'listener',
-  DATATYPE = 'datatypes',
 }
 
 export enum TUTORIAL_CATEGORIES {
-  MESSAGING = 'messaging',
+  MESSAGES = 'messages',
   TOKENS = 'tokens',
   CONTRACTS = 'contracts',
 }
 
 export const TutorialSections: ITutorialSection[] = [
   {
-    title: TUTORIAL_CATEGORIES.MESSAGING,
+    category: TUTORIAL_CATEGORIES.MESSAGES,
+    icon: <Message />,
     tutorials: [
       {
-        id: TUTORIALS.BROADCAST,
+        formID: TUTORIAL_FORMS.BROADCAST,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/broadcast_data.html',
-        endpoint: FF_Paths.broadcast,
+        endpoint: SDK_PATHS.messagesBroadcast,
         form: <BroadcastForm />,
+        runnable: true,
         shortInfo: 'broadcastShortInfo',
         title: 'broadcastTitle',
       },
       {
-        id: TUTORIALS.PRIVATE,
+        formID: TUTORIAL_FORMS.PRIVATE,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/private_send.html',
-        endpoint: FF_Paths.private,
+        endpoint: SDK_PATHS.messagesPrivate,
         form: <PrivateForm />,
+        runnable: true,
         shortInfo: 'privateShortInfo',
         title: 'privateTitle',
       },
       {
-        id: TUTORIALS.DATATYPE,
+        formID: TUTORIAL_FORMS.DATATYPE,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/define_datatype.html',
-        endpoint: FF_Paths.datatypes,
+        endpoint: SDK_PATHS.messagesDatatypes,
         form: <DefineDatatypeForm />,
+        runnable: true,
         shortInfo: 'createDatatypeInfo',
         title: 'createDatatypeTitle',
       },
     ],
   },
   {
-    title: TUTORIAL_CATEGORIES.TOKENS,
+    category: TUTORIAL_CATEGORIES.TOKENS,
+    icon: <Adjust />,
     tutorials: [
       {
-        id: TUTORIALS.POOL,
+        formID: TUTORIAL_FORMS.POOL,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
-        endpoint: FF_Paths.pools,
+        endpoint: SDK_PATHS.tokensPools,
         form: <PoolForm />,
+        runnable: true,
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
       },
       {
-        id: TUTORIALS.MINT,
+        formID: TUTORIAL_FORMS.MINT,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
-        endpoint: FF_Paths.mint,
+        endpoint: SDK_PATHS.tokensMint,
         form: <MintForm />,
+        runnable: true,
         shortInfo: 'mintShortInfo',
         title: 'mintTitle',
       },
       {
-        id: TUTORIALS.TRANSFER,
+        formID: TUTORIAL_FORMS.TRANSFER,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
-        endpoint: FF_Paths.transfer,
+        endpoint: SDK_PATHS.tokensTransfer,
         form: <TransferForm />,
+        runnable: true,
         shortInfo: 'transferShortInfo',
         title: 'transferTitle',
       },
       {
-        id: TUTORIALS.BURN,
+        formID: TUTORIAL_FORMS.BURN,
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
-        endpoint: FF_Paths.burn,
+        endpoint: SDK_PATHS.tokensBurn,
         form: <BurnForm />,
+        runnable: true,
         shortInfo: 'burnShortInfo',
         title: 'burnTitle',
       },
     ],
   },
   {
-    title: TUTORIAL_CATEGORIES.CONTRACTS,
+    category: TUTORIAL_CATEGORIES.CONTRACTS,
+    icon: <Description />,
     tutorials: [
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
-        endpoint: FF_Paths.interface,
         form: <DeployContractForm />,
-        id: 'deploycontract',
+        formID: TUTORIAL_FORMS.DEPLOY_CONTRACT,
         shortInfo: 'deployContractInfo',
         title: 'deployContractTitle',
+        runnable: false,
       },
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
-        endpoint: FF_Paths.interface,
+        endpoint: SDK_PATHS.contractsInterface,
         form: <DefineInterfaceForm />,
-        id: TUTORIALS.DEFINE_CONTRACT_INTERFACE,
+        formID: TUTORIAL_FORMS.DEFINE_CONTRACT_INTERFACE,
         shortInfo: 'defineContractInterfaceInfo',
+        runnable: true,
         title: 'contractInterfaceTitle',
       },
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
-        endpoint: FF_Paths.api,
+        endpoint: SDK_PATHS.contractsApi,
         form: <RegisterContractApiForm />,
-        id: TUTORIALS.REGISTER_CONTRACT_API,
+        formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API,
         shortInfo: 'registerContractApiInfo',
+        runnable: true,
         title: 'registerContractApiTitle',
       },
       {
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
-        endpoint: FF_Paths.listener,
+        endpoint: SDK_PATHS.contractsListener,
         form: <RegisterContractApiListenerForm />,
-        id: TUTORIALS.REGISTER_CONTRACT_API_LISTENER,
+        formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API_LISTENER,
         shortInfo: 'registerContractApiListenerInfo',
+        runnable: true,
         title: 'registerApiListenerTitle',
       },
     ],

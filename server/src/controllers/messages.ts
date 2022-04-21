@@ -3,7 +3,13 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q, FormDataSchema, getMessageBody } from '../utils';
+import {
+  formatTemplate,
+  quoteAndEscape as q,
+  FormDataSchema,
+  getMessageBody,
+  EmptyVal,
+} from '../utils';
 import {
   BroadcastBlob,
   BroadcastValue,
@@ -116,26 +122,23 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const message = await firefly.sendBroadcast({
         header: {
-          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          tag: <%= ${q('tag')} %>,
+          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
         },
         data: [<% if(jsonValue) { %>
           {
             datatype: { 
-              name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
-              version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+              name: <%= ${q('datatypename')} %>,
+              version: <%= ${q('datatypeversion')} %>,
             },
-            value: <%= jsonValue ? ${q('jsonValue', {
+            value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
-            })} : ${q('value')}%>
-          }
-            <% } else { %>
-              { value: <%= jsonValue ? ${q('jsonValue', {
-                isObject: true,
-                truncate: true,
-              })} : ${q('value')}%> }
-          <%} 
+            })} %>,
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };
@@ -151,8 +154,8 @@ export class MessagesTemplateController {
       );
       const message = await firefly.sendBroadcast({
         header: {
-          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          tag: <%= ${q('tag')} %>,
+          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
         },
         data: [{ id: data.id }],
       });
@@ -165,8 +168,8 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const message = await firefly.sendPrivateMessage({
         header: {
-          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          tag: <%= ${q('tag')} %>,
+          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
         },
         group: {
           members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
@@ -174,20 +177,17 @@ export class MessagesTemplateController {
         data: [<% if(jsonValue) { %>
           {
             datatype: { 
-              name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
-              version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+              name: <%= ${q('datatypename')} %>,
+              version: <%= ${q('datatypeversion')} %>,
             },
-            value: <%= jsonValue ? ${q('jsonValue', {
+            value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
-            })} : ${q('value')}%>
-          }
-            <% } else { %>
-              { value: <%= jsonValue ? ${q('jsonValue', {
-                isObject: true,
-                truncate: true,
-              })} : ${q('value')}%> }
-          <%} 
+            })} %>
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };
@@ -203,8 +203,8 @@ export class MessagesTemplateController {
       );
       const message = await firefly.sendPrivateMessage({
         header: {
-          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          tag: <%= ${q('tag')} %>,
+          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
         },
         group: {
           members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],

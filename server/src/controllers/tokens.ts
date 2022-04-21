@@ -126,7 +126,7 @@ export class TokensTemplateController {
         symbol: <%= ${q('symbol')} %>,
         type: <%= ${q('type')} %>,
         config: {
-          address: <%= ${q('address')} %>
+          address: <%= ${q('address')} %>,
         }
       });
       return { type: 'token_pool', id: pool.id };
@@ -150,7 +150,7 @@ export class TokensTemplateController {
       const transfer = await firefly.burnTokens({
         pool: <%= ${q('pool')} %>,
         amount: <%= ${q('amount')} %>,
-        tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
+        tokenIndex: <%= ${q('tokenIndex')} %>,
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);
@@ -163,26 +163,9 @@ export class TokensTemplateController {
         pool: <%= ${q('pool')} %>,
         to: <%= ${q('to')} %>,
         amount: <%= ${q('amount')} %>,
-        tokenIndex: <%= tokenIndex ? ${q('tokenIndex')} : 'undefined' %>,
+        tokenIndex: <%= ${q('tokenIndex')} %>,
       });
       return { type: 'token_transfer', id: transfer.localId };
-    `);
-  }
-
-  @Get('/balances')
-  balancesTemplate() {
-    return formatTemplate(`
-      const balances = await firefly.getTokenBalances({
-        pool: <%= pool ? ${q('pool')} : 'undefined' %>,
-        key: <%= key ? ${q('key')} : 'undefined' %>,
-        balance: '>0',
-      });
-      return balances.map((b) => ({
-        pool: b.pool,
-        key: b.key,
-        balance: b.balance,
-        tokenIndex: b.tokenIndex,
-      }));
     `);
   }
 }

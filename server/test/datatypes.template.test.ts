@@ -35,9 +35,9 @@ describe('Templates: Datatypes', () => {
         ).toBe(
           formatTemplate(`
             const datatype = await firefly.createDatatype({
-              name:  'widget',
+              name: 'widget',
               version: '0.0.2',
-            },  {"$id":"ht ...  name."}}}) ;
+            }, {"$id":"ht ...  name."}}}) ;
             return { type: 'datatype', id: datatype.id };
         `),
         );

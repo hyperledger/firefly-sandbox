@@ -5,6 +5,7 @@ import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import stripIndent = require('strip-indent');
+import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
@@ -84,7 +85,7 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
 }
 
 export function getMessageBody(body: any) {
-  const dataBody = {} as any;
+  const dataBody: FireFlyDataRequest = {};
   dataBody.value = body.value || body.jsonValue;
   if (body.jsonValue && body.datatypename && body.datatypeversion) {
     dataBody.datatype = {

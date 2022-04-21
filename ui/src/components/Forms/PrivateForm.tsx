@@ -27,7 +27,17 @@ interface NetworkIdentity {
   name: string;
 }
 
-export const PrivateForm: React.FC = () => {
+interface Props {
+  tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
+  tokenBody?: object;
+  tokenMissingFields?: boolean;
+}
+
+export const PrivateForm: React.FC<Props> = ({
+  tokenOperation,
+  tokenBody,
+  tokenMissingFields,
+}) => {
   const { jsonPayload, setJsonPayload, activeForm, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
@@ -60,12 +70,12 @@ export const PrivateForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!activeForm.includes('private')) {
+    if (!activeForm.includes('private') && !tokenOperation) {
       return;
     }
     setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
-    setJsonPayload({
+    const body = {
       topic: topics,
       tag,
       value: message,
@@ -74,7 +84,8 @@ export const PrivateForm: React.FC = () => {
       recipients,
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
-    });
+    };
+    setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
   }, [
     message,
     recipients,
@@ -90,18 +101,23 @@ export const PrivateForm: React.FC = () => {
     if (jsonValue && isJsonString(jsonValue)) {
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
       setMessage('');
-      setJsonPayload({
-        topic: topics,
-        tag,
-        jsonValue: JSON.parse(jsonValue),
-        value: message,
-        filename: fileName,
-        recipients,
-        datatypename: datatype?.name ?? '',
-        datatypeversion: datatype?.version ?? '',
-      });
+      const body = getFormBody(JSON.parse(jsonValue));
+      setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
     }
   }, [jsonValue]);
+
+  const getFormBody = (json: object) => {
+    return {
+      topic: topics,
+      tag,
+      jsonValue: json,
+      value: message,
+      filename: fileName,
+      recipients,
+      datatypename: datatype?.name ?? '',
+      datatypeversion: datatype?.version ?? '',
+    };
+  };
 
   const handleRecipientChange = (
     event: SelectChangeEvent<typeof recipients>
@@ -138,6 +154,7 @@ export const PrivateForm: React.FC = () => {
           jsonValue={jsonValue}
           fileName={fileName}
           recipients={recipients}
+          tokenMissingFields={tokenMissingFields}
           onSetMessage={(msg: string) => setMessage(msg)}
           onSetFileName={(file: string) => {
             setFileName(file);

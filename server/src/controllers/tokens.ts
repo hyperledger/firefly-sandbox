@@ -1,7 +1,12 @@
 import { Post, Get, HttpCode, Body, JsonController, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q } from '../utils';
+import {
+  formatTemplate,
+  getBroadcastMessageBody,
+  getPrivateMessageBody,
+  quoteAndEscape as q,
+} from '../utils';
 import {
   TokenPool,
   TokenPoolInput,
@@ -49,10 +54,18 @@ export class TokensController {
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
   async mint(@Body() body: TokenMint): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
-    const transfer = await firefly.mintTokens({
+    const mintBody = {
       pool: body.pool,
       amount: body.amount,
-    });
+    } as any;
+    if (body.messagingMethod) {
+      mintBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body)
+          : getPrivateMessageBody(body);
+    }
+    console.log(mintBody);
+    const transfer = await firefly.mintTokens(mintBody);
     return { type: 'token_transfer', id: transfer.localId };
   }
 
@@ -138,7 +151,32 @@ export class TokensTemplateController {
     return formatTemplate(`
       const transfer = await firefly.mintTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod && (value||jsonValue)) { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [<% if(jsonValue) { %>
+            {
+              datatype: { 
+                name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
+                version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+              },
+              value: <%= jsonValue ? ${q('jsonValue', {
+                isObject: true,
+                truncate: true,
+              })} : ${q('value')}%>
+            }
+              <% } else { %>
+                { value: <%= jsonValue ? ${q('jsonValue', {
+                  isObject: true,
+                  truncate: true,
+                })} : ${q('value')}%> }
+            <%} 
+          %>],
+        }
+        <% } %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);

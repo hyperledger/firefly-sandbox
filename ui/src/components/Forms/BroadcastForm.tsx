@@ -10,7 +10,17 @@ import {
   MessageTypeGroup,
 } from '../Buttons/MessageTypeGroup';
 
-export const BroadcastForm: React.FC = () => {
+interface Props {
+  tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
+  tokenBody?: object;
+  tokenMissingFields?: boolean;
+}
+
+export const BroadcastForm: React.FC<Props> = ({
+  tokenOperation,
+  tokenBody,
+  tokenMissingFields,
+}) => {
   const { jsonPayload, setJsonPayload, activeForm } =
     useContext(ApplicationContext);
 
@@ -22,10 +32,12 @@ export const BroadcastForm: React.FC = () => {
   const [jsonValue, setJsonValue] = useState<string | undefined>();
   const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
+  console.log(jsonPayload);
+
   useEffect(() => {
-    if (!activeForm.includes('broadcast')) return;
+    if (!activeForm.includes('broadcast') && !tokenOperation) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
-    setJsonPayload({
+    const body = {
       topic: topics,
       tag,
       value: message,
@@ -33,24 +45,30 @@ export const BroadcastForm: React.FC = () => {
       filename: fileName,
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
-    });
+    };
+    setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
   }, [message, tag, topics, fileName, activeForm, datatype]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
       setMessage('');
-      setJsonPayload({
-        topic: topics,
-        tag,
-        jsonValue: JSON.parse(jsonValue),
-        value: message,
-        filename: fileName,
-        datatypename: datatype?.name ?? '',
-        datatypeversion: datatype?.version ?? '',
-      });
+      const body = getFormBody(JSON.parse(jsonValue));
+      setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
     }
   }, [jsonValue]);
+
+  const getFormBody = (json: object) => {
+    return {
+      topic: topics,
+      tag,
+      jsonValue: json,
+      value: message,
+      filename: fileName,
+      datatypename: datatype?.name ?? '',
+      datatypeversion: datatype?.version ?? '',
+    };
+  };
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -78,6 +96,7 @@ export const BroadcastForm: React.FC = () => {
             datatype={datatype}
             message={message}
             jsonValue={jsonValue}
+            tokenMissingFields={tokenMissingFields}
             onSetMessage={(msg: string) => {
               setMessage(msg);
             }}

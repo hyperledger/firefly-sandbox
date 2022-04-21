@@ -43,6 +43,8 @@ interface Props {
   onSetJsonValue: any;
   onSetDatatype?: any;
   noUndefined?: boolean;
+  tokenMissingFields?: boolean;
+  tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
 }
 
 export const MessageTypeGroup: React.FC<Props> = ({
@@ -56,6 +58,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
   onSetFileName,
   onSetJsonValue,
   onSetDatatype,
+  tokenMissingFields,
+  tokenOperation,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
@@ -67,22 +71,32 @@ export const MessageTypeGroup: React.FC<Props> = ({
     useContext(ApplicationContext);
 
   useEffect(() => {
-    if (getTemplateCategory(activeForm) !== 'messages') return;
+    if (getTemplateCategory(activeForm) !== 'messages' && !tokenOperation)
+      return;
     if (activeForm.indexOf('blob') < 0) {
       if (!message && !jsonValue) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
-      setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
-      setDefaultJsonDatatype();
+      const bodyType = message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON;
+      setMessageType(bodyType);
+      if (bodyType === POST_BODY_TYPE.JSON) {
+        setDefaultJsonDatatype();
+      } else {
+        onSetDatatype(undefined);
+        onSetJsonValue(undefined);
+      }
       checkMissingFields();
     } else {
       const file: any = document.querySelector('input[type="file"]');
-      setPayloadMissingFields(!file.files[0] ? true : false);
+      setPayloadMissingFields(
+        !file.files[0] || tokenMissingFields ? true : false
+      );
     }
   }, [activeForm, messageType]);
 
   useEffect(() => {
-    if (getTemplateCategory(activeForm) !== 'messages') return;
+    if (getTemplateCategory(activeForm) !== 'messages' && !tokenOperation)
+      return;
     checkMissingFields();
   }, [message, jsonValue, messageType, fileName, recipients]);
 
@@ -91,7 +105,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
       (activeForm.includes('private') && recipients?.length === 0) ||
       (!message && messageType === POST_BODY_TYPE.STRING) ||
       (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
-      (messageType === POST_BODY_TYPE.FILE && !fileName)
+      (messageType === POST_BODY_TYPE.FILE && !fileName) ||
+      tokenMissingFields
     ) {
       setPayloadMissingFields(true);
     } else {
@@ -101,39 +116,34 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   useEffect(() => {
     if (
-      getTemplateCategory(activeForm) !== 'messages' ||
+      (getTemplateCategory(activeForm) !== 'messages' && !tokenOperation) ||
       messageType !== POST_BODY_TYPE.JSON ||
       !datatype
     )
       return;
-    setDatatypeBasedJson();
+    setDatatypeBasedJson(datatype);
   }, [datatype]);
 
   const setDefaultJsonDatatype = () => {
-    if (messageType === POST_BODY_TYPE.JSON) {
-      fetchCatcher(`${FF_Paths.datatypes}`)
-        .then((dtRes: IDatatype[]) => {
-          setDatatypes(dtRes);
-          if (dtRes.length > 0) {
-            onSetDatatype(dtRes[0]);
-            setDatatypeBasedJson();
-            return;
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-      if (!datatype) {
-        onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
-      }
-    } else {
-      onSetDatatype(undefined);
-      onSetJsonValue(undefined);
+    fetchCatcher(`${FF_Paths.datatypes}`)
+      .then((dtRes: IDatatype[]) => {
+        setDatatypes(dtRes);
+        if (dtRes.length > 0) {
+          onSetDatatype(dtRes[0]);
+          setDatatypeBasedJson(dtRes[0]);
+          return;
+        }
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
+    if (!datatype) {
+      onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
     }
   };
 
-  const setDatatypeBasedJson = () => {
-    const properties = datatype?.schema?.properties;
+  const setDatatypeBasedJson = (dt: IDatatype) => {
+    const properties = dt.schema?.properties;
     if (properties) {
       const keys = Object.keys(properties);
       const newJsonValue = {} as any;
@@ -161,6 +171,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
     if (!newAlignment) {
       return;
     }
+    console.log('hi', newAlignment);
     setMessageType(newAlignment);
     switch (newAlignment) {
       case POST_BODY_TYPE.NONE:
@@ -305,7 +316,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
                 type="file"
                 required
                 onChange={(event: any) => {
-                  setPayloadMissingFields(false);
+                  setPayloadMissingFields(tokenMissingFields ?? false);
                   onSetFileName(event?.target?.files[0]?.name);
                 }}
               />

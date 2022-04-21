@@ -154,6 +154,14 @@ export class TokenMint {
 
   @IsNumberString()
   amount: string;
+
+  @IsObject()
+  @IsOptional()
+  message?: any;
+
+  @IsString()
+  @IsOptional()
+  messagingMethod?: string;
 }
 
 export class TokenBurn extends TokenMint {

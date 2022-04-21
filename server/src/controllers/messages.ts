@@ -3,7 +3,13 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q, FormDataSchema, getMessageBody } from '../utils';
+import {
+  formatTemplate,
+  quoteAndEscape as q,
+  FormDataSchema,
+  getBroadcastMessageBody,
+  getPrivateMessageBody,
+} from '../utils';
 import {
   BroadcastBlob,
   BroadcastValue,
@@ -24,14 +30,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
   async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = getMessageBody(body);
-    const message = await firefly.sendBroadcast({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      data: [dataBody],
-    });
+    const message = await firefly.sendBroadcast(getBroadcastMessageBody(body));
     return { type: 'message', id: message.header.id };
   }
 
@@ -47,13 +46,7 @@ export class MessagesController {
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
-    const message = await firefly.sendBroadcast({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      data: [{ id: data.id }],
-    });
+    const message = await firefly.sendBroadcast(getBroadcastMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
 
@@ -63,17 +56,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
   async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = getMessageBody(body);
-    const message = await firefly.sendPrivateMessage({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      group: {
-        members: body.recipients.map((r) => ({ identity: r })),
-      },
-      data: [dataBody],
-    });
+    const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body));
     return { type: 'message', id: message.header.id };
   }
 
@@ -89,16 +72,7 @@ export class MessagesController {
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
-    const message = await firefly.sendPrivateMessage({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      group: {
-        members: body.recipients.map((r) => ({ identity: r })),
-      },
-      data: [{ id: data.id }],
-    });
+    const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
 }

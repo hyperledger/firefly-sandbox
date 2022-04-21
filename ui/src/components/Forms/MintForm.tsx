@@ -25,15 +25,18 @@ import { BroadcastForm } from './BroadcastForm';
 import { PrivateForm } from './PrivateForm';
 
 export const MintForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, activeForm, setPayloadMissingFields } =
-    useContext(ApplicationContext);
+  const {
+    selfIdentity,
+    jsonPayload,
+    setJsonPayload,
+    activeForm,
+    setPayloadMissingFields,
+  } = useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
-
-  const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
 
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
@@ -47,25 +50,12 @@ export const MintForm: React.FC = () => {
       return;
     }
     setPayloadMissingFields(!amount || !pool);
-    if (!message) {
-      setJsonPayload({
-        pool: pool?.name,
-        amount: amount.toString(),
-      });
-      return;
-    }
     setJsonPayload({
       pool: pool?.name,
       amount: amount.toString(),
-      message: {
-        data: [
-          {
-            value: message,
-          },
-        ],
-      },
+      messagingMethod: withMessage ? messageMethod : null,
     });
-  }, [pool, amount, activeForm]);
+  }, [pool, amount, messageMethod, activeForm]);
 
   useEffect(() => {
     if (activeForm !== TUTORIALS.MINT) return;
@@ -186,6 +176,13 @@ export const MintForm: React.FC = () => {
               <Checkbox
                 checked={withMessage}
                 onChange={() => {
+                  if (withMessage) {
+                    setJsonPayload({
+                      pool: pool?.name,
+                      amount: amount.toString(),
+                      messagingMethod: null,
+                    });
+                  }
                   setWithMessage(!withMessage);
                 }}
               />
@@ -193,7 +190,7 @@ export const MintForm: React.FC = () => {
             label={t('mintWithData')}
           />
         </Grid>
-        {withMessage && (
+        {withMessage === true && (
           <>
             <Grid item width="100%">
               <FormControl fullWidth required>
@@ -202,7 +199,14 @@ export const MintForm: React.FC = () => {
                   fullWidth
                   value={messageMethod}
                   label={t('messagingMethod')}
-                  onChange={(e) => setMessageMethod(e.target.value)}
+                  onChange={(e) => {
+                    setMessageMethod(e.target.value);
+                    setJsonPayload({
+                      pool: pool?.name,
+                      amount: amount.toString(),
+                      messagingMethod: withMessage ? e.target.value : null,
+                    });
+                  }}
                 >
                   <MenuItem key={'messageMethod-broadcast'} value={'broadcast'}>
                     {t('broadcast')}
@@ -218,9 +222,17 @@ export const MintForm: React.FC = () => {
         {withMessage === true && (
           <Grid container item>
             {messageMethod === 'broadcast' ? (
-              <BroadcastForm />
+              <BroadcastForm
+                tokenOperation="mint"
+                tokenBody={{ ...jsonPayload, messagingMethod: 'broadcast' }}
+                tokenMissingFields={!amount || !pool}
+              />
             ) : (
-              <PrivateForm />
+              <PrivateForm
+                tokenOperation="mint"
+                tokenBody={{ ...jsonPayload, messagingMethod: 'private' }}
+                tokenMissingFields={!amount || !pool}
+              />
             )}
           </Grid>
         )}

@@ -83,6 +83,32 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return varName;
 }
 
+export function getBroadcastMessageBody(body: any, blobId?: string) {
+  const dataBody = blobId ? { id: blobId } : getMessageBody(body);
+  return {
+    header: {
+      tag: body.tag || undefined,
+      topics: body.topic ? [body.topic] : undefined,
+    },
+    data: [dataBody],
+  };
+}
+
+export function getPrivateMessageBody(body: any, blobId?: string) {
+  const dataBody = blobId ? { id: blobId } : getMessageBody(body);
+  return {
+    header: {
+      tag: body.tag || undefined,
+      topics: body.topic ? [body.topic] : undefined,
+      type: 'transfer_private',
+    },
+    group: {
+      members: body.recipients.map((r) => ({ identity: r })),
+    },
+    data: [dataBody],
+  };
+}
+
 export function getMessageBody(body: any) {
   const dataBody = {} as any;
   dataBody.value = body.value || body.jsonValue;

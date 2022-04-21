@@ -17,6 +17,8 @@ import { IApiStatus, ISelfIdentity, IVerifier } from './interfaces/api';
 import { themeOptions } from './theme';
 import { fetchCatcher, summarizeFetchError } from './utils/fetches';
 
+export const MAX_FORM_ROWS = 10;
+
 function App() {
   const [initialized, setInitialized] = useState(true);
   const [message, setMessage] = useState('');

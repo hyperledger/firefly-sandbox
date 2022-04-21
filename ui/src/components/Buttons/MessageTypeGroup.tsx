@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MAX_FORM_ROWS } from '../../App';
 import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import {
   TUTORIAL_CATEGORIES,
@@ -271,7 +272,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
                 multiline
                 required
                 fullWidth
-                maxRows={7}
+                maxRows={MAX_FORM_ROWS}
                 value={
                   messageType === POST_BODY_TYPE.STRING
                     ? message

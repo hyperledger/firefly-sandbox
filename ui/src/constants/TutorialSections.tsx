@@ -6,7 +6,7 @@ import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfa
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
-import { DefineDatatypeForm } from '../components/Forms/Messages/DefineDatatypeForm';
+import { DatatypeForm } from '../components/Forms/Messages/DatatypeForm';
 import { SDK_PATHS } from './SDK_PATHS';
 import { PrivateForm } from '../components/Forms/Messages/PrivateForm';
 import { MintForm } from '../components/Forms/Tokens/MintForm';
@@ -66,7 +66,7 @@ export const TutorialSections: ITutorialSection[] = [
         docsURL:
           'https://hyperledger.github.io/firefly/gettingstarted/define_datatype.html',
         endpoint: SDK_PATHS.messagesDatatypes,
-        form: <DefineDatatypeForm />,
+        form: <DatatypeForm />,
         runnable: true,
         shortInfo: 'createDatatypeInfo',
         title: 'createDatatypeTitle',

@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MAX_FORM_ROWS } from '../../../App';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
@@ -161,16 +162,11 @@ export const DefineInterfaceForm: React.FC = () => {
             multiline
             required
             fullWidth
-            maxRows={7}
+            maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
           />
         </Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-              message={message}
-              onSetMessage={(msg: string) => setMessage(msg)}
-            /> */}
       </Grid>
     </Grid>
   );

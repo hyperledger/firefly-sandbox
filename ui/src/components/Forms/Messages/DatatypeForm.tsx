@@ -6,6 +6,7 @@ import { DEFAULT_SPACING } from '../../../theme';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { isJsonString } from '../../../utils/strings';
 import { FormContext } from '../../../contexts/FormContext';
+import { MAX_FORM_ROWS } from '../../../App';
 
 const DEFAULT_DATATYPE_SCHEMA = {
   $id: 'https://example.com/person.schema.json',
@@ -37,7 +38,7 @@ const DEFAULT_DATATYPE_SCHEMA = {
   },
 };
 
-export const DefineDatatypeForm: React.FC = () => {
+export const DatatypeForm: React.FC = () => {
   const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
@@ -107,7 +108,7 @@ export const DefineDatatypeForm: React.FC = () => {
             multiline
             required
             fullWidth
-            maxRows={40}
+            maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
           />

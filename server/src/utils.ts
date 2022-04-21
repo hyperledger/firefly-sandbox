@@ -97,7 +97,7 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return result;
 }
 
-export function getMessageBody(body: any) {
+export function getMessageBody(body: any): any {
   const dataBody = {} as any;
   dataBody.value = body.value || body.jsonValue;
   if (body.jsonValue && body.datatypename && body.datatypeversion) {

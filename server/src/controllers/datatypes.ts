@@ -9,7 +9,6 @@ import {
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { formatTemplate, quoteAndEscape as q } from '../utils';
 import { AsyncResponse, DatatypeInterface } from '../interfaces';
 
 /**

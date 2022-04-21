@@ -32,8 +32,6 @@ import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
 
-const WS_URL = `ws://${window.location.host}/api/ws`;
-
 export const Header: React.FC = () => {
   const { t } = useTranslation();
   const { addLogToHistory } = useContext(EventContext);
@@ -47,7 +45,11 @@ export const Header: React.FC = () => {
   const connectToWS = () => {
     if (!wsConnected) {
       // Open websocket
-      webSocket.current = new ReconnectingWebSocket(WS_URL);
+      webSocket.current = new ReconnectingWebSocket(
+        process.env.NODE_ENV === 'development'
+          ? 'ws://localhost:3001/api/ws'
+          : `ws://${window.location.host}/api/ws`
+      );
       // On Open
       webSocket.current.onopen = function () {
         setWsConnected(true);

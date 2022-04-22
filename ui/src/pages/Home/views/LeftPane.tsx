@@ -50,7 +50,6 @@ export const LeftPane = () => {
   }, [formID, categoryID]);
 
   const handleTabChange = (_: React.SyntheticEvent, newTabIdx: number) => {
-    setIsBlob(false);
     const selectedTutorial = TutorialSections.find(
       (t) => t.category === TutorialSections[newTabIdx].category
     );

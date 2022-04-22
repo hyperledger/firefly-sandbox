@@ -31,14 +31,7 @@ export const BroadcastForm: React.FC<Props> = ({
   const [jsonValue, setJsonValue] = useState<string | undefined>();
   const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
-  console.log(jsonPayload);
-
   useEffect(() => {
-    console.log(
-      'tokenpayload',
-      tokenBody,
-      formID !== TUTORIAL_FORMS.BROADCAST && !isTokenMessage(formID)
-    );
     if (formID !== TUTORIAL_FORMS.BROADCAST && !isTokenMessage(formID)) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     const body = {
@@ -50,10 +43,6 @@ export const BroadcastForm: React.FC<Props> = ({
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
     };
-    console.log(
-      'body set',
-      isTokenMessage(formID) ? { ...tokenBody, ...body } : body
-    );
     setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
   }, [message, tag, topics, fileName, formID, datatype]);
 

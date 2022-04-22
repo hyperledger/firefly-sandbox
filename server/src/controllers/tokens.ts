@@ -1,8 +1,19 @@
-import { Post, Get, HttpCode, Body, JsonController, QueryParam } from 'routing-controllers';
+import {
+  Post,
+  Get,
+  HttpCode,
+  Body,
+  JsonController,
+  QueryParam,
+  Req,
+  UploadedFile,
+} from 'routing-controllers';
+import { Request } from 'express';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
 import {
   formatTemplate,
+  FormDataSchema,
   getBroadcastMessageBody,
   getPrivateMessageBody,
   quoteAndEscape as q,
@@ -15,7 +26,9 @@ import {
   TokenBurn,
   TokenBalance,
   AsyncResponse,
+  MintBlob,
 } from '../interfaces';
+import { plainToClassFromExist } from 'class-transformer';
 
 /**
  * Tokens - API Server
@@ -64,7 +77,32 @@ export class TokensController {
           ? getBroadcastMessageBody(body)
           : getPrivateMessageBody(body);
     }
-    console.log(mintBody);
+    const transfer = await firefly.mintTokens(mintBody);
+    return { type: 'token_transfer', id: transfer.localId };
+  }
+
+  @Post('/mintblob')
+  @HttpCode(202)
+  @FormDataSchema(MintBlob)
+  @ResponseSchema(AsyncResponse)
+  @OpenAPI({ summary: 'Mint a token with a binary blob' })
+  async mintblob(
+    @Req() req: Request,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<AsyncResponse> {
+    // See MessagesTemplateController and keep template code up to date.
+    const body = plainToClassFromExist(new MintBlob(), req.body);
+    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const mintBody = {
+      pool: body.pool,
+      amount: body.amount,
+    } as any;
+    if (body.messagingMethod) {
+      mintBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body, data.id)
+          : getPrivateMessageBody(body, data.id);
+    }
     const transfer = await firefly.mintTokens(mintBody);
     return { type: 'token_transfer', id: transfer.localId };
   }
@@ -177,6 +215,40 @@ export class TokensTemplateController {
           %>],
         }
         <% } %>
+      });
+      return { type: 'token_transfer', id: transfer.localId };
+    `);
+  }
+
+  @Get('/mintblob')
+  sendblobTemplate() {
+    return formatTemplate(`
+    const data = await firefly.uploadDataBlob(
+      file.buffer,
+      <%= ${q('filename')} %>,
+    );
+      const transfer = await firefly.mintTokens({
+        pool: <%= ${q('pool')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [{ id: data.id }],
+        }
+        <% } else { %>
+          message: {
+            header: {
+              tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+              topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            },
+            group: {
+              members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+            },
+            data: [{ id: data.id }],
+          }
+      <%} %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);

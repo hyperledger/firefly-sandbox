@@ -164,6 +164,12 @@ export class TokenMint {
   messagingMethod?: string;
 }
 
+export class MintBlob extends TokenMint {
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
+}
+
 export class TokenBurn extends TokenMint {
   @IsString()
   @IsOptional()

@@ -59,7 +59,8 @@ export const MiddlePane = () => {
         (categoryID === TUTORIAL_CATEGORIES.TOKENS &&
           messagingMethod &&
           !value &&
-          !jsonValue)
+          !jsonValue &&
+          !isBlob)
       ) {
         return;
       }

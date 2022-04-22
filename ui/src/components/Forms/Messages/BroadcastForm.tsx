@@ -6,20 +6,18 @@ import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { IDatatype } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
-import { isJsonString } from '../../../utils/strings';
+import { isJsonString, isTokenMessage } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../../Buttons/MessageTypeGroup';
 
 interface Props {
-  tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
   tokenBody?: object;
   tokenMissingFields?: boolean;
 }
 
 export const BroadcastForm: React.FC<Props> = ({
-  tokenOperation,
   tokenBody,
   tokenMissingFields,
 }) => {
@@ -36,7 +34,12 @@ export const BroadcastForm: React.FC<Props> = ({
   console.log(jsonPayload);
 
   useEffect(() => {
-    if (formID !== TUTORIAL_FORMS.BROADCAST && !tokenOperation) return;
+    console.log(
+      'tokenpayload',
+      tokenBody,
+      formID !== TUTORIAL_FORMS.BROADCAST && !isTokenMessage(formID)
+    );
+    if (formID !== TUTORIAL_FORMS.BROADCAST && !isTokenMessage(formID)) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     const body = {
       topic: topics,
@@ -47,7 +50,11 @@ export const BroadcastForm: React.FC<Props> = ({
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
     };
-    setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
+    console.log(
+      'body set',
+      isTokenMessage(formID) ? { ...tokenBody, ...body } : body
+    );
+    setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
   }, [message, tag, topics, fileName, formID, datatype]);
 
   useEffect(() => {
@@ -55,7 +62,7 @@ export const BroadcastForm: React.FC<Props> = ({
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
       setMessage('');
       const body = getFormBody(JSON.parse(jsonValue));
-      setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
+      setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
     }
   }, [jsonValue]);
 

@@ -107,7 +107,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
-    console.log('blobob', blobEndpoint);
     if (blobEndpoint.includes('privateblob')) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);

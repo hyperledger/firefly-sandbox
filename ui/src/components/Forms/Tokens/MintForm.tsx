@@ -61,8 +61,8 @@ export const MintForm: React.FC = () => {
       amount: amount.toString(),
       messagingMethod: withMessage ? messageMethod : null,
     };
-    setJsonPayload(withMessage ? { ...jsonPayload, body } : body);
-  }, [pool, amount, messageMethod, formID, withMessage]);
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+  }, [pool, amount, messageMethod, formID]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;

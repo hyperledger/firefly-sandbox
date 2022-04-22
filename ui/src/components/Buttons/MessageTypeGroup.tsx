@@ -72,24 +72,31 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const { formID, categoryID, isBlob, setIsBlob } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
-  const { setPayloadMissingFields } = useContext(ApplicationContext);
+  const { jsonPayload, setPayloadMissingFields } =
+    useContext(ApplicationContext);
 
   useEffect(() => {
+    if (categoryID !== TUTORIAL_CATEGORIES.MESSAGES && !isTokenMessage(formID))
+      return;
     checkMissingFields();
   }, [
+    formID,
     message,
     jsonValue,
-    fileName,
     messageType,
-    tokenMissingFields,
+    fileName,
     recipients,
+    tokenMissingFields,
   ]);
 
   useEffect(() => {
     if (categoryID !== TUTORIAL_CATEGORIES.MESSAGES && !isTokenMessage(formID))
       return;
     if (!isBlob) {
-      if (!message && !jsonValue) {
+      if (
+        (!message && !jsonValue) ||
+        (isTokenMessage(formID) && !(jsonPayload as any).message)
+      ) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
       const bodyType = message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON;
@@ -104,21 +111,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
     checkMissingFields();
   }, [formID, messageType]);
 
-  useEffect(() => {
-    if (categoryID !== TUTORIAL_CATEGORIES.MESSAGES && !isTokenMessage(formID))
-      return;
-    checkMissingFields();
-  }, [
-    message,
-    jsonValue,
-    messageType,
-    fileName,
-    recipients,
-    tokenMissingFields,
-  ]);
-
   const checkMissingFields = () => {
-    console.log('check missing');
     if (isBlob) {
       const file: any = document.querySelector('input[type="file"]');
       setPayloadMissingFields(
@@ -154,9 +147,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
     )
       return;
     setDatatypeBasedJson(datatype);
-  }, [datatype]);
+  }, [datatype, formID]);
 
-  console.log('istokenmess', isTokenMessage(formID));
   const setDefaultJsonDatatype = () => {
     fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
       .then((dtRes: IDatatype[]) => {
@@ -260,7 +252,6 @@ export const MessageTypeGroup: React.FC<Props> = ({
           <UploadFile />
         </ToggleButton>
       </ToggleButtonGroup>
-      {/* Text input, or file upload button */}
       {
         <Grid container item xs={12} pt={1}>
           {messageType !== POST_BODY_TYPE.FILE ? (

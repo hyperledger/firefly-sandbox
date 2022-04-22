@@ -53,13 +53,16 @@ export const MintForm: React.FC = () => {
       resetValues();
       return;
     }
-    setPayloadMissingFields(!amount || !pool);
-    setJsonPayload({
+    if (!withMessage) {
+      setPayloadMissingFields(!amount || !pool);
+    }
+    const body = {
       pool: pool?.name,
       amount: amount.toString(),
       messagingMethod: withMessage ? messageMethod : null,
-    });
-  }, [pool, amount, messageMethod, formID]);
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, body } : body);
+  }, [pool, amount, messageMethod, formID, withMessage]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
@@ -233,13 +236,11 @@ export const MintForm: React.FC = () => {
           <Grid container item>
             {messageMethod === 'broadcast' ? (
               <BroadcastForm
-                tokenOperation="mint"
                 tokenBody={{ ...jsonPayload, messagingMethod: 'broadcast' }}
                 tokenMissingFields={!amount || !pool}
               />
             ) : (
               <PrivateForm
-                tokenOperation="mint"
                 tokenBody={{ ...jsonPayload, messagingMethod: 'private' }}
                 tokenMissingFields={!amount || !pool}
               />

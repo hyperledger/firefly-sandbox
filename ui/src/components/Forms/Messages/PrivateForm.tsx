@@ -20,7 +20,7 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { IDatatype } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import { isJsonString } from '../../../utils/strings';
+import { isJsonString, isTokenMessage } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
@@ -33,13 +33,11 @@ interface NetworkIdentity {
 }
 
 interface Props {
-  tokenOperation?: 'mint' | 'transfer' | 'burn' | undefined;
   tokenBody?: object;
   tokenMissingFields?: boolean;
 }
 
 export const PrivateForm: React.FC<Props> = ({
-  tokenOperation,
   tokenBody,
   tokenMissingFields,
 }) => {
@@ -77,7 +75,7 @@ export const PrivateForm: React.FC<Props> = ({
   }, [isMounted]);
 
   useEffect(() => {
-    if (formID !== TUTORIAL_FORMS.PRIVATE && !tokenOperation) return;
+    if (formID !== TUTORIAL_FORMS.PRIVATE && !isTokenMessage(formID)) return;
     setPayloadMissingFields(recipients.length === 0);
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     const body = {
@@ -90,7 +88,7 @@ export const PrivateForm: React.FC<Props> = ({
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
     };
-    setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
+    setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
   }, [message, recipients, tag, topics, fileName, formID, datatype, jsonValue]);
 
   useEffect(() => {
@@ -98,7 +96,7 @@ export const PrivateForm: React.FC<Props> = ({
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
       setMessage('');
       const body = getFormBody(JSON.parse(jsonValue));
-      setJsonPayload(tokenOperation ? { ...tokenBody, ...body } : body);
+      setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
     }
   }, [jsonValue]);
 

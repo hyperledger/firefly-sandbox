@@ -56,14 +56,17 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
+    const postEndpoint = isBlob ? endpoint + 'blob' : endpoint;
     const reqDetails: any = {
       method: 'POST',
-      body: isBlob ? buildFormData(payload, endpoint) : JSON.stringify(payload),
+      body: isBlob
+        ? buildFormData(payload, postEndpoint)
+        : JSON.stringify(payload),
     };
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(isBlob ? endpoint + 'blob' : endpoint, reqDetails)
+    fetch(postEndpoint, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,
@@ -104,6 +107,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
+    console.log('blobob', blobEndpoint);
     if (blobEndpoint.includes('privateblob')) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);

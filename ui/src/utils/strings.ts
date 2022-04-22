@@ -26,3 +26,10 @@ export const isSuccessfulResponse = (statusCode: number) => {
   }
   return false;
 };
+
+export const isTokenMessage = (formID?: string) => {
+  if ([formID && 'mint', 'burn', 'transfer'].includes(formID)) {
+    return true;
+  }
+  return false;
+};

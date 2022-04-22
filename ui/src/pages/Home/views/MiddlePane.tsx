@@ -28,7 +28,7 @@ export const MiddlePane = () => {
   const { jsonPayload, apiResponse, apiStatus, setApiResponse, setApiStatus } =
     useContext(ApplicationContext);
   const { reportFetchError } = useContext(SnackbarContext);
-  const { formID, formObject, categoryID } = useContext(FormContext);
+  const { formID, formObject, categoryID, isBlob } = useContext(FormContext);
   const [template, setTemplate] = useState<string>('');
   const [codeBlock, setCodeBlock] = useState<string>('');
 
@@ -41,14 +41,14 @@ export const MiddlePane = () => {
     }
     categoryID &&
       formID &&
-      fetchCatcher(SDK_PATHS.template(categoryID, formID))
+      fetchCatcher(SDK_PATHS.template(categoryID, formID, isBlob))
         .then((template: string) => {
           setTemplate(template);
         })
         .catch((e) => {
           reportFetchError(e);
         });
-  }, [categoryID, formID]);
+  }, [categoryID, formID, isBlob]);
 
   useEffect(() => {
     if (template && jsonPayload && formID) {

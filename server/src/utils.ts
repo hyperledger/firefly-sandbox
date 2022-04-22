@@ -6,6 +6,18 @@ import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import stripIndent = require('strip-indent');
 
+export enum FF_MESSAGES {
+  // Definition
+  DEFINITON = 'definition',
+  // Broadcast
+  BROADCAST = 'broadcast',
+  TRANSFER_BROADCAST = 'transfer_broadcast',
+  // Private
+  PRIVATE = 'private',
+  TRANSFER_PRIVATE = 'transfer_private',
+  GROUP_INIT = 'groupinit',
+}
+
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
     info: {
@@ -114,7 +126,7 @@ export function getPrivateMessageBody(body: any, blobId?: string) {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: 'transfer_private',
+      type: FF_MESSAGES.TRANSFER_PRIVATE,
     },
     group: {
       members: body.recipients.map((r) => ({ identity: r })),

@@ -20,10 +20,13 @@ export const SDK_PATHS = {
   // Tokens
   tokensBalances: '/api/tokens/balances',
   tokensBurn: '/api/tokens/burn',
+  tokensBurnWithBlob: '/api/tokens/burnblob',
   tokensMint: '/api/tokens/mint',
+  tokensMintWithBlob: '/api/tokens/mintblob',
   tokensPools: '/api/tokens/pools',
   tokensTransfer: '/api/tokens/transfer',
+  tokensTransferWithBlob: '/api/tokens/transferblob',
   // Templates
-  template: (category: string, formID: string) =>
-    `/api/${category}/template/${formID}`,
+  template: (category: string, formID: string, isBlob?: boolean) =>
+    `/api/${category}/template/${formID}${isBlob ? 'blob' : ''}`,
 };

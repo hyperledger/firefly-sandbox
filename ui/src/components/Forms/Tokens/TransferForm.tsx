@@ -22,6 +22,7 @@ import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 import { BroadcastForm } from '../Messages/BroadcastForm';
 import { PrivateForm } from '../Messages/PrivateForm';
+import { MessageForm } from './MessageForm';
 
 export const TransferForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
@@ -215,96 +216,18 @@ export const TransferForm: React.FC = () => {
         ) : (
           <></>
         )}
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={withMessage}
-                onChange={() => {
-                  if (withMessage) {
-                    setJsonPayload({
-                      pool: pool?.name,
-                      amount: amount.toString(),
-                      messagingMethod: null,
-                      tokenIndex: tokenIndex?.toString(),
-                      to: recipient,
-                    });
-                  }
-                  setWithMessage(!withMessage);
-                }}
-              />
-            }
-            label={t('transferWithData')}
-          />
-        </Grid>
-        {withMessage === true && (
-          <>
-            <Grid item width="100%">
-              <FormControl fullWidth required>
-                <InputLabel>{t('messagingMethod')}</InputLabel>
-                <Select
-                  fullWidth
-                  value={messageMethod}
-                  label={t('messagingMethod')}
-                  onChange={(e) => {
-                    setMessageMethod(e.target.value);
-                    setJsonPayload({
-                      pool: pool?.name,
-                      amount: amount.toString(),
-                      messagingMethod: withMessage ? e.target.value : null,
-                      tokenIndex: tokenIndex?.toString(),
-                      to: recipient,
-                    });
-                  }}
-                >
-                  <MenuItem
-                    key={'messageMethod-broadcast'}
-                    value={TUTORIAL_FORMS.BROADCAST}
-                  >
-                    {t(TUTORIAL_FORMS.BROADCAST)}
-                  </MenuItem>
-                  <MenuItem
-                    key={'messageMethod-private'}
-                    value={TUTORIAL_FORMS.PRIVATE}
-                  >
-                    {t(TUTORIAL_FORMS.PRIVATE)}
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </>
-        )}
-        {withMessage === true && (
-          <Grid container item>
-            {messageMethod === TUTORIAL_FORMS.BROADCAST ? (
-              <BroadcastForm
-                tokenBody={{
-                  ...jsonPayload,
-                  messagingMethod: TUTORIAL_FORMS.BROADCAST,
-                }}
-                tokenMissingFields={
-                  !amount ||
-                  !pool ||
-                  !recipient ||
-                  (!isFungible() && !tokenIndex)
-                }
-              />
-            ) : (
-              <PrivateForm
-                tokenBody={{
-                  ...jsonPayload,
-                  messagingMethod: TUTORIAL_FORMS.PRIVATE,
-                }}
-                tokenMissingFields={
-                  !amount ||
-                  !pool ||
-                  !recipient ||
-                  (!isFungible() && !tokenIndex)
-                }
-              />
-            )}
-          </Grid>
-        )}
+        <MessageForm
+          tokenMissingFields={
+            !amount || !pool || !recipient || (!isFungible() && !tokenIndex)
+          }
+          tokenOperationPayload={{
+            pool: pool?.name,
+            amount: amount.toString(),
+            tokenIndex: tokenIndex?.toString(),
+            to: recipient,
+          }}
+          label={t('transferWithData')}
+        />
       </Grid>
     </Grid>
   );

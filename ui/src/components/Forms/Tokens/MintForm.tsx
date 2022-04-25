@@ -1,7 +1,5 @@
 import {
-  Checkbox,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -19,8 +17,7 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import { BroadcastForm } from '../Messages/BroadcastForm';
-import { PrivateForm } from '../Messages/PrivateForm';
+import { MessageForm } from './MessageForm';
 
 export const MintForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
@@ -141,82 +138,14 @@ export const MintForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={withMessage}
-                onChange={() => {
-                  if (withMessage) {
-                    setJsonPayload({
-                      pool: pool?.name,
-                      amount: amount.toString(),
-                      messagingMethod: null,
-                    });
-                  }
-                  setWithMessage(!withMessage);
-                }}
-              />
-            }
-            label={t('mintWithData')}
-          />
-        </Grid>
-        {withMessage === true && (
-          <>
-            <Grid item width="100%">
-              <FormControl fullWidth required>
-                <InputLabel>{t('messagingMethod')}</InputLabel>
-                <Select
-                  fullWidth
-                  value={messageMethod}
-                  label={t('messagingMethod')}
-                  onChange={(e) => {
-                    setMessageMethod(e.target.value);
-                    setJsonPayload({
-                      pool: pool?.name,
-                      amount: amount.toString(),
-                      messagingMethod: withMessage ? e.target.value : null,
-                    });
-                  }}
-                >
-                  <MenuItem
-                    key={'messageMethod-broadcast'}
-                    value={TUTORIAL_FORMS.BROADCAST}
-                  >
-                    {t('broadcast')}
-                  </MenuItem>
-                  <MenuItem
-                    key={'messageMethod-private'}
-                    value={TUTORIAL_FORMS.PRIVATE}
-                  >
-                    {t(TUTORIAL_FORMS.PRIVATE)}
-                  </MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          </>
-        )}
-        {withMessage === true && (
-          <Grid container item>
-            {messageMethod === TUTORIAL_FORMS.BROADCAST ? (
-              <BroadcastForm
-                tokenBody={{
-                  ...jsonPayload,
-                  messagingMethod: TUTORIAL_FORMS.BROADCAST,
-                }}
-                tokenMissingFields={!amount || !pool}
-              />
-            ) : (
-              <PrivateForm
-                tokenBody={{
-                  ...jsonPayload,
-                  messagingMethod: TUTORIAL_FORMS.PRIVATE,
-                }}
-                tokenMissingFields={!amount || !pool}
-              />
-            )}
-          </Grid>
-        )}
+        <MessageForm
+          tokenMissingFields={!amount || !pool}
+          tokenOperationPayload={{
+            pool: pool?.name,
+            amount: amount.toString(),
+          }}
+          label={t('mintWithData')}
+        />
       </Grid>
     </Grid>
   );

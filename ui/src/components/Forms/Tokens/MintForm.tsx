@@ -1,6 +1,4 @@
-import RefreshIcon from '@mui/icons-material/Refresh';
 import {
-  Button,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -19,24 +17,22 @@ import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 import { BroadcastForm } from '../Messages/BroadcastForm';
 import { PrivateForm } from '../Messages/PrivateForm';
 
 export const MintForm: React.FC = () => {
-  const { jsonPayload, selfIdentity, setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
-  const [tokenBalance, setTokenBalance] = useState<string>('0');
 
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
-  const [refresh, setRefresh] = useState<number>(0);
   const [withMessage, setWithMessage] = useState<boolean>(false);
   const [messageMethod, setMessageMethod] = useState<string>(
     TUTORIAL_FORMS.BROADCAST
@@ -85,31 +81,6 @@ export const MintForm: React.FC = () => {
         });
   }, [formID, isMounted]);
 
-  useEffect(() => {
-    if (!pool?.id) return;
-    const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    isMounted &&
-      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
-        .then((balanceRes: any) => {
-          if (isMounted) {
-            if (pool.type === 'nonfungible') {
-              setTokenBalance(balanceRes.length);
-            } else {
-              setTokenBalance(
-                balanceRes.length > 0
-                  ? balanceRes.find(
-                      (b: any) => b.key === selfIdentity?.ethereum_address
-                    ).balance
-                  : 0
-              );
-            }
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-  }, [pool, refresh, isMounted]);
-
   const resetValues = () => {
     setAmount('1');
     setWithMessage(false);
@@ -124,7 +95,7 @@ export const MintForm: React.FC = () => {
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
         <Grid container item justifyContent="space-between" spacing={1}>
-          <Grid item width="100%">
+          <Grid item width="100%" xs={10}>
             <FormControl
               fullWidth
               required
@@ -158,33 +129,17 @@ export const MintForm: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-        </Grid>
-        <Grid item xs={12} justifyContent={'space-between'}>
-          {t('tokenBalance')}: {tokenBalance}
-          <Button
-            sx={{ marginLeft: DEFAULT_PADDING }}
-            onClick={() => {
-              setRefresh(refresh + 1);
-            }}
-          >
-            <RefreshIcon
-              sx={{
-                cursor: 'pointer',
-              }}
-            ></RefreshIcon>
-          </Button>
-        </Grid>
-        <Grid item xs={4}>
-          <FormControl fullWidth required>
-            <TextField
-              fullWidth
-              type="number"
-              label={t('amount')}
-              placeholder={t('exampleAmount')}
-              value={amount}
-              onChange={handleAmountChange}
-            />
-          </FormControl>
+          <Grid item xs={2}>
+            <FormControl fullWidth required>
+              <TextField
+                fullWidth
+                label={t('amount')}
+                placeholder={t('exampleAmount')}
+                value={amount}
+                onChange={handleAmountChange}
+              />
+            </FormControl>
+          </Grid>
         </Grid>
         <Grid item xs={12}>
           <FormControlLabel

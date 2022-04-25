@@ -33,6 +33,7 @@ interface Props {
   shortHash?: boolean;
   fullLength?: boolean;
   paper?: boolean;
+  monospace?: boolean;
 }
 
 export const HashPopover: React.FC<Props> = ({
@@ -40,6 +41,7 @@ export const HashPopover: React.FC<Props> = ({
   shortHash,
   paper,
   fullLength,
+  monospace,
 }) => {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
@@ -54,6 +56,7 @@ export const HashPopover: React.FC<Props> = ({
           color: theme.palette.text.primary,
           borderRadius: DEFAULT_BORDER_RADIUS,
           fontSize: '12px',
+          fontFamily: monospace ? 'Monospace' : undefined,
           backgroundColor: paper
             ? theme.palette.background.paper
             : theme.palette.background.default,

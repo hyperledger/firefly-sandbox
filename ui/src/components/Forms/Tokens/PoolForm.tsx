@@ -56,30 +56,28 @@ export const PoolForm: React.FC = () => {
       <Grid container spacing={DEFAULT_SPACING}>
         <Grid container item justifyContent="space-between" spacing={1}>
           {/* Pool Name */}
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <TextField
               required
               fullWidth
               label={t('poolName')}
-              placeholder={t('abcCoin')}
+              placeholder={t('acme')}
               value={name}
               onChange={handleNameChange}
             />
           </Grid>
           {/* Pool Symbol */}
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <TextField
               fullWidth
               label={t('poolSymbol')}
-              placeholder={t('abc')}
+              placeholder={t('$acme')}
               value={symbol}
               onChange={handleSymbolChange}
             />
           </Grid>
-        </Grid>
-        <Grid container item justifyContent="space-between" spacing={1}>
           {/* Type */}
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             <FormControl fullWidth required>
               <InputLabel>{t('type')}</InputLabel>
               <Select
@@ -94,7 +92,9 @@ export const PoolForm: React.FC = () => {
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={6}>
+        </Grid>
+        <Grid container item justifyContent="space-between" spacing={1}>
+          <Grid item xs={12}>
             <TextField
               fullWidth
               label={t('contractAddress')}

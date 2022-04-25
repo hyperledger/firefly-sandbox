@@ -62,6 +62,20 @@ export const themeOptions: ThemeOptions = {
         },
       },
     },
+    MuiAccordionDetails: {
+      styleOverrides: {
+        root: {
+          borderRadius: DEFAULT_BORDER_RADIUS,
+        },
+      },
+    },
+    MuiAccordionSummary: {
+      styleOverrides: {
+        root: {
+          borderRadius: DEFAULT_BORDER_RADIUS,
+        },
+      },
+    },
     MuiChip: {
       styleOverrides: {
         root: {

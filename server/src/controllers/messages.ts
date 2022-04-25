@@ -1,4 +1,13 @@
-import { Post, Get, HttpCode, UploadedFile, Req, Body, JsonController } from 'routing-controllers';
+import {
+  Post,
+  Get,
+  HttpCode,
+  UploadedFile,
+  Req,
+  Body,
+  JsonController,
+  Redirect,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
@@ -217,13 +226,9 @@ export class MessagesTemplateController {
   }
 
   @Get('/datatypes')
-  createDatatypeTemplate() {
-    return formatTemplate(`
-      const datatype = await firefly.createDatatype({
-        name: <%= ${q('name')}  %>,
-        version: <%= ${q('version')} %>,
-      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>);
-      return { type: 'datatype', id: datatype.id };
-    `);
+  @Redirect('../../datatypes/template')
+  datatypesTemplate() {
+    // This template actually lives in DatatypesTemplateController, but a redirect is
+    // provided here because the UI displays datatypes in the Messages category.
   }
 }

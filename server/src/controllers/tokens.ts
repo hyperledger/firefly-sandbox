@@ -27,6 +27,8 @@ import {
   TokenBalance,
   AsyncResponse,
   MintBlob,
+  BurnBlob,
+  TransferBlob,
 } from '../interfaces';
 import { plainToClassFromExist } from 'class-transformer';
 
@@ -113,11 +115,45 @@ export class TokensController {
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
   async burn(@Body() body: TokenBurn): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
-    const transfer = await firefly.burnTokens({
+    const burnBody = {
       pool: body.pool,
       amount: body.amount,
       tokenIndex: body.tokenIndex,
-    });
+    } as any;
+    if (body.messagingMethod) {
+      burnBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body)
+          : getPrivateMessageBody(body);
+    }
+    const transfer = await firefly.burnTokens(burnBody);
+    return { type: 'token_transfer', id: transfer.localId };
+  }
+
+  @Post('/burnblob')
+  @HttpCode(202)
+  @FormDataSchema(BurnBlob)
+  @ResponseSchema(AsyncResponse)
+  @OpenAPI({ summary: 'Burn a token with a binary blob' })
+  async burnblob(
+    @Req() req: Request,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<AsyncResponse> {
+    // See MessagesTemplateController and keep template code up to date.
+    const body = plainToClassFromExist(new BurnBlob(), req.body);
+    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const burnBody = {
+      pool: body.pool,
+      amount: body.amount,
+      tokenIndex: body.tokenIndex,
+    } as any;
+    if (body.messagingMethod) {
+      burnBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body, data.id)
+          : getPrivateMessageBody(body, data.id);
+    }
+    const transfer = await firefly.burnTokens(burnBody);
     return { type: 'token_transfer', id: transfer.localId };
   }
 
@@ -127,12 +163,47 @@ export class TokensController {
   @OpenAPI({ summary: 'Transfer tokens within a token pool' })
   async transfer(@Body() body: TokenTransfer): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
-    const transfer = await firefly.transferTokens({
+    const transferBody = {
       pool: body.pool,
       to: body.to,
       amount: body.amount,
       tokenIndex: body.tokenIndex,
-    });
+    } as any;
+    if (body.messagingMethod) {
+      transferBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body)
+          : getPrivateMessageBody(body);
+    }
+    const transfer = await firefly.transferTokens(transferBody);
+    return { type: 'token_transfer', id: transfer.localId };
+  }
+
+  @Post('/transferblob')
+  @HttpCode(202)
+  @FormDataSchema(TransferBlob)
+  @ResponseSchema(AsyncResponse)
+  @OpenAPI({ summary: 'Transfer a token with a binary blob' })
+  async transferblob(
+    @Req() req: Request,
+    @UploadedFile('file') file: Express.Multer.File,
+  ): Promise<AsyncResponse> {
+    // See MessagesTemplateController and keep template code up to date.
+    const body = plainToClassFromExist(new TransferBlob(), req.body);
+    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const transferBody = {
+      pool: body.pool,
+      to: body.to,
+      amount: body.amount,
+      tokenIndex: body.tokenIndex,
+    } as any;
+    if (body.messagingMethod) {
+      transferBody.message =
+        body.messagingMethod === 'broadcast'
+          ? getBroadcastMessageBody(body, data.id)
+          : getPrivateMessageBody(body, data.id);
+    }
+    const transfer = await firefly.transferTokens(transferBody);
     return { type: 'token_transfer', id: transfer.localId };
   }
 
@@ -257,10 +328,69 @@ export class TokensTemplateController {
   @Get('/burn')
   burnTemplate() {
     return formatTemplate(`
+      const burn = await firefly.burnTokens({
+        pool: <%= ${q('pool')} %>,
+        tokenIndex: <%= ${q('tokenIndex')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod && (value||jsonValue)) { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [<% if(jsonValue) { %>
+            {
+              datatype: { 
+                name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
+                version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+              },
+              value: <%= jsonValue ? ${q('jsonValue', {
+                isObject: true,
+                truncate: true,
+              })} : ${q('value')}%>
+            }
+              <% } else { %>
+                { value: <%= jsonValue ? ${q('jsonValue', {
+                  isObject: true,
+                  truncate: true,
+                })} : ${q('value')}%> }
+            <%} 
+          %>],
+        }
+        <% } %>
+      });
+      return { type: 'token_transfer', id: transfer.localId };
+    `);
+  }
+
+  @Get('/burnblob')
+  burnBlobTemplate() {
+    return formatTemplate(`
+    const data = await firefly.uploadDataBlob(
+      file.buffer,
+      <%= ${q('filename')} %>,
+    );
       const transfer = await firefly.burnTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,
-        tokenIndex: <%= ${q('tokenIndex')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [{ id: data.id }],
+        }
+        <% } else { %>
+          message: {
+            header: {
+              tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+              topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            },
+            group: {
+              members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+            },
+            data: [{ id: data.id }],
+          }
+      <%} %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);
@@ -272,8 +402,67 @@ export class TokensTemplateController {
       const transfer = await firefly.transferTokens({
         pool: <%= ${q('pool')} %>,
         to: <%= ${q('to')} %>,
-        amount: <%= ${q('amount')} %>,
         tokenIndex: <%= ${q('tokenIndex')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod && (value||jsonValue)) { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [<% if(jsonValue) { %>
+            {
+              datatype: { 
+                name: <%= datatypename ? ${q('datatypename')} : 'undefined' %>,
+                version: <%= datatypeversion ? ${q('datatypeversion')} : 'undefined' %>
+              },
+              value: <%= jsonValue ? ${q('jsonValue', {
+                isObject: true,
+                truncate: true,
+              })} : ${q('value')}%>
+            }
+              <% } else { %>
+                { value: <%= jsonValue ? ${q('jsonValue', {
+                  isObject: true,
+                  truncate: true,
+                })} : ${q('value')}%> }
+            <%} 
+          %>],
+        }
+        <% } %>
+      });
+      return { type: 'token_transfer', id: transfer.localId };
+    `);
+  }
+
+  @Get('/transferblob')
+  transferBlobTemplate() {
+    return formatTemplate(`
+    const data = await firefly.uploadDataBlob(
+      file.buffer,
+      <%= ${q('filename')} %>,
+    );
+      const transfer = await firefly.transferTokens({
+        pool: <%= ${q('pool')} %>,
+        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        message: {
+          header: {
+            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          },
+          data: [{ id: data.id }],
+        }
+        <% } else { %>
+          message: {
+            header: {
+              tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+              topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            },
+            group: {
+              members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+            },
+            data: [{ id: data.id }],
+          }
+      <%} %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);

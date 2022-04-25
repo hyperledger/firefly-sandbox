@@ -29,8 +29,7 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 export const LeftPane = () => {
   const { t } = useTranslation();
   const { setPayloadMissingFields } = useContext(ApplicationContext);
-  const { formID, categoryID, setActionParam, setIsBlob } =
-    useContext(FormContext);
+  const { formID, categoryID, setActionParam } = useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
 
   // Set tab index when category ID changes

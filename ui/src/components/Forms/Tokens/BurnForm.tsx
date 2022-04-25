@@ -1,6 +1,8 @@
 import {
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -19,9 +21,11 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { SDK_PATHS } from '../../../constants/SDK_PATHS';
 import { FormContext } from '../../../contexts/FormContext';
+import { BroadcastForm } from '../Messages/BroadcastForm';
+import { PrivateForm } from '../Messages/PrivateForm';
 
 export const BurnForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
+  const { selfIdentity, jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -33,6 +37,8 @@ export const BurnForm: React.FC = () => {
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
+  const [withMessage, setWithMessage] = useState<boolean>(false);
+  const [messageMethod, setMessageMethod] = useState<string>('broadcast');
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -43,13 +49,22 @@ export const BurnForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (formID !== TUTORIAL_FORMS.BURN) return;
-    setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
-    setJsonPayload({
+    if (formID !== TUTORIAL_FORMS.BURN) {
+      resetValues();
+      return;
+    }
+    if (!withMessage) {
+      setPayloadMissingFields(
+        !amount || !pool || (!isFungible() && !tokenIndex)
+      );
+    }
+    const body = {
       pool: pool?.name,
       amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
-    });
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
   }, [pool, amount, tokenIndex, formID]);
 
   useEffect(() => {
@@ -113,6 +128,12 @@ export const BurnForm: React.FC = () => {
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);
+  };
+
+  const resetValues = () => {
+    setAmount('1');
+    setWithMessage(false);
+    setMessageMethod('broadcast');
   };
 
   return (
@@ -197,6 +218,76 @@ export const BurnForm: React.FC = () => {
           </Grid>
         ) : (
           <></>
+        )}
+        <Grid item xs={12}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={withMessage}
+                onChange={() => {
+                  if (withMessage) {
+                    setJsonPayload({
+                      pool: pool?.name,
+                      amount: amount.toString(),
+                      tokenIndex: tokenIndex?.toString(),
+                      messagingMethod: null,
+                    });
+                  }
+                  setWithMessage(!withMessage);
+                }}
+              />
+            }
+            label={t('burnWithData')}
+          />
+        </Grid>
+        {withMessage === true && (
+          <>
+            <Grid item width="100%">
+              <FormControl fullWidth required>
+                <InputLabel>{t('messagingMethod')}</InputLabel>
+                <Select
+                  fullWidth
+                  value={messageMethod}
+                  label={t('messagingMethod')}
+                  onChange={(e) => {
+                    setMessageMethod(e.target.value);
+                    setJsonPayload({
+                      pool: pool?.name,
+                      amount: amount.toString(),
+                      tokenIndex: tokenIndex?.toString(),
+                      messagingMethod: withMessage ? e.target.value : null,
+                    });
+                  }}
+                >
+                  <MenuItem key={'messageMethod-broadcast'} value={'broadcast'}>
+                    {t('broadcast')}
+                  </MenuItem>
+                  <MenuItem key={'messageMethod-private'} value={'private'}>
+                    {t('private')}
+                  </MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          </>
+        )}
+        {withMessage === true && (
+          <Grid container item>
+            {messageMethod === 'broadcast' ? (
+              <BroadcastForm
+                tokenBody={{ ...jsonPayload, messagingMethod: 'broadcast' }}
+                tokenMissingFields={
+                  !amount || !pool || (!isFungible() && !tokenIndex)
+                }
+              />
+            ) : (
+              <PrivateForm
+                tokenBody={{ ...jsonPayload, messagingMethod: 'private' }}
+                tokenMissingFields={
+                  !amount || !pool || (!isFungible() && !tokenIndex)
+                }
+              />
+            )}
+          </Grid>
         )}
       </Grid>
     </Grid>

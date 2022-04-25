@@ -176,9 +176,21 @@ export class TokenBurn extends TokenMint {
   tokenIndex?: string;
 }
 
+export class BurnBlob extends TokenBurn {
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
+}
+
 export class TokenTransfer extends TokenBurn {
   @IsString()
   to: string;
+}
+
+export class TransferBlob extends TokenTransfer {
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
 }
 
 export class TokenBalance {

@@ -107,12 +107,29 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
-    if (blobEndpoint.includes('privateblob')) {
+    if (isTokenOperation(blobEndpoint)) {
+      data.append('pool', payload.pool);
+      data.append('amount', payload.amount ?? '0');
+      data.append('tokenIndex', payload.tokenIndex ?? '');
+      data.append('to', payload.to);
+    }
+    if (
+      blobEndpoint.includes('privateblob') ||
+      payload.messagingMethod === 'private'
+    ) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);
       }
     }
     return data;
+  };
+
+  const isTokenOperation = (blobEndpoint: string) => {
+    return (
+      blobEndpoint.includes('mint') ||
+      blobEndpoint.includes('burn') ||
+      blobEndpoint.includes('transfer')
+    );
   };
 
   return (

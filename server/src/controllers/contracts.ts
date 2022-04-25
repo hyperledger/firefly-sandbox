@@ -189,7 +189,10 @@ export class ContractsTemplateController {
       const listener = await firefly.createContractAPIListener(
         <%= ${q('apiName')} %>,
         <%= ${q('eventPath')} %>,
-        { topic: <%= ${q('topic')} %>, name: <%= ${q('name')} %>, },
+        {
+          topic: <%= ${q('topic')} %>,<% if (name) { %>
+          <% print('name: ' + ${q('name')} + ',') } %>
+        },
       );
       return {
         name: listener.name,

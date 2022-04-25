@@ -23,7 +23,9 @@ describe('Templates: Smart Contracts', () => {
             const ffi = await firefly.generateContractInterface({
               name: 'simple-storage',
               version: '1.0',
-              input: [{"name":" ... "event1"}],
+              input: {
+                abi: [{"name":" ... "event1"}],
+              },
             });
             const result = await firefly.createContractInterface(ffi);
             return { type: 'message', id: result.message };

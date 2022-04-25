@@ -122,11 +122,11 @@ export class TokensTemplateController {
   tokenpoolsTemplate() {
     return formatTemplate(`
       const pool = await firefly.createTokenPool({
-        name: <%= ${q('name')} %>,
-        symbol: <%= ${q('symbol')} %>,
+        name: <%= ${q('name')} %>,<% if (symbol) { %>
+        <% print('symbol: ' + ${q('symbol')} + ',') } %>
         type: <%= ${q('type')} %>,
-        config: {
-          address: <%= ${q('address')} %>,
+        config: {<% if (address) { %>
+          <% print('address: ' + ${q('address')} + ',') } %>
         }
       });
       return { type: 'token_pool', id: pool.id };
@@ -138,7 +138,8 @@ export class TokensTemplateController {
     return formatTemplate(`
       const transfer = await firefly.mintTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+          <% print('tokenIndex: ' + ${q('tokenIndex')} + ',') } %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);
@@ -149,8 +150,8 @@ export class TokensTemplateController {
     return formatTemplate(`
       const transfer = await firefly.burnTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,
-        tokenIndex: <%= ${q('tokenIndex')} %>,
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+        <% print('tokenIndex: ' + ${q('tokenIndex')} + ',') } %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);
@@ -162,8 +163,8 @@ export class TokensTemplateController {
       const transfer = await firefly.transferTokens({
         pool: <%= ${q('pool')} %>,
         to: <%= ${q('to')} %>,
-        amount: <%= ${q('amount')} %>,
-        tokenIndex: <%= ${q('tokenIndex')} %>,
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+        <% print('tokenIndex: ' + ${q('tokenIndex')} + ',') } %>
       });
       return { type: 'token_transfer', id: transfer.localId };
     `);

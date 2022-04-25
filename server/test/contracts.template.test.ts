@@ -98,7 +98,9 @@ describe('Templates: Smart Contracts', () => {
             const listener = await firefly.createContractAPIListener(
               'api1',
               'set',
-              { topic: 'app1', name: undefined, },
+              {
+                topic: 'app1',
+              },
             );
             return {
               name: listener.name,

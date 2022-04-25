@@ -24,8 +24,6 @@ describe('Templates: Messages', () => {
           formatTemplate(`
             const message = await firefly.sendBroadcast({
               header: {
-                tag: undefined,
-                topics: [],
               },
               data: [
                 { value: '' },
@@ -77,16 +75,42 @@ describe('Templates: Messages', () => {
             },
             data: [
               {
-                datatype: { 
-                  name: undefined,
-                  version: undefined,
+                value: {"val1":"f ... l2":"bar"},
+              },
+            ],
+          });
+          return { type: 'message', id: message.header.id };
+        `),
+        );
+
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: '',
+            jsonValue: { val1: 'foo', val2: 'bar' },
+            datatypename: 'widget',
+            datatypeversion: '1.0',
+          }),
+        ).toBe(
+          formatTemplate(`
+          const message = await firefly.sendBroadcast({
+            header: {
+              tag: 'test-tag',
+              topics: ['test-topic'],
+            },
+            data: [
+              {
+                datatype: {
+                  name: 'widget',
+                  version: '1.0',
                 },
                 value: {"val1":"f ... l2":"bar"},
               },
             ],
           });
           return { type: 'message', id: message.header.id };
-      `),
+        `),
         );
       });
   });
@@ -143,11 +167,10 @@ describe('Templates: Messages', () => {
           formatTemplate(`
             const message = await firefly.sendPrivateMessage({
               header: {
-                tag: undefined,
-                topics: [],
               },
               group: {
-                members: [],
+                members: [
+                ],
               },
               data: [
                 { value: '' },
@@ -175,7 +198,10 @@ describe('Templates: Messages', () => {
                 topics: ['test-topic'],
               },
               group: {
-                members: [{ identity: 'alpha' }, { identity: 'beta' }],
+                members: [
+                  { identity: 'alpha' },
+                  { identity: 'beta' },
+                ],
               },
               data: [
                 { value: '\\'Hello\\'' },
@@ -203,13 +229,49 @@ describe('Templates: Messages', () => {
                 topics: ['test-topic'],
               },
               group: {
-                members: [{ identity: 'alpha' }, { identity: 'beta' }],
+                members: [
+                  { identity: 'alpha' },
+                  { identity: 'beta' },
+                ],
               },
               data: [
                 {
-                  datatype: { 
-                    name: undefined,
-                    version: undefined,
+                  value: {"val1":"f ... l2":"bar"}
+                },
+              ],
+            });
+            return { type: 'message', id: message.header.id };
+        `),
+        );
+
+        expect(
+          compiled({
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: '',
+            jsonValue: { val1: 'foo', val2: 'bar' },
+            recipients: ['alpha', 'beta'],
+            datatypename: 'widget',
+            datatypeversion: '1.0',
+          }),
+        ).toBe(
+          formatTemplate(`
+            const message = await firefly.sendPrivateMessage({
+              header: {
+                tag: 'test-tag',
+                topics: ['test-topic'],
+              },
+              group: {
+                members: [
+                  { identity: 'alpha' },
+                  { identity: 'beta' },
+                ],
+              },
+              data: [
+                {
+                  datatype: {
+                    name: 'widget',
+                    version: '1.0',
                   },
                   value: {"val1":"f ... l2":"bar"}
                 },
@@ -248,7 +310,10 @@ describe('Templates: Messages', () => {
                 topics: ['test-topic'],
               },
               group: {
-                members: [{ identity: 'alpha' }, { identity: 'beta' }],
+                members: [
+                  { identity: 'alpha' },
+                  { identity: 'beta' },
+                ],
               },
               data: [{ id: data.id }],
             });
@@ -291,7 +356,7 @@ describe('Templates: Messages', () => {
             const datatype = await firefly.createDatatype({
               name: 'widget',
               version: '0.0.2',
-            }, {"$id":"ht ...  name."}}}) ;
+            }, {"$id":"ht ...  name."}}});
             return { type: 'datatype', id: datatype.id };
         `),
         );

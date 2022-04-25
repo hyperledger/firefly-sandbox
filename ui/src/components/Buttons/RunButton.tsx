@@ -10,7 +10,10 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setDumbAwaitedEventId } from '../../AppWrapper';
-import { TUTORIAL_CATEGORIES } from '../../constants/TutorialSections';
+import {
+  TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
+} from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
@@ -115,7 +118,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     }
     if (
       blobEndpoint.includes('privateblob') ||
-      payload.messagingMethod === 'private'
+      payload.messagingMethod === TUTORIAL_FORMS.PRIVATE
     ) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);

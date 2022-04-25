@@ -38,7 +38,9 @@ export const BurnForm: React.FC = () => {
   const [refresh, setRefresh] = useState<number>(0);
   const [tokenBalance, setTokenBalance] = useState<string>('0');
   const [withMessage, setWithMessage] = useState<boolean>(false);
-  const [messageMethod, setMessageMethod] = useState<string>('broadcast');
+  const [messageMethod, setMessageMethod] = useState<string>(
+    TUTORIAL_FORMS.BROADCAST
+  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -133,7 +135,7 @@ export const BurnForm: React.FC = () => {
   const resetValues = () => {
     setAmount('1');
     setWithMessage(false);
-    setMessageMethod('broadcast');
+    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
   };
 
   return (
@@ -259,11 +261,17 @@ export const BurnForm: React.FC = () => {
                     });
                   }}
                 >
-                  <MenuItem key={'messageMethod-broadcast'} value={'broadcast'}>
+                  <MenuItem
+                    key={'messageMethod-broadcast'}
+                    value={TUTORIAL_FORMS.BROADCAST}
+                  >
                     {t('broadcast')}
                   </MenuItem>
-                  <MenuItem key={'messageMethod-private'} value={'private'}>
-                    {t('private')}
+                  <MenuItem
+                    key={'messageMethod-private'}
+                    value={TUTORIAL_FORMS.PRIVATE}
+                  >
+                    {t(TUTORIAL_FORMS.PRIVATE)}
                   </MenuItem>
                 </Select>
               </FormControl>
@@ -272,16 +280,22 @@ export const BurnForm: React.FC = () => {
         )}
         {withMessage === true && (
           <Grid container item>
-            {messageMethod === 'broadcast' ? (
+            {messageMethod === TUTORIAL_FORMS.BROADCAST ? (
               <BroadcastForm
-                tokenBody={{ ...jsonPayload, messagingMethod: 'broadcast' }}
+                tokenBody={{
+                  ...jsonPayload,
+                  messagingMethod: TUTORIAL_FORMS.BROADCAST,
+                }}
                 tokenMissingFields={
                   !amount || !pool || (!isFungible() && !tokenIndex)
                 }
               />
             ) : (
               <PrivateForm
-                tokenBody={{ ...jsonPayload, messagingMethod: 'private' }}
+                tokenBody={{
+                  ...jsonPayload,
+                  messagingMethod: TUTORIAL_FORMS.PRIVATE,
+                }}
                 tokenMissingFields={
                   !amount || !pool || (!isFungible() && !tokenIndex)
                 }

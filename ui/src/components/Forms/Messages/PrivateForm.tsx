@@ -57,7 +57,7 @@ export const PrivateForm: React.FC = () => {
 
   useEffect(() => {
     isMounted &&
-      fetchCatcher(`${SDK_PATHS.organizations}?exclude_self=false`)
+      fetchCatcher(`${SDK_PATHS.organizations}?exclude_self=true`)
         .then((identityRes: NetworkIdentity[]) => {
           isMounted && setIdentities(identityRes);
         })

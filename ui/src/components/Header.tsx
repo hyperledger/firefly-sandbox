@@ -14,12 +14,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import {
+  DescriptionOutlined,
+  GitHub,
+  QuestionMarkOutlined,
+} from '@mui/icons-material';
 import CircleIcon from '@mui/icons-material/Circle';
 import {
   AppBar,
   Chip,
   Container,
   Grid,
+  IconButton,
   Toolbar,
   Tooltip,
   Typography,
@@ -27,16 +33,19 @@ import {
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReconnectingWebSocket from 'reconnecting-websocket';
+import { ResourceUrls } from '../constants/ResourceUrls';
 import { EventContext } from '../contexts/EventContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
+import { InstructionModal } from './Modals/InstructionModal';
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();
   const { addLogToHistory } = useContext(EventContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     connectToWS();
@@ -70,46 +79,84 @@ export const Header: React.FC = () => {
   };
 
   return (
-    <AppBar position="sticky" elevation={0}>
-      <Container maxWidth="xl">
-        <Toolbar disableGutters>
-          <Grid container direction="row" alignItems={'center'}>
-            <Grid item container justifyContent={'flex-start'} xs={6}>
-              <Typography variant="h6" noWrap component="div">
-                <MenuLogo />
-              </Typography>
-            </Grid>
-            <Grid item container justifyContent={'flex-end'} xs={6}>
-              <Tooltip
-                title={
-                  wsConnected
-                    ? t('connectedToFirefly').toString()
-                    : t('notConnectedToFirefly').toString()
-                }
+    <>
+      <AppBar position="sticky" elevation={1}>
+        <Container maxWidth="xl">
+          <Toolbar disableGutters>
+            <Grid container direction="row" alignItems={'center'}>
+              <Grid item container justifyContent={'flex-start'} xs={6}>
+                <Typography variant="h6" noWrap component="div">
+                  <MenuLogo />
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                container
+                justifyContent={'flex-end'}
+                xs={6}
+                alignItems="center"
               >
-                <Chip
-                  icon={
-                    <CircleIcon
-                      fontSize="small"
-                      style={{
-                        color: wsConnected ? FFColors.Green : FFColors.Red,
-                      }}
-                    />
+                <Tooltip
+                  title={
+                    wsConnected
+                      ? t('connectedToFirefly').toString()
+                      : t('notConnectedToFirefly').toString()
                   }
-                  label={wsConnected ? t('connected') : t('notConnected')}
-                  sx={{
-                    color: FFColors.White,
-                    cursor: 'pointer',
-                    width: '20%',
-                  }}
-                  variant="outlined"
-                  onClick={connectToWS}
-                />
-              </Tooltip>
+                >
+                  <Chip
+                    icon={
+                      <CircleIcon
+                        fontSize="small"
+                        style={{
+                          color: wsConnected ? FFColors.Green : FFColors.Red,
+                        }}
+                      />
+                    }
+                    label={wsConnected ? t('connected') : t('notConnected')}
+                    sx={{
+                      color: FFColors.White,
+                      cursor: 'pointer',
+                      width: '20%',
+                    }}
+                    variant="outlined"
+                    onClick={connectToWS}
+                  />
+                </Tooltip>
+                {/* Docs */}
+                <IconButton
+                  color="secondary"
+                  onClick={() => window.open(ResourceUrls.fireflyTutorial)}
+                  size="small"
+                >
+                  <DescriptionOutlined />
+                </IconButton>
+                {/* Github */}
+                <IconButton
+                  color="secondary"
+                  onClick={() => window.open(ResourceUrls.sandBoxGH)}
+                  size="small"
+                >
+                  <GitHub />
+                </IconButton>
+                {/* Help */}
+                <IconButton
+                  color="secondary"
+                  onClick={() => setIsModalOpen(true)}
+                  size="small"
+                >
+                  <QuestionMarkOutlined />
+                </IconButton>
+              </Grid>
             </Grid>
-          </Grid>
-        </Toolbar>
-      </Container>
-    </AppBar>
+          </Toolbar>
+        </Container>
+      </AppBar>
+      {isModalOpen && (
+        <InstructionModal
+          isOpen={isModalOpen}
+          handleModalOpen={(open: boolean) => setIsModalOpen(open)}
+        />
+      )}
+    </>
   );
 };

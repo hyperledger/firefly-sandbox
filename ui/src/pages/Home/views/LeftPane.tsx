@@ -3,27 +3,27 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Divider,
   Grid,
+  Icon,
   Tab,
   Tabs,
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_ACTION } from '../../../AppWrapper';
-import { ContractStateAccordion } from '../../../components/Accordion/ContractStateAccordion';
+import { ContractStateBox } from '../../../components/Boxes/ContractStateBox';
 import { FFAccordionHeader } from '../../../components/Accordion/FFAccordionHeader';
 import { FFAccordionText } from '../../../components/Accordion/FFAccordionText';
-import { TokenStateAccordion } from '../../../components/Accordion/TokensStateAccordion';
+import { TokenStateBox } from '../../../components/Boxes/TokenStateBox';
 import { TutorialSections } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
-import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING } from '../../../theme';
+import { DEFAULT_PADDING } from '../../../theme';
 
 const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
   0: undefined,
-  1: <TokenStateAccordion />,
-  2: <ContractStateAccordion />,
+  1: <TokenStateBox />,
+  2: <ContractStateBox />,
 };
 
 export const LeftPane = () => {
@@ -64,91 +64,88 @@ export const LeftPane = () => {
   };
 
   return (
-    <>
-      <Grid container direction="column">
-        {/* Tabs */}
-        <Tabs
-          variant="fullWidth"
-          value={tabIdx ?? 0}
-          onChange={handleTabChange}
-        >
-          {TutorialSections.map((section) => {
-            return (
-              <Tab
-                iconPosition="start"
-                icon={section.icon}
-                label={t(section.category)}
-                key={section.category}
-              />
-            );
-          })}
-        </Tabs>
-        <Grid container p={DEFAULT_PADDING}>
-          {tabIdx !== undefined && formID ? (
-            // Current state of FireFly section
-            <Grid container item wrap="nowrap" direction="column">
-              {currentStateMap[tabIdx] && (
-                <Grid pb={1}>
-                  {currentStateMap[tabIdx]}
-                  <Divider />
+    <Grid container direction="column">
+      {/* Tabs */}
+      <Tabs
+        variant="fullWidth"
+        sx={{ maxHeight: 65 }}
+        value={tabIdx ?? 0}
+        onChange={handleTabChange}
+      >
+        {TutorialSections.map((section) => {
+          return (
+            <Tab
+              iconPosition="start"
+              icon={section.icon}
+              label={t(section.category)}
+              key={section.category}
+              sx={{
+                textTransform: 'none',
+                fontSize: '16px',
+                maxHeight: 65,
+              }}
+            />
+          );
+        })}
+      </Tabs>
+      <Grid container p={DEFAULT_PADDING} pt={0} direction="column">
+        {tabIdx !== undefined && formID && (
+          // Current state of FireFly section
+          <Grid container item wrap="nowrap" direction="column">
+            {currentStateMap[tabIdx] && (
+              <Grid pb={1}>{currentStateMap[tabIdx]}</Grid>
+            )}
+            {/* Tutorial section column */}
+            {TutorialSections.filter(
+              (section) =>
+                section.category === TutorialSections[tabIdx].category
+            ).map((ts) => {
+              return (
+                <Grid key={ts.category} pb={DEFAULT_PADDING} pt={1}>
+                  {ts.tutorials.map((tutorial) => {
+                    // Tutorial form
+                    return (
+                      <Grid
+                        key={tutorial.formID}
+                        item
+                        pb={1}
+                        sx={{ width: '100%' }}
+                      >
+                        <Accordion
+                          expanded={formID === tutorial.formID}
+                          onChange={() => {
+                            setActionParam(ts.category, tutorial.formID);
+                            setPayloadMissingFields(false);
+                          }}
+                        >
+                          <AccordionSummary expandIcon={<ExpandMore />}>
+                            <FFAccordionHeader
+                              content={
+                                <>
+                                  <Icon sx={{ mr: 1, mb: 1 }}>
+                                    {tutorial.icon}
+                                  </Icon>
+                                  <FFAccordionText
+                                    color="primary"
+                                    text={t(tutorial.title)}
+                                    isHeader
+                                  />
+                                </>
+                              }
+                              subText={t(tutorial.shortInfo)}
+                            />
+                          </AccordionSummary>
+                          <AccordionDetails>{tutorial.form}</AccordionDetails>
+                        </Accordion>
+                      </Grid>
+                    );
+                  })}
                 </Grid>
-              )}
-              {/* Tutorial section column */}
-              {TutorialSections.filter(
-                (section) =>
-                  section.category === TutorialSections[tabIdx].category
-              ).map((ts) => {
-                return (
-                  <Grid key={ts.category} pb={DEFAULT_PADDING} pt={1}>
-                    <Grid container item>
-                      {ts.tutorials.map((tutorial) => {
-                        // Tutorial form
-                        return (
-                          <Grid
-                            key={tutorial.formID}
-                            item
-                            pb={1}
-                            sx={{ width: '100%' }}
-                          >
-                            <Accordion
-                              sx={{
-                                borderRadius: DEFAULT_BORDER_RADIUS,
-                              }}
-                              expanded={formID === tutorial.formID}
-                              onChange={() => {
-                                setActionParam(ts.category, tutorial.formID);
-                                setPayloadMissingFields(false);
-                              }}
-                            >
-                              <AccordionSummary expandIcon={<ExpandMore />}>
-                                <FFAccordionHeader
-                                  content={
-                                    <FFAccordionText
-                                      color="primary"
-                                      text={t(tutorial.title)}
-                                      isHeader
-                                    />
-                                  }
-                                  subText={t(tutorial.shortInfo)}
-                                />
-                              </AccordionSummary>
-                              <AccordionDetails>
-                                {tutorial.form}
-                              </AccordionDetails>
-                            </Accordion>
-                          </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </Grid>
-                );
-              })}
-            </Grid>
-          ) : (
-            <Grid>Loading</Grid>
-          )}
-        </Grid>
+              );
+            })}
+          </Grid>
+        )}
       </Grid>
-    </>
+    </Grid>
   );
 };

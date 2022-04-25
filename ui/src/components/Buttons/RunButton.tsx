@@ -6,6 +6,7 @@ import {
   Grid,
   Snackbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
@@ -136,11 +138,14 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
             endIcon={<ArrowForwardIos />}
             variant="contained"
             disabled={disabled || payloadMissingFields}
-            sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+            sx={{
+              borderRadius: DEFAULT_BORDER_RADIUS,
+              backgroundColor: theme.palette.success.main,
+            }}
             onClick={handlePost}
             size="small"
           >
-            <Typography>{t('run')}</Typography>
+            <Typography sx={{ textTransform: 'none' }}>{t('run')}</Typography>
           </Button>
           <Snackbar
             open={showSnackbar}

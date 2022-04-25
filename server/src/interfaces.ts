@@ -147,21 +147,19 @@ export class TokenPool extends TokenPoolInput {
   id: string;
 }
 
-export class TokenMint {
+export class TokenMintBurn {
   @IsString()
   pool: string;
 
   @IsNumberString()
   amount: string;
-}
 
-export class TokenBurn extends TokenMint {
   @IsString()
   @IsOptional()
   tokenIndex?: string;
 }
 
-export class TokenTransfer extends TokenBurn {
+export class TokenTransfer extends TokenMintBurn {
   @IsString()
   to: string;
 }

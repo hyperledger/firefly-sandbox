@@ -5,9 +5,8 @@ import { formatTemplate, quoteAndEscape as q } from '../utils';
 import {
   TokenPool,
   TokenPoolInput,
-  TokenMint,
+  TokenMintBurn,
   TokenTransfer,
-  TokenBurn,
   TokenBalance,
   AsyncResponse,
 } from '../interfaces';
@@ -47,11 +46,12 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMint): Promise<AsyncResponse> {
+  async mint(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
     const transfer = await firefly.mintTokens({
       pool: body.pool,
       amount: body.amount,
+      tokenIndex: body.tokenIndex,
     });
     return { type: 'token_transfer', id: transfer.localId };
   }
@@ -60,7 +60,7 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenBurn): Promise<AsyncResponse> {
+  async burn(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
     const transfer = await firefly.burnTokens({
       pool: body.pool,

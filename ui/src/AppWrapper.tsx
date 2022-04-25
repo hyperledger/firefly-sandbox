@@ -89,6 +89,7 @@ export const AppWrapper: React.FC = () => {
       setFormID(validAction[1]);
       setActionParam(validAction[0], validAction[1]);
     }
+    setIsBlob(false);
   };
 
   const setActionParam = (categoryID: string, formID: string) => {

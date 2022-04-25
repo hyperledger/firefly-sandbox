@@ -18,6 +18,8 @@ export const FFCodeSnippet: React.FC<Props> = ({ codeBlock, language }) => {
       customStyle={{
         backgroundColor: theme.palette.background.paper,
         fontSize: 12,
+        overflow: 'auto',
+        overflowWrap: 'break-word',
       }}
       wrapLongLines
     >

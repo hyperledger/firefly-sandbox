@@ -117,20 +117,11 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   return (
     <>
       {dumbAwaitedEventID || justSubmitted ? (
-        <Grid
-          justifyContent="space-between"
-          direction="row"
-          container
-          alignItems={'center'}
-        >
-          <Grid item xs={11}>
-            <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>
-              {t('waitingForTxEventsToFinish')}
-            </Typography>
-          </Grid>
-          <Grid item xs={1} container justifyContent="flex-end">
-            <CircularProgress size={16} color="warning" />
-          </Grid>
+        <Grid container alignItems={'center'}>
+          <Typography sx={{ fontSize: '14px' }} pr={1}>
+            {t('waitingForTxEventsToFinish')}
+          </Typography>
+          <CircularProgress size={20} color="warning" />
         </Grid>
       ) : (
         <>

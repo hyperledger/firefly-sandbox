@@ -7,6 +7,7 @@
   "apiResponse": "API Response",
   "apis": "APIs",
   "apisKnownToFirefly": "APIs Known to FireFly",
+  "appCodeInstructions": "Build an action using the panels on the left. Click \"Run\" to execute the action via the backend server. FireFly events related to the transaction will appear on the right.",
   "applicationCode": "Application Code",
   "back": "Back",
   "backToStepOne": "Back to Step 1",
@@ -149,5 +150,5 @@
   "typescriptSDK": "Typescript SDK",
   "uploadFile": "Upload File",
   "version": "Version",
-  "waitingForTxEventsToFinish": "Waiting for Events to Finish..."
+  "waitingForTxEventsToFinish": "Waiting for events to finish"
 }

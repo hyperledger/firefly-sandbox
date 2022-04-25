@@ -1,5 +1,4 @@
 import {
-  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -10,18 +9,17 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
-import { SDK_PATHS } from '../../../constants/SDK_PATHS';
-import { FormContext } from '../../../contexts/FormContext';
 
 export const BurnForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -31,8 +29,6 @@ export const BurnForm: React.FC = () => {
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('0');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-  const [refresh, setRefresh] = useState<number>(0);
-  const [tokenBalance, setTokenBalance] = useState<string>('0');
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -68,31 +64,6 @@ export const BurnForm: React.FC = () => {
           reportFetchError(err);
         });
   }, [formID, isMounted]);
-
-  useEffect(() => {
-    if (!pool?.id) return;
-    const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    isMounted &&
-      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
-        .then((balanceRes: any) => {
-          if (isMounted) {
-            if (pool.type === 'nonfungible') {
-              setTokenBalance(balanceRes.length);
-            } else {
-              setTokenBalance(
-                balanceRes.length > 0
-                  ? balanceRes.find(
-                      (b: any) => b.key === selfIdentity?.ethereum_address
-                    ).balance
-                  : 0
-              );
-            }
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-  }, [pool, refresh, isMounted]);
 
   useEffect(() => {
     if (!isFungible()) {
@@ -154,28 +125,12 @@ export const BurnForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
-        <Grid item xs={12}>
-          {t('tokenBalance')}: {tokenBalance}
-          <Button
-            sx={{ marginLeft: DEFAULT_PADDING }}
-            onClick={() => {
-              setRefresh(refresh + 1);
-            }}
-          >
-            <RefreshIcon
-              sx={{
-                cursor: 'pointer',
-              }}
-            ></RefreshIcon>
-          </Button>
-        </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <FormControl fullWidth required>
             <TextField
               fullWidth
               value={amount}
               disabled={!isFungible()}
-              type="number"
               label={t('amount')}
               placeholder="ex. 10"
               onChange={handleAmountChange}
@@ -183,7 +138,7 @@ export const BurnForm: React.FC = () => {
           </FormControl>
         </Grid>
         {!isFungible() ? (
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth

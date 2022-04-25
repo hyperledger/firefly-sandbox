@@ -101,17 +101,31 @@ export const MiddlePane = () => {
             borderRadius: DEFAULT_BORDER_RADIUS,
           }}
         >
-          {/* Header */}
-          <Typography
-            variant="body1"
+          <Grid
+            container
+            item
             sx={{
               padding: 1,
-              fontWeight: 600,
               borderBottom: `3px solid ${theme.palette.background.default}`,
             }}
+            direction="column"
           >
-            {t('applicationCode')}
-          </Typography>
+            {/* Header */}
+            <Typography
+              variant="body1"
+              sx={{
+                fontWeight: 600,
+              }}
+            >
+              {t('applicationCode')}
+            </Typography>
+            {/* Header */}
+            <Grid container item alignItems="center">
+              <Typography variant="caption">
+                {t('appCodeInstructions')}
+              </Typography>
+            </Grid>
+          </Grid>
           {/* Code Snippet */}
           <Grid p={1} item>
             <FFCodeSnippet codeBlock={codeBlock} language={'typescript'} />
@@ -122,7 +136,7 @@ export const MiddlePane = () => {
             container
             item
             alignItems={'center'}
-            justifyContent="flex-end"
+            justifyContent="space-between"
             direction="row"
             sx={{
               borderTop: `3px solid ${theme.palette.background.default}`,

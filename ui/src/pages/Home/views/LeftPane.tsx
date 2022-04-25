@@ -88,7 +88,7 @@ export const LeftPane = () => {
           );
         })}
       </Tabs>
-      <Grid container p={DEFAULT_PADDING} pt={0} direction="column">
+      <Grid container p={DEFAULT_PADDING} pt={1} direction="column">
         {tabIdx !== undefined && formID && (
           // Current state of FireFly section
           <Grid container item wrap="nowrap" direction="column">

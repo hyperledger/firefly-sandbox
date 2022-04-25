@@ -70,7 +70,7 @@ export const DeployContractForm: React.FC = () => {
               </IconButton>
             </StepLabel>
             <StepContent>
-              <Typography>{step.description}</Typography>
+              {step.description}
               <Box mt={2}>
                 <Button variant="contained" onClick={handleNext}>
                   <Typography sx={{ textTransform: 'none', fontSize: '14px' }}>

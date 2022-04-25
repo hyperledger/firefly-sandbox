@@ -1,5 +1,11 @@
 import { Refresh } from '@mui/icons-material';
-import { Grid, IconButton, Typography, useTheme } from '@mui/material';
+import {
+  Grid,
+  IconButton,
+  Skeleton,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon from 'react-jazzicon';
@@ -19,7 +25,7 @@ export const TokenStateBox: React.FC = () => {
 
   const [tokenBalanceMap, setTokenBalanceMap] = useState<{
     [key: string]: { balances: ITokenBalance[] };
-  }>({});
+  }>();
   const [lastRefreshTime, setLastRefreshTime] = useState<string>(
     new Date().toISOString()
   );
@@ -58,7 +64,7 @@ export const TokenStateBox: React.FC = () => {
         .catch((err) => {
           reportFetchError(err);
         });
-  }, [lastRefreshTime, isMounted]);
+  }, [lastRefreshTime, isMounted, selfIdentity]);
 
   const makeNonFungibleString = (balances: ITokenBalance[]): string => {
     return `${t('total')}: ${balances.length} (${balances
@@ -105,7 +111,12 @@ export const TokenStateBox: React.FC = () => {
         </Grid>
       </Grid>
       {/* Pool list */}
-      {Object.keys(tokenBalanceMap).length ? (
+      {!tokenBalanceMap ? (
+        <>
+          <Skeleton width={'40%'} />
+          <Skeleton width={'50%'} />
+        </>
+      ) : Object.keys(tokenBalanceMap).length ? (
         Object.keys(tokenBalanceMap).map((poolIDKey) => {
           return (
             <Grid

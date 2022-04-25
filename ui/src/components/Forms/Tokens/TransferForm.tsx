@@ -1,7 +1,5 @@
-import RefreshIcon from '@mui/icons-material/Refresh';
 import {
   Autocomplete,
-  Button,
   FormControl,
   Grid,
   InputLabel,
@@ -18,11 +16,11 @@ import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool, IVerifier } from '../../../interfaces/api';
-import { DEFAULT_PADDING, DEFAULT_SPACING } from '../../../theme';
+import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 
 export const TransferForm: React.FC = () => {
-  const { selfIdentity, setJsonPayload, setPayloadMissingFields } =
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -34,8 +32,6 @@ export const TransferForm: React.FC = () => {
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-  const [tokenBalance, setTokenBalance] = useState<string>('0');
-  const [refresh, setRefresh] = useState<string>('0');
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -99,31 +95,6 @@ export const TransferForm: React.FC = () => {
       setAmount('1');
     }
   }, [pool, amount]);
-
-  useEffect(() => {
-    if (!pool?.id) return;
-    const qParams = `?pool=${pool?.id}&key=${selfIdentity?.ethereum_address}`;
-    isMounted &&
-      fetchCatcher(`${SDK_PATHS.tokensBalances}${qParams}`)
-        .then((balanceRes: any) => {
-          if (isMounted) {
-            if (pool.type === 'nonfungible') {
-              setTokenBalance(balanceRes.length);
-            } else {
-              setTokenBalance(
-                balanceRes.length > 0
-                  ? balanceRes.find(
-                      (b: any) => b.key === selfIdentity?.ethereum_address
-                    ).balance
-                  : 0
-              );
-            }
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-  }, [pool, refresh, isMounted]);
 
   const isFungible = () => {
     const selectedPool = tokenPools.find((p) => p.name === pool?.name);
@@ -197,28 +168,12 @@ export const TransferForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          {t('tokenBalance')}: {tokenBalance}
-          <Button
-            sx={{ marginLeft: DEFAULT_PADDING }}
-            onClick={() => {
-              setRefresh(refresh + 1);
-            }}
-          >
-            <RefreshIcon
-              sx={{
-                cursor: 'pointer',
-              }}
-            ></RefreshIcon>
-          </Button>
-        </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6}>
           <FormControl fullWidth required>
             <TextField
               fullWidth
               value={amount}
               disabled={!isFungible()}
-              type="number"
               label={t('amount')}
               placeholder="ex. 10"
               onChange={handleAmountChange}
@@ -226,7 +181,7 @@ export const TransferForm: React.FC = () => {
           </FormControl>
         </Grid>
         {!isFungible() ? (
-          <Grid item xs={4}>
+          <Grid item xs={6}>
             <FormControl fullWidth required>
               <TextField
                 fullWidth
@@ -240,11 +195,6 @@ export const TransferForm: React.FC = () => {
         ) : (
           <></>
         )}
-        {/* Message
-        <MessageTypeGroup
-          message={message}
-          onSetMessage={(msg: string) => setMessage(msg)}
-        /> */}
       </Grid>
     </Grid>
   );

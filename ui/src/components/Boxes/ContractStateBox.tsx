@@ -1,5 +1,12 @@
 import { Launch, Refresh } from '@mui/icons-material';
-import { Grid, IconButton, Link, Typography, useTheme } from '@mui/material';
+import {
+  Grid,
+  IconButton,
+  Link,
+  Skeleton,
+  Typography,
+  useTheme,
+} from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SDK_PATHS } from '../../constants/SDK_PATHS';
@@ -93,7 +100,12 @@ export const ContractStateBox: React.FC = () => {
         </Grid>
       </Grid>
       {/* API List */}
-      {contractApis?.length ? (
+      {!contractApis ? (
+        <>
+          <Skeleton width={'40%'} />
+          <Skeleton width={'50%'} />
+        </>
+      ) : contractApis.length ? (
         contractApis.map((api) => {
           return (
             <Grid

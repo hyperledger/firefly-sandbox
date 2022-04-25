@@ -1,4 +1,5 @@
 export const ResourceUrls = {
+  fireflyDiscordInvite: 'https://discord.gg/xZ7qqy97MZ',
   fireflySDK: 'https://github.com/hyperledger/firefly-sdk-nodejs',
   fireflyTutorial:
     'https://hyperledger.github.io/firefly/tutorials/tutorials.html',

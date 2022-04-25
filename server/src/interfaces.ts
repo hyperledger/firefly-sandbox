@@ -148,7 +148,7 @@ export class TokenPool extends TokenPoolInput {
   id: string;
 }
 
-export class TokenMint {
+export class TokenMintBurn {
   @IsString()
   pool: string;
 
@@ -162,27 +162,19 @@ export class TokenMint {
   @IsString()
   @IsOptional()
   messagingMethod?: string;
-}
 
-export class MintBlob extends TokenMint {
-  @IsString()
-  @JSONSchema({ format: 'binary' })
-  file: string;
-}
-
-export class TokenBurn extends TokenMint {
   @IsString()
   @IsOptional()
   tokenIndex?: string;
 }
 
-export class BurnBlob extends TokenBurn {
+export class MintBurnBlob extends TokenMintBurn {
   @IsString()
   @JSONSchema({ format: 'binary' })
   file: string;
 }
 
-export class TokenTransfer extends TokenBurn {
+export class TokenTransfer extends TokenMintBurn {
   @IsString()
   to: string;
 }

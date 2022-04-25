@@ -21,13 +21,11 @@ import {
 import {
   TokenPool,
   TokenPoolInput,
-  TokenMint,
+  TokenMintBurn,
   TokenTransfer,
-  TokenBurn,
   TokenBalance,
   AsyncResponse,
-  MintBlob,
-  BurnBlob,
+  MintBurnBlob,
   TransferBlob,
 } from '../interfaces';
 import { plainToClassFromExist } from 'class-transformer';
@@ -67,11 +65,12 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMint): Promise<AsyncResponse> {
+  async mint(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
     const mintBody = {
       pool: body.pool,
       amount: body.amount,
+      tokenIndex: body.tokenIndex,
     } as any;
     if (body.messagingMethod) {
       mintBody.message =
@@ -85,7 +84,7 @@ export class TokensController {
 
   @Post('/mintblob')
   @HttpCode(202)
-  @FormDataSchema(MintBlob)
+  @FormDataSchema(MintBurnBlob)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint a token with a binary blob' })
   async mintblob(
@@ -93,7 +92,7 @@ export class TokensController {
     @UploadedFile('file') file: Express.Multer.File,
   ): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const body = plainToClassFromExist(new MintBlob(), req.body);
+    const body = plainToClassFromExist(new MintBurnBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
     const mintBody = {
       pool: body.pool,
@@ -113,7 +112,7 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenBurn): Promise<AsyncResponse> {
+  async burn(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
     // See TokensTemplateController and keep template code up to date.
     const burnBody = {
       pool: body.pool,
@@ -132,7 +131,7 @@ export class TokensController {
 
   @Post('/burnblob')
   @HttpCode(202)
-  @FormDataSchema(BurnBlob)
+  @FormDataSchema(MintBurnBlob)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn a token with a binary blob' })
   async burnblob(
@@ -140,7 +139,7 @@ export class TokensController {
     @UploadedFile('file') file: Express.Multer.File,
   ): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const body = plainToClassFromExist(new BurnBlob(), req.body);
+    const body = plainToClassFromExist(new MintBurnBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
     const burnBody = {
       pool: body.pool,
@@ -244,11 +243,11 @@ export class TokensTemplateController {
   tokenpoolsTemplate() {
     return formatTemplate(`
       const pool = await firefly.createTokenPool({
-        name: <%= ${q('name')} %>,
-        symbol: <%= ${q('symbol')} %>,
+        name: <%= ${q('name')} %>,<% if (symbol) { %>
+        <% print('symbol: ' + ${q('symbol')} + ',') } %>
         type: <%= ${q('type')} %>,
-        config: {
-          address: <%= ${q('address')} %>,
+        config: {<% if (address) { %>
+          <% print('address: ' + ${q('address')} + ',') } %>
         }
       });
       return { type: 'token_pool', id: pool.id };
@@ -300,7 +299,10 @@ export class TokensTemplateController {
     );
       const transfer = await firefly.mintTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+          <% print('tokenIndex: ' + ${q(
+            'tokenIndex',
+          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -371,7 +373,10 @@ export class TokensTemplateController {
     );
       const transfer = await firefly.burnTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+          <% print('tokenIndex: ' + ${q(
+            'tokenIndex',
+          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -443,7 +448,10 @@ export class TokensTemplateController {
     );
       const transfer = await firefly.transferTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,<% if(messagingMethod === 'broadcast') { %>
+        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+          <% print('tokenIndex: ' + ${q(
+            'tokenIndex',
+          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,

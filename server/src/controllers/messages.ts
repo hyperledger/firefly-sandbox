@@ -1,4 +1,13 @@
-import { Post, Get, HttpCode, UploadedFile, Req, Body, JsonController } from 'routing-controllers';
+import {
+  Post,
+  Get,
+  HttpCode,
+  UploadedFile,
+  Req,
+  Body,
+  JsonController,
+  Redirect,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
@@ -90,20 +99,17 @@ export class MessagesTemplateController {
   broadcastTemplate() {
     return formatTemplate(`
       const message = await firefly.sendBroadcast({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
-        data: [<% if(jsonValue) { %>
-          {
-            datatype: { 
+        data: [<% if (jsonValue) { %>
+          {<% if (datatypename || datatypeversion) { %>
+            datatype: {
               name: <%= ${q('datatypename')} %>,
               version: <%= ${q('datatypeversion')} %>,
-            },
-            value: <%= ${q('jsonValue', {
-              isObject: true,
-              truncate: true,
-            })} %>,
+            },<% } %>
+            value: <%= ${q('jsonValue', { isObject: true, truncate: true })} %>,
           },
         <% } else { %>
           { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
@@ -122,9 +128,9 @@ export class MessagesTemplateController {
         <%= ${q('filename')} %>,
       );
       const message = await firefly.sendBroadcast({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         data: [{ id: data.id }],
       });
@@ -136,19 +142,21 @@ export class MessagesTemplateController {
   sendTemplate() {
     return formatTemplate(`
       const message = await firefly.sendPrivateMessage({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         group: {
-          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+          members: [<% for (const r of recipients) { %>
+            <% print('{ identity: ' + ${q('r')} + ' },') } %>
+          ],
         },
-        data: [<% if(jsonValue) { %>
-          {
-            datatype: { 
+        data: [<% if (jsonValue) { %>
+          {<% if (datatypename || datatypeversion) { %>
+            datatype: {
               name: <%= ${q('datatypename')} %>,
               version: <%= ${q('datatypeversion')} %>,
-            },
+            },<% } %>
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
@@ -171,12 +179,14 @@ export class MessagesTemplateController {
         <%= ${q('filename')} %>,
       );
       const message = await firefly.sendPrivateMessage({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         group: {
-          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+          members: [<% for (const r of recipients) { %>
+            <% print('{ identity: ' + ${q('r')} + ' },') } %>
+          ],
         },
         data: [{ id: data.id }],
       });
@@ -185,13 +195,9 @@ export class MessagesTemplateController {
   }
 
   @Get('/datatypes')
-  createDatatypeTemplate() {
-    return formatTemplate(`
-      const datatype = await firefly.createDatatype({
-        name: <%= ${q('name')}  %>,
-        version: <%=  ${q('version')} %>,
-      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
-      return { type: 'datatype', id: datatype.id };
-    `);
+  @Redirect('../../datatypes/template')
+  datatypesTemplate() {
+    // This template actually lives in DatatypesTemplateController, but a redirect is
+    // provided here because the UI displays datatypes in the Messages category.
   }
 }

@@ -24,7 +24,6 @@ describe('Templates: Tokens', () => {
               symbol: 'P1',
               type: 'fungible',
               config: {
-                address: undefined,
               }
             });
             return { type: 'token_pool', id: pool.id };
@@ -44,6 +43,7 @@ describe('Templates: Tokens', () => {
             pool: 'pool1',
             amount: 10,
             messagingMethod: null,
+            tokenIndex: '',
           }),
         ).toBe(
           formatTemplate(`
@@ -94,14 +94,14 @@ describe('Templates: Tokens', () => {
             pool: 'pool1',
             amount: 1,
             tokenIndex: '1',
-            to: '0x111',
+            to: '0x1111',
             messagingMethod: null,
           }),
         ).toBe(
           formatTemplate(`
             const transfer = await firefly.transferTokens({
               pool: 'pool1',
-              to: '0x111',
+              to: '0x1111',
               tokenIndex: '1',
               amount: '1',
             });

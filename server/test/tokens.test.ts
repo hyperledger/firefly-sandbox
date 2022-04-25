@@ -6,7 +6,7 @@ import FireFly, {
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
 import { firefly } from '../src/clients/firefly';
-import { TokenBurn, TokenMint, TokenPoolInput, TokenTransfer } from '../src/interfaces';
+import { TokenMintBurn, TokenPoolInput, TokenTransfer } from '../src/interfaces';
 
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
@@ -56,7 +56,7 @@ describe('Tokens', () => {
   });
 
   test('Mint tokens', async () => {
-    const req: TokenMint = {
+    const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '10',
     };
@@ -80,7 +80,7 @@ describe('Tokens', () => {
   });
 
   test('Burn tokens', async () => {
-    const req: TokenBurn = {
+    const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '1',
     };

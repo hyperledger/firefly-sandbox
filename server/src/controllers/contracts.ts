@@ -154,12 +154,13 @@ export class ContractsTemplateController {
   @Get('/interface')
   interfaceTemplate() {
     return formatTemplate(`
-      const ffi = <%= format === 'abi' ?
-      \`await firefly.generateContractInterface({
-        name: \` + ${q('name')} + \`,
-        version: \` + ${q('version')} + \`,
-        input: \` + ${q('schema', { isObject: true, truncate: true })} + \`,
-      })\` : ${q('schema', { isObject: true, truncate: true })} %>;
+      const ffi = <% if (format === 'abi') { %>await firefly.generateContractInterface({
+        name: <%= ${q('name')} %>,
+        version: <%= ${q('version')} %>,
+        input: {
+          abi: <%= ${q('schema', { isObject: true, truncate: true })} %>,
+        },
+      })<% } else { %><%= ${q('schema', { isObject: true, truncate: true })} %><% } %>;
       const result = await firefly.createContractInterface(ffi);
       return { type: 'message', id: result.message };
     `);
@@ -188,7 +189,10 @@ export class ContractsTemplateController {
       const listener = await firefly.createContractAPIListener(
         <%= ${q('apiName')} %>,
         <%= ${q('eventPath')} %>,
-        { topic: <%= ${q('topic')} %>, name: <%= ${q('name')} %>, },
+        {
+          topic: <%= ${q('topic')} %>,<% if (name) { %>
+          <% print('name: ' + ${q('name')} + ',') } %>
+        },
       );
       return {
         name: listener.name,

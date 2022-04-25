@@ -1,19 +1,20 @@
 import { FormControl, Grid, TextField } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ApplicationContext } from '../../contexts/ApplicationContext';
-import { IDatatype } from '../../interfaces/api';
-import { DEFAULT_SPACING } from '../../theme';
-import { isJsonString } from '../../utils/strings';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
+import { IDatatype } from '../../../interfaces/api';
+import { DEFAULT_SPACING } from '../../../theme';
+import { isJsonString } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
-} from '../Buttons/MessageTypeGroup';
+} from '../../Buttons/MessageTypeGroup';
 
 export const BroadcastForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, activeForm } =
-    useContext(ApplicationContext);
-
+  const { jsonPayload, setJsonPayload } = useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
   const [message, setMessage] = useState<string>(DEFAULT_MESSAGE_STRING);
   const [fileName, setFileName] = useState<string>('');
@@ -23,7 +24,7 @@ export const BroadcastForm: React.FC = () => {
   const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
   useEffect(() => {
-    if (!activeForm.includes('broadcast')) return;
+    if (formID !== TUTORIAL_FORMS.BROADCAST) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
     setJsonPayload({
       topic: topics,
@@ -34,7 +35,7 @@ export const BroadcastForm: React.FC = () => {
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
     });
-  }, [message, tag, topics, fileName, activeForm, datatype]);
+  }, [message, tag, topics, fileName, formID, datatype]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {

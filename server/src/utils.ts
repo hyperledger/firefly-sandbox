@@ -4,8 +4,8 @@ import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-contr
 import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import stripIndent = require('strip-indent');
 import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
+import stripIndent = require('strip-indent');
 
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {

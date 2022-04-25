@@ -129,16 +129,16 @@ export class MessagesTemplateController {
           {
             datatype: { 
               name: <%= ${q('datatypename')} %>,
-              version: <%= ${q('datatypeversion')} %>
+              version: <%= ${q('datatypeversion')} %>,
             },
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
-            })} %>
-          }
-            <% } else { %>
-              { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> }
-          <%} 
+            })} %>,
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };
@@ -178,16 +178,16 @@ export class MessagesTemplateController {
           {
             datatype: { 
               name: <%= ${q('datatypename')} %>,
-              version: <%= ${q('datatypeversion')} %>
+              version: <%= ${q('datatypeversion')} %>,
             },
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
             })} %>
-          }
-            <% } else { %>
-              { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> }
-          <%} 
+          },
+        <% } else { %>
+          { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
+        <% }
         %>],
       });
       return { type: 'message', id: message.header.id };
@@ -212,6 +212,17 @@ export class MessagesTemplateController {
         data: [{ id: data.id }],
       });
       return { type: 'message', id: message.header.id };
+    `);
+  }
+
+  @Get('/datatypes')
+  createDatatypeTemplate() {
+    return formatTemplate(`
+      const datatype = await firefly.createDatatype({
+        name: <%= ${q('name')}  %>,
+        version: <%=  ${q('version')} %>,
+      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
+      return { type: 'datatype', id: datatype.id };
     `);
   }
 }

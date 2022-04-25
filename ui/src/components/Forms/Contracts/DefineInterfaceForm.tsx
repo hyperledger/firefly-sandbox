@@ -9,9 +9,11 @@ import {
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { MAX_FORM_ROWS } from '../../../App';
+import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
 import { DEFAULT_SPACING } from '../../../theme';
-import { TUTORIALS } from '../../../constants/TutorialSections';
 import { isJsonString } from '../../../utils/strings';
 
 export const CONTRACT_INTERFACE_FORMATS = ['ffi', 'abi'];
@@ -59,20 +61,21 @@ const DEFAULT_ABI_SCHEMA = [
 ];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { setJsonPayload, activeForm, setPayloadMissingFields } =
+  const { setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
   const [name, setName] = useState<string>('');
   const [schema, setSchema] = useState<object>(DEFAULT_FFI_SCHEMA);
+  const { formID } = useContext(FormContext);
   const [schemaString, setSchemaString] = useState<string>(
     JSON.stringify(DEFAULT_FFI_SCHEMA, null, 2)
   );
   const [version, setVersion] = useState<string>('');
 
   useEffect(() => {
-    if (activeForm !== TUTORIALS.DEFINE_CONTRACT_INTERFACE) {
+    if (formID !== TUTORIAL_FORMS.DEFINE_CONTRACT_INTERFACE) {
       return;
     }
     setPayloadMissingFields(
@@ -84,7 +87,7 @@ export const DefineInterfaceForm: React.FC = () => {
       version,
       schema,
     });
-  }, [interfaceFormat, schema, name, version, activeForm]);
+  }, [interfaceFormat, schema, name, version, formID]);
 
   useEffect(() => {
     if (isJsonString(schemaString)) {
@@ -159,16 +162,11 @@ export const DefineInterfaceForm: React.FC = () => {
             multiline
             required
             fullWidth
-            maxRows={40}
+            maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
           />
         </Grid>
-        {/* Message */}
-        {/* <MessageTypeGroup
-              message={message}
-              onSetMessage={(msg: string) => setMessage(msg)}
-            /> */}
       </Grid>
     </Grid>
   );

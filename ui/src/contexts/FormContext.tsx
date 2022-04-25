@@ -15,21 +15,17 @@
 // limitations under the License.
 
 import { createContext, Dispatch, SetStateAction } from 'react';
-import { IApiStatus, ISelfIdentity } from '../interfaces/api';
+import { ITutorial } from '../interfaces/tutorialSection';
 
-export interface IApplicationContext {
-  selfIdentity: ISelfIdentity | undefined;
-  // Json Payload
-  jsonPayload: object;
-  setJsonPayload: Dispatch<SetStateAction<object>>;
-  payloadMissingFields: boolean;
-  setPayloadMissingFields: Dispatch<SetStateAction<boolean>>;
-  // API Response
-  apiResponse: object;
-  setApiResponse: Dispatch<SetStateAction<object>>;
-  // API Status
-  apiStatus: IApiStatus | undefined;
-  setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
+export interface IFormContext {
+  action: string | null;
+  setActionParam: (categoryID: string, formID: string) => void;
+  categoryID: string | undefined;
+  formID: string | undefined;
+  formObject: ITutorial | undefined;
+  isBlob: boolean;
+  setIsBlob: Dispatch<SetStateAction<boolean>>;
+  searchParams: URLSearchParams;
 }
 
-export const ApplicationContext = createContext({} as IApplicationContext);
+export const FormContext = createContext({} as IFormContext);

@@ -1,33 +1,40 @@
-import * as React from 'react';
+import { LaunchOutlined } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import Box from '@mui/material/Box';
-import Stepper from '@mui/material/Stepper';
-import Step from '@mui/material/Step';
-import StepLabel from '@mui/material/StepLabel';
-import StepContent from '@mui/material/StepContent';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
+import Step from '@mui/material/Step';
+import StepContent from '@mui/material/StepContent';
+import StepLabel from '@mui/material/StepLabel';
+import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
-import LinkIcon from '@mui/icons-material/Link';
+import i18next from 'i18next';
+import * as React from 'react';
 import { useTranslation } from 'react-i18next';
+import { ResourceUrls } from '../../../constants/ResourceUrls';
+import {
+  CompileSCInstructions,
+  DeployContractInstructions,
+  InstallSolcInstructions,
+} from './DeployContractStepper';
 
 export const DeployContractForm: React.FC = () => {
   const { t } = useTranslation();
   const steps = [
     {
-      label: 'Install the Solidity Compiler',
-      description: `We first need the solc compiler to compile our smart contract. Follow the steps in the link to install the solc compiler. There are a couple of different ways to install the solc compiler. Open your Terminal and type "solc --version" to verify that the installation was successful.`,
-      link: 'https://docs.soliditylang.org/en/v0.8.13/installing-solidity.html',
+      label: i18next.t('installSolc'),
+      description: <InstallSolcInstructions />,
+      link: ResourceUrls.solidityInstall,
     },
     {
-      label: 'Compile your smart contract',
-      description:
-        'Compile your own smart contract or use our sample simple-storage smart contract provided in the link. Copy and save the sample smart contract to a file called simple_storage.sol. Then, run "solc --combined-json abi,bin simple_storage.sol > simple_storage.json".',
-      link: 'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#example-smart-contract',
+      label: i18next.t('compileSmartContract'),
+      description: <CompileSCInstructions />,
+      link: ResourceUrls.fireflyTutorialExampleSC,
     },
     {
-      label: 'Deploy your compiled contract',
-      description: `Lastly, you will tell FireFly to deploy the compiled contract to your running stack. Run "ff deploy <FF_STACK_NAME> simple_storage.json". You should receive a contract address back, which we will use while registering a contract API.`,
-      link: 'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
+      label: i18next.t('deployCompiledContract'),
+      description: <DeployContractInstructions />,
+      link: ResourceUrls.fireflyTutorialDeployContract,
     },
   ];
 
@@ -46,64 +53,53 @@ export const DeployContractForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: 400 }}>
+    <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, index) => (
           <Step key={step.label}>
-            <StepLabel
-              optional={
-                index === 2 ? (
-                  <Typography variant="caption">Last step</Typography>
-                ) : null
-              }
-            >
+            <StepLabel>
               {step.label}
-              <Button
-                variant="text"
+              <IconButton
+                color="secondary"
                 disableRipple
                 disableFocusRipple
-                sx={{ ':hover': { background: 'inherit' } }}
-                onClick={() => {
-                  window.open(step.link);
-                }}
+                onClick={() => window.open(step.link)}
+                size="small"
               >
-                {' '}
-                <LinkIcon />{' '}
-              </Button>
+                <LaunchOutlined sx={{ fontSize: '20px' }} />
+              </IconButton>
             </StepLabel>
             <StepContent>
-              <Typography>{step.description}</Typography>
-              <Box sx={{ mb: 2 }}>
-                <div>
-                  <Button
-                    variant="contained"
-                    onClick={handleNext}
-                    sx={{ mt: 1, mr: 1 }}
-                  >
-                    {index === steps.length - 1 ? 'Finish' : 'Continue'}
-                  </Button>
-                  <Button
-                    disabled={index === 0}
-                    onClick={handleBack}
-                    sx={{ mt: 1, mr: 1 }}
-                  >
-                    Back
-                  </Button>
-                </div>
+              {step.description}
+              <Box mt={2}>
+                <Button variant="contained" onClick={handleNext}>
+                  <Typography sx={{ textTransform: 'none', fontSize: '14px' }}>
+                    {index === steps.length - 1 ? t('finish') : t('continue')}
+                  </Typography>
+                </Button>
+                <Button
+                  disabled={index === 0}
+                  sx={{ ml: 1 }}
+                  onClick={handleBack}
+                >
+                  <Typography sx={{ textTransform: 'none', fontSize: '14px' }}>
+                    {t('back')}
+                  </Typography>
+                </Button>
               </Box>
             </StepContent>
           </Step>
         ))}
       </Stepper>
       {activeStep === steps.length && (
-        <Paper square elevation={0} sx={{ p: 3 }}>
-          <Typography>
-            You should now have an address for your deployed contract!
+        <Paper square elevation={0} sx={{ pl: 3 }}>
+          <Typography sx={{ fontSize: '14px' }}>
+            {t('contractDeployedToFirefly')}
           </Typography>
           <Button
             variant="outlined"
             onClick={handleReset}
-            sx={{ mt: 1, mr: 1, textTransform: 'none' }}
+            sx={{ mt: 1, mr: 1, textTransform: 'none', fontSize: '14px' }}
           >
             {t('backToStepOne')}
           </Button>

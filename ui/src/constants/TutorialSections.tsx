@@ -1,17 +1,32 @@
-import { Adjust, Description, Message } from '@mui/icons-material';
-import { BroadcastForm } from '../components/Forms/Messages/BroadcastForm';
-import { BurnForm } from '../components/Forms/Tokens/BurnForm';
-import { ITutorialSection } from '../interfaces/tutorialSection';
+import {
+  Adjust,
+  ApprovalOutlined,
+  CellTowerOutlined,
+  DataObject,
+  Description,
+  Group,
+  HearingOutlined,
+  IntegrationInstructionsOutlined,
+  LocalFireDepartmentOutlined,
+  Message,
+  SaveAsOutlined,
+  SwapHoriz,
+  TerminalOutlined,
+  TokenOutlined,
+} from '@mui/icons-material';
 import { DefineInterfaceForm } from '../components/Forms/Contracts/DefineInterfaceForm';
 import { DeployContractForm } from '../components/Forms/Contracts/DeployContractForm';
 import { RegisterContractApiForm } from '../components/Forms/Contracts/RegisterContractApiForm';
 import { RegisterContractApiListenerForm } from '../components/Forms/Contracts/RegisterContractApiListenerForm';
+import { BroadcastForm } from '../components/Forms/Messages/BroadcastForm';
 import { DatatypeForm } from '../components/Forms/Messages/DatatypeForm';
-import { SDK_PATHS } from './SDK_PATHS';
 import { PrivateForm } from '../components/Forms/Messages/PrivateForm';
+import { BurnForm } from '../components/Forms/Tokens/BurnForm';
 import { MintForm } from '../components/Forms/Tokens/MintForm';
 import { PoolForm } from '../components/Forms/Tokens/PoolForm';
 import { TransferForm } from '../components/Forms/Tokens/TransferForm';
+import { ITutorialSection } from '../interfaces/tutorialSection';
+import { SDK_PATHS } from './SDK_PATHS';
 
 export enum TUTORIAL_FORMS {
   // Messages
@@ -50,6 +65,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'broadcastShortInfo',
         title: 'broadcastTitle',
+        icon: <CellTowerOutlined />,
       },
       {
         formID: TUTORIAL_FORMS.PRIVATE,
@@ -60,6 +76,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'privateShortInfo',
         title: 'privateTitle',
+        icon: <Group />,
       },
       {
         formID: TUTORIAL_FORMS.DATATYPE,
@@ -70,6 +87,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'createDatatypeInfo',
         title: 'createDatatypeTitle',
+        icon: <DataObject />,
       },
     ],
   },
@@ -86,6 +104,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
+        icon: <TokenOutlined />,
       },
       {
         formID: TUTORIAL_FORMS.MINT,
@@ -96,6 +115,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'mintShortInfo',
         title: 'mintTitle',
+        icon: <ApprovalOutlined />,
       },
       {
         formID: TUTORIAL_FORMS.TRANSFER,
@@ -106,6 +126,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'transferShortInfo',
         title: 'transferTitle',
+        icon: <SwapHoriz />,
       },
       {
         formID: TUTORIAL_FORMS.BURN,
@@ -116,6 +137,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         shortInfo: 'burnShortInfo',
         title: 'burnTitle',
+        icon: <LocalFireDepartmentOutlined />,
       },
     ],
   },
@@ -131,6 +153,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'deployContractInfo',
         title: 'deployContractTitle',
         runnable: false,
+        icon: <TerminalOutlined />,
       },
       {
         docsURL:
@@ -141,6 +164,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'defineContractInterfaceInfo',
         runnable: true,
         title: 'contractInterfaceTitle',
+        icon: <SaveAsOutlined />,
       },
       {
         docsURL:
@@ -151,6 +175,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'registerContractApiInfo',
         runnable: true,
         title: 'registerContractApiTitle',
+        icon: <IntegrationInstructionsOutlined />,
       },
       {
         docsURL:
@@ -161,6 +186,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'registerContractApiListenerInfo',
         runnable: true,
         title: 'registerApiListenerTitle',
+        icon: <HearingOutlined />,
       },
     ],
   },

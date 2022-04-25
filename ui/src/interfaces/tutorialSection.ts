@@ -5,10 +5,11 @@ export interface ITutorialSection {
 }
 
 export interface ITutorial {
-  formID: string;
   docsURL: string;
   endpoint?: string;
   form: JSX.Element;
+  formID: string;
+  icon: JSX.Element;
   runnable: boolean;
   shortInfo: string;
   title: string;

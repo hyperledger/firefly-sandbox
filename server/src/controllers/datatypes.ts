@@ -10,6 +10,7 @@ import {
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
 import { AsyncResponse, DatatypeInterface } from '../interfaces';
+import { formatTemplate, quoteAndEscape as q } from '../utils';
 
 /**
  * Datatypes - API Server
@@ -17,7 +18,7 @@ import { AsyncResponse, DatatypeInterface } from '../interfaces';
 @JsonController('/datatypes')
 @OpenAPI({ tags: ['Datatypes'] })
 export class DatatypesController {
-  @Get('')
+  @Get()
   @ResponseSchema(DatatypeInterface, { isArray: true })
   @OpenAPI({ summary: 'List all datatypes' })
   async getAllDatatypes(): Promise<DatatypeInterface[]> {
@@ -44,7 +45,7 @@ export class DatatypesController {
     };
   }
 
-  @Post('')
+  @Post()
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Creates and broadcasts a new datatype' })
@@ -56,5 +57,23 @@ export class DatatypesController {
       value: body.schema,
     });
     return { type: 'datatype', id: datatype.id };
+  }
+}
+
+@JsonController('/datatypes/template')
+@OpenAPI({ tags: ['Datatypes'] })
+export class DatatypesTemplateController {
+  @Get()
+  createDatatypeTemplate() {
+    return formatTemplate(`
+      const datatype = await firefly.createDatatype(
+        {
+          name: <%= ${q('name')}  %>,
+          version: <%= ${q('version')} %>,
+        },
+        <%= ${q('schema', { isObject: true, truncate: true })} %>,
+      );
+      return { type: 'datatype', id: datatype.id };
+    `);
   }
 }

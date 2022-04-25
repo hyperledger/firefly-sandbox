@@ -43,6 +43,7 @@ describe('Templates: Tokens', () => {
           compiled({
             pool: 'pool1',
             amount: 10,
+            messagingMethod: null,
           }),
         ).toBe(
           formatTemplate(`
@@ -65,15 +66,16 @@ describe('Templates: Tokens', () => {
         expect(
           compiled({
             pool: 'pool1',
-            amount: 1,
             tokenIndex: '1',
+            amount: 1,
+            messagingMethod: null,
           }),
         ).toBe(
           formatTemplate(`
-            const transfer = await firefly.burnTokens({
+            const burn = await firefly.burnTokens({
               pool: 'pool1',
-              amount: '1',
               tokenIndex: '1',
+              amount: '1',
             });
             return { type: 'token_transfer', id: transfer.localId };
         `),
@@ -93,14 +95,15 @@ describe('Templates: Tokens', () => {
             amount: 1,
             tokenIndex: '1',
             to: '0x111',
+            messagingMethod: null,
           }),
         ).toBe(
           formatTemplate(`
             const transfer = await firefly.transferTokens({
               pool: 'pool1',
               to: '0x111',
-              amount: '1',
               tokenIndex: '1',
+              amount: '1',
             });
             return { type: 'token_transfer', id: transfer.localId };
         `),

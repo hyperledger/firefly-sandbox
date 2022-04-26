@@ -17,10 +17,10 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import { DEFAULT_MESSAGE_STRING } from '../../Buttons/MessageTypeGroup';
+import { MessageForm } from './MessageForm';
 
 export const MintForm: React.FC = () => {
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -28,12 +28,12 @@ export const MintForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
 
-  const [message] = useState<string | object | undefined>(
-    DEFAULT_MESSAGE_STRING
-  );
-
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
+  const [withMessage, setWithMessage] = useState<boolean>(false);
+  const [messageMethod, setMessageMethod] = useState<string>(
+    TUTORIAL_FORMS.BROADCAST
+  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -45,31 +45,20 @@ export const MintForm: React.FC = () => {
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) {
-      setAmount('1');
+      resetValues();
       return;
     }
-    setPayloadMissingFields(!amount || !pool);
-    if (!message) {
-      setJsonPayload({
-        pool: pool?.name,
-        amount: amount.toString(),
-        tokenIndex: '',
-      });
-      return;
+    if (!withMessage) {
+      setPayloadMissingFields(!amount || !pool);
     }
-    setJsonPayload({
+    const body = {
       pool: pool?.name,
       amount: amount.toString(),
       tokenIndex: '',
-      message: {
-        data: [
-          {
-            value: message,
-          },
-        ],
-      },
-    });
-  }, [pool, amount, message, formID]);
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+  }, [pool, amount, messageMethod, formID]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
@@ -88,6 +77,12 @@ export const MintForm: React.FC = () => {
           reportFetchError(err);
         });
   }, [formID, isMounted]);
+
+  const resetValues = () => {
+    setAmount('1');
+    setWithMessage(false);
+    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
+  };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setAmount(event.target.value);
@@ -117,7 +112,8 @@ export const MintForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.name}
+                      {tp.symbol ? `(${tp.symbol}) - ` : ' - '}
                       {tp.type === 'fungible'
                         ? t('fungible')
                         : t('nonfungible')}
@@ -142,6 +138,14 @@ export const MintForm: React.FC = () => {
             </FormControl>
           </Grid>
         </Grid>
+        <MessageForm
+          tokenMissingFields={!amount || !pool}
+          tokenOperationPayload={{
+            pool: pool?.name,
+            amount: amount.toString(),
+          }}
+          label={t('mintWithData')}
+        />
       </Grid>
     </Grid>
   );

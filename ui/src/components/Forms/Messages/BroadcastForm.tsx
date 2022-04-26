@@ -6,13 +6,21 @@ import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { IDatatype } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
-import { isJsonString } from '../../../utils/strings';
+import { isJsonString, isTokenMessage } from '../../../utils/strings';
 import {
   DEFAULT_MESSAGE_STRING,
   MessageTypeGroup,
 } from '../../Buttons/MessageTypeGroup';
 
-export const BroadcastForm: React.FC = () => {
+interface Props {
+  tokenBody?: object;
+  tokenMissingFields?: boolean;
+}
+
+export const BroadcastForm: React.FC<Props> = ({
+  tokenBody,
+  tokenMissingFields,
+}) => {
   const { jsonPayload, setJsonPayload } = useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { t } = useTranslation();
@@ -24,9 +32,9 @@ export const BroadcastForm: React.FC = () => {
   const [datatype, setDatatype] = useState<IDatatype | undefined>();
 
   useEffect(() => {
-    if (formID !== TUTORIAL_FORMS.BROADCAST) return;
+    if (formID !== TUTORIAL_FORMS.BROADCAST && !isTokenMessage(formID)) return;
     const { jsonValue: jsonCurValue } = jsonPayload as any;
-    setJsonPayload({
+    const body = {
       topic: topics,
       tag,
       value: message,
@@ -34,24 +42,30 @@ export const BroadcastForm: React.FC = () => {
       filename: fileName,
       datatypename: datatype?.name ?? '',
       datatypeversion: datatype?.version ?? '',
-    });
+    };
+    setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
   }, [message, tag, topics, fileName, formID, datatype]);
 
   useEffect(() => {
     if (jsonValue && isJsonString(jsonValue)) {
       setJsonValue(JSON.stringify(JSON.parse(jsonValue), null, 2));
       setMessage('');
-      setJsonPayload({
-        topic: topics,
-        tag,
-        jsonValue: JSON.parse(jsonValue),
-        value: message,
-        filename: fileName,
-        datatypename: datatype?.name ?? '',
-        datatypeversion: datatype?.version ?? '',
-      });
+      const body = getFormBody(JSON.parse(jsonValue));
+      setJsonPayload(isTokenMessage(formID) ? { ...tokenBody, ...body } : body);
     }
   }, [jsonValue]);
+
+  const getFormBody = (json: object) => {
+    return {
+      topic: topics,
+      tag,
+      jsonValue: json,
+      value: message,
+      filename: fileName,
+      datatypename: datatype?.name ?? '',
+      datatypeversion: datatype?.version ?? '',
+    };
+  };
 
   const handleTagChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.length === 0) {
@@ -79,6 +93,7 @@ export const BroadcastForm: React.FC = () => {
             datatype={datatype}
             message={message}
             jsonValue={jsonValue}
+            tokenMissingFields={tokenMissingFields}
             onSetMessage={(msg: string) => {
               setMessage(msg);
             }}

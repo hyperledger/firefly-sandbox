@@ -79,7 +79,7 @@ describe('Messages', () => {
 
     expect(mockFireFly.uploadDataBlob).not.toHaveBeenCalled();
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
-      header: { tag: 'test-tag', topics: ['test-topic'] },
+      header: { tag: 'test-tag', topics: ['test-topic'], type: 'transfer_private' },
       group: {
         members: [{ identity: 'alpha' }, { identity: 'beta' }],
       },
@@ -109,7 +109,7 @@ describe('Messages', () => {
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
-      header: { tag: 'test-tag' },
+      header: { tag: 'test-tag', topics: undefined, type: 'transfer_private' },
       group: {
         members: [{ identity: 'alpha' }, { identity: 'beta' }],
       },

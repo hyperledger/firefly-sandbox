@@ -17,9 +17,10 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
+import { MessageForm } from './MessageForm';
 
 export const BurnForm: React.FC = () => {
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -29,6 +30,10 @@ export const BurnForm: React.FC = () => {
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('0');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
+  const [withMessage, setWithMessage] = useState<boolean>(false);
+  const [messageMethod, setMessageMethod] = useState<string>(
+    TUTORIAL_FORMS.BROADCAST
+  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -39,13 +44,22 @@ export const BurnForm: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (formID !== TUTORIAL_FORMS.BURN) return;
-    setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
-    setJsonPayload({
+    if (formID !== TUTORIAL_FORMS.BURN) {
+      resetValues();
+      return;
+    }
+    if (!withMessage) {
+      setPayloadMissingFields(
+        !amount || !pool || (!isFungible() && !tokenIndex)
+      );
+    }
+    const body = {
       pool: pool?.name,
       amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
-    });
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
   }, [pool, amount, tokenIndex, formID]);
 
   useEffect(() => {
@@ -86,6 +100,12 @@ export const BurnForm: React.FC = () => {
     setAmount(event.target.value);
   };
 
+  const resetValues = () => {
+    setAmount('1');
+    setWithMessage(false);
+    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
+  };
+
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
@@ -111,7 +131,8 @@ export const BurnForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.name}
+                      {tp.symbol ? `(${tp.symbol}) - ` : ' - '}
                       {tp.type === 'fungible'
                         ? t('fungible')
                         : t('nonfungible')}
@@ -152,6 +173,17 @@ export const BurnForm: React.FC = () => {
         ) : (
           <></>
         )}
+        <MessageForm
+          tokenMissingFields={
+            !amount || !pool || (!isFungible() && !tokenIndex)
+          }
+          tokenOperationPayload={{
+            pool: pool?.name,
+            amount: amount.toString(),
+            tokenIndex: tokenIndex?.toString(),
+          }}
+          label={t('burnWithData')}
+        />
       </Grid>
     </Grid>
   );

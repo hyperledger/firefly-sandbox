@@ -18,9 +18,10 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool, IVerifier } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
+import { MessageForm } from './MessageForm';
 
 export const TransferForm: React.FC = () => {
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -32,6 +33,10 @@ export const TransferForm: React.FC = () => {
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
+  const [withMessage, setWithMessage] = useState<boolean>(false);
+  const [messageMethod, setMessageMethod] = useState<string>(
+    TUTORIAL_FORMS.BROADCAST
+  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -43,20 +48,23 @@ export const TransferForm: React.FC = () => {
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.TRANSFER) {
-      setAmount('1');
+      resetValues();
       return;
     }
-    setPayloadMissingFields(
-      !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
-    );
-    setJsonPayload({
+    if (!withMessage) {
+      setPayloadMissingFields(
+        !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
+      );
+    }
+    const body = {
       pool: pool?.name,
       amount: amount.toString(),
       tokenIndex: tokenIndex?.toString(),
       to: recipient,
-    });
-    return;
-  }, [pool, amount, recipient, tokenIndex, formID]);
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+  }, [pool, amount, recipient, messageMethod, tokenIndex, formID]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
@@ -111,6 +119,14 @@ export const TransferForm: React.FC = () => {
     setTokenIndex(event.target.value);
   };
 
+  const resetValues = () => {
+    setAmount('1');
+    setWithMessage(false);
+    setRecipient('');
+    setTokenIndex('');
+    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
+  };
+
   return (
     <Grid container>
       <Grid container spacing={DEFAULT_SPACING}>
@@ -135,7 +151,8 @@ export const TransferForm: React.FC = () => {
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>
                     <Typography color="primary">
-                      {tp.name}&nbsp;({tp.symbol})&nbsp;-&nbsp;
+                      {tp.name}
+                      {tp.symbol ? `(${tp.symbol}) - ` : ' - '}
                       {tp.type === 'fungible'
                         ? t('fungible')
                         : t('nonfungible')}
@@ -195,6 +212,18 @@ export const TransferForm: React.FC = () => {
         ) : (
           <></>
         )}
+        <MessageForm
+          tokenMissingFields={
+            !amount || !pool || !recipient || (!isFungible() && !tokenIndex)
+          }
+          tokenOperationPayload={{
+            pool: pool?.name,
+            amount: amount.toString(),
+            tokenIndex: tokenIndex?.toString(),
+            to: recipient,
+          }}
+          label={t('transferWithData')}
+        />
       </Grid>
     </Grid>
   );

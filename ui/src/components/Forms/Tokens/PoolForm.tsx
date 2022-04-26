@@ -30,10 +30,10 @@ export const PoolForm: React.FC = () => {
       setAddress('');
       return;
     }
-    setPayloadMissingFields(!name || !symbol);
+    setPayloadMissingFields(!name);
     setJsonPayload({
       name,
-      symbol,
+      symbol: symbol === '' ? null : symbol,
       type,
       address,
     });
@@ -70,7 +70,6 @@ export const PoolForm: React.FC = () => {
           <Grid item xs={4}>
             <TextField
               fullWidth
-              required
               label={t('poolSymbol')}
               placeholder={t('$acme')}
               value={symbol}

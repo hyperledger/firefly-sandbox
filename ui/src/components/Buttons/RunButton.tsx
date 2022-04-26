@@ -11,7 +11,10 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setDumbAwaitedEventId } from '../../AppWrapper';
-import { TUTORIAL_CATEGORIES } from '../../constants/TutorialSections';
+import {
+  TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
+} from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
@@ -58,14 +61,17 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
+    const postEndpoint = isBlob ? endpoint + 'blob' : endpoint;
     const reqDetails: any = {
       method: 'POST',
-      body: isBlob ? buildFormData(payload, endpoint) : JSON.stringify(payload),
+      body: isBlob
+        ? buildFormData(payload, postEndpoint)
+        : JSON.stringify(payload),
     };
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(isBlob ? endpoint + 'blob' : endpoint, reqDetails)
+    fetch(postEndpoint, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,
@@ -106,12 +112,29 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
-    if (blobEndpoint.includes('privateblob')) {
+    if (isTokenOperation(blobEndpoint)) {
+      data.append('pool', payload.pool);
+      data.append('amount', payload.amount ?? '0');
+      data.append('tokenIndex', payload.tokenIndex ?? '');
+      data.append('to', payload.to);
+    }
+    if (
+      blobEndpoint.includes('privateblob') ||
+      payload.messagingMethod === TUTORIAL_FORMS.PRIVATE
+    ) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);
       }
     }
     return data;
+  };
+
+  const isTokenOperation = (blobEndpoint: string) => {
+    return (
+      blobEndpoint.includes(TUTORIAL_FORMS.MINT) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.TRANSFER) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.BURN)
+    );
   };
 
   return (

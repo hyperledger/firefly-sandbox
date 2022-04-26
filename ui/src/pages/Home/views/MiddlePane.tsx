@@ -15,7 +15,10 @@ import { FFCodeSnippet } from '../../../components/Boxes/FFCodeSnippet';
 import { RunButton } from '../../../components/Buttons/RunButton';
 import { FFPanelHeader } from '../../../components/Panels/FFPanelHeader';
 import { SDK_PATHS } from '../../../constants/SDK_PATHS';
-import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
+import {
+  TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
+} from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
@@ -31,10 +34,10 @@ export const MiddlePane = () => {
   const theme = useTheme();
   const { jsonPayload, apiResponse, apiStatus, setApiResponse, setApiStatus } =
     useContext(ApplicationContext);
-  const { formID, formObject, categoryID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
-  const [codeBlock, setCodeBlock] = useState<string>('');
+  const { formID, formObject, categoryID, isBlob } = useContext(FormContext);
   const [template, setTemplate] = useState<string>('');
+  const [codeBlock, setCodeBlock] = useState<string>('');
 
   useEffect(() => {
     if (formID === TUTORIAL_FORMS.DEPLOY_CONTRACT) {
@@ -45,20 +48,26 @@ export const MiddlePane = () => {
     }
     categoryID &&
       formID &&
-      fetchCatcher(SDK_PATHS.template(categoryID, formID))
+      fetchCatcher(SDK_PATHS.template(categoryID, formID, isBlob))
         .then((template: string) => {
           setTemplate(template);
         })
         .catch((e) => {
           reportFetchError(e);
         });
-  }, [categoryID, formID]);
+  }, [categoryID, formID, isBlob]);
 
   useEffect(() => {
     if (template && jsonPayload && formID) {
+      const { recipients, messagingMethod, value, jsonValue } =
+        jsonPayload as any;
       if (
-        formID === TUTORIAL_FORMS.PRIVATE &&
-        !(jsonPayload as any).recipients
+        (formID === TUTORIAL_FORMS.PRIVATE && !recipients) ||
+        (categoryID === TUTORIAL_CATEGORIES.TOKENS &&
+          messagingMethod &&
+          !value &&
+          !jsonValue &&
+          !isBlob)
       ) {
         return;
       }

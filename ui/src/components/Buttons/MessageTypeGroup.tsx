@@ -31,6 +31,7 @@ import { POST_BODY_TYPE } from '../../enums/enums';
 import { IDatatype } from '../../interfaces/api';
 import { DEFAULT_PADDING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
+import { isTokenMessage } from '../../utils/strings';
 
 export const DEFAULT_MESSAGE_STRING = 'This is a message';
 export const DEFAULT_MESSAGE_JSON = {
@@ -48,6 +49,7 @@ interface Props {
   onSetJsonValue: any;
   onSetDatatype?: any;
   noUndefined?: boolean;
+  tokenMissingFields?: boolean;
 }
 
 export const MessageTypeGroup: React.FC<Props> = ({
@@ -61,85 +63,112 @@ export const MessageTypeGroup: React.FC<Props> = ({
   onSetFileName,
   onSetJsonValue,
   onSetDatatype,
+  tokenMissingFields,
 }) => {
   const { t } = useTranslation();
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
-  const { formID, isBlob, setIsBlob } = useContext(FormContext);
+  const { formID, categoryID, isBlob, setIsBlob } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
-  const { setPayloadMissingFields } = useContext(ApplicationContext);
+  const { jsonPayload, setPayloadMissingFields } =
+    useContext(ApplicationContext);
 
   useEffect(() => {
-    if (formID !== TUTORIAL_CATEGORIES.MESSAGES) return;
+    if (categoryID !== TUTORIAL_CATEGORIES.MESSAGES && !isTokenMessage(formID))
+      return;
+    checkMissingFields();
+  }, [
+    formID,
+    message,
+    jsonValue,
+    messageType,
+    fileName,
+    recipients,
+    tokenMissingFields,
+  ]);
+
+  useEffect(() => {
+    if (categoryID !== TUTORIAL_CATEGORIES.MESSAGES && !isTokenMessage(formID))
+      return;
     if (!isBlob) {
-      if (!message && !jsonValue) {
+      if (
+        (!message && !jsonValue) ||
+        (isTokenMessage(formID) && !(jsonPayload as any).message)
+      ) {
         onSetMessage(DEFAULT_MESSAGE_STRING);
       }
-      setMessageType(message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON);
-      setDefaultJsonDatatype();
-      checkMissingFields();
-    } else {
-      const file: any = document.querySelector('input[type="file"]');
-      setPayloadMissingFields(!file.files[0] ? true : false);
+      const bodyType = message ? POST_BODY_TYPE.STRING : POST_BODY_TYPE.JSON;
+      setMessageType(bodyType);
+      if (bodyType === POST_BODY_TYPE.JSON) {
+        setDefaultJsonDatatype();
+      } else {
+        onSetDatatype(undefined);
+        onSetJsonValue(undefined);
+      }
     }
+    checkMissingFields();
   }, [formID, messageType]);
 
-  useEffect(() => {
-    if (formID !== TUTORIAL_CATEGORIES.MESSAGES) return;
-    checkMissingFields();
-  }, [message, jsonValue, messageType, fileName, recipients]);
-
   const checkMissingFields = () => {
-    if (
-      (formID === TUTORIAL_FORMS.PRIVATE && recipients?.length === 0) ||
-      (!message && messageType === POST_BODY_TYPE.STRING) ||
-      (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
-      (messageType === POST_BODY_TYPE.FILE && !fileName)
-    ) {
-      setPayloadMissingFields(true);
+    if (isBlob) {
+      const file: any = document.querySelector('input[type="file"]');
+      setPayloadMissingFields(
+        !file?.files[0] ||
+          (!isTokenMessage(formID) &&
+            messageType === POST_BODY_TYPE.FILE &&
+            !fileName) ||
+          tokenMissingFields
+          ? true
+          : false
+      );
     } else {
-      setPayloadMissingFields(false);
+      if (
+        (formID === TUTORIAL_FORMS.PRIVATE && recipients?.length === 0) ||
+        (!message && messageType === POST_BODY_TYPE.STRING) ||
+        (!jsonValue && messageType === POST_BODY_TYPE.JSON) ||
+        tokenMissingFields
+      ) {
+        setPayloadMissingFields(true);
+      } else {
+        setPayloadMissingFields(false);
+      }
     }
   };
 
   useEffect(() => {
     if (
       formID === null ||
-      formID !== TUTORIAL_CATEGORIES.MESSAGES ||
+      (categoryID !== TUTORIAL_CATEGORIES.MESSAGES &&
+        !isTokenMessage(formID)) ||
       messageType !== POST_BODY_TYPE.JSON ||
       !datatype
     )
       return;
-    setDatatypeBasedJson();
-  }, [datatype]);
+    setDatatypeBasedJson(datatype);
+  }, [datatype, formID]);
 
   const setDefaultJsonDatatype = () => {
-    if (messageType === POST_BODY_TYPE.JSON) {
-      fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
-        .then((dtRes: IDatatype[]) => {
-          setDatatypes(dtRes);
-          if (dtRes.length > 0) {
-            onSetDatatype(dtRes[0]);
-            setDatatypeBasedJson();
-            return;
-          }
-        })
-        .catch((err) => {
-          reportFetchError(err);
-        });
-      if (!datatype) {
-        onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
-      }
-    } else {
-      onSetDatatype(undefined);
-      onSetJsonValue(undefined);
+    fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
+      .then((dtRes: IDatatype[]) => {
+        setDatatypes(dtRes);
+        if (dtRes.length > 0) {
+          onSetDatatype(dtRes[0]);
+          setDatatypeBasedJson(dtRes[0]);
+          return;
+        }
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      });
+    if (!datatype) {
+      onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
     }
   };
 
-  const setDatatypeBasedJson = () => {
-    const properties = datatype?.schema?.properties;
+  const setDatatypeBasedJson = (dt: IDatatype) => {
+    const properties = dt.schema?.properties;
     if (properties) {
       const keys = Object.keys(properties);
       const newJsonValue = {} as any;
@@ -175,9 +204,9 @@ export const MessageTypeGroup: React.FC<Props> = ({
         return;
       case POST_BODY_TYPE.STRING:
         setIsBlob(false);
-        checkMissingFields();
         onSetDatatype(undefined);
         onSetMessage(DEFAULT_MESSAGE_STRING);
+        checkMissingFields();
         onSetJsonValue(undefined);
         return;
       case POST_BODY_TYPE.JSON:
@@ -223,7 +252,6 @@ export const MessageTypeGroup: React.FC<Props> = ({
           <UploadFile />
         </ToggleButton>
       </ToggleButtonGroup>
-      {/* Text input, or file upload button */}
       {
         <Grid container item xs={12} pt={1}>
           {messageType !== POST_BODY_TYPE.FILE ? (
@@ -303,8 +331,11 @@ export const MessageTypeGroup: React.FC<Props> = ({
                 type="file"
                 required
                 onChange={(event: any) => {
-                  setPayloadMissingFields(false);
-                  onSetFileName(event?.target?.files[0]?.name);
+                  const file = event?.target?.files[0]?.name;
+                  onSetFileName(file);
+                  setPayloadMissingFields(
+                    (tokenMissingFields || !file) ?? false
+                  );
                 }}
               />
             </Button>

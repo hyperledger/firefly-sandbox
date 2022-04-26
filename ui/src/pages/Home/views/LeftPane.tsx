@@ -52,7 +52,6 @@ export const LeftPane = () => {
     const selectedTutorial = TutorialSections.find(
       (t) => t.category === TutorialSections[newTabIdx].category
     );
-
     if (selectedTutorial) {
       setActionParam(
         selectedTutorial.category,

@@ -129,7 +129,8 @@ export class TokenPoolInput {
   name: string;
 
   @IsString()
-  symbol: string;
+  @IsOptional()
+  symbol?: string;
 
   @IsString()
   type: 'fungible' | 'nonfungible';
@@ -154,14 +155,34 @@ export class TokenMintBurn {
   @IsNumberString()
   amount: string;
 
+  @IsObject()
+  @IsOptional()
+  message?: any;
+
+  @IsString()
+  @IsOptional()
+  messagingMethod?: string;
+
   @IsString()
   @IsOptional()
   tokenIndex?: string;
 }
 
+export class MintBurnBlob extends TokenMintBurn {
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
+}
+
 export class TokenTransfer extends TokenMintBurn {
   @IsString()
   to: string;
+}
+
+export class TransferBlob extends TokenTransfer {
+  @IsString()
+  @JSONSchema({ format: 'binary' })
+  file: string;
 }
 
 export class TokenBalance {

@@ -1,8 +1,6 @@
 import {
   Autocomplete,
-  Checkbox,
   FormControl,
-  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -20,8 +18,6 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool, IVerifier } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
-import { BroadcastForm } from '../Messages/BroadcastForm';
-import { PrivateForm } from '../Messages/PrivateForm';
 import { MessageForm } from './MessageForm';
 
 export const TransferForm: React.FC = () => {

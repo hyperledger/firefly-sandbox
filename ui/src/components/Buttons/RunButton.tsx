@@ -131,9 +131,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   const isTokenOperation = (blobEndpoint: string) => {
     return (
-      blobEndpoint.includes('mint') ||
-      blobEndpoint.includes('burn') ||
-      blobEndpoint.includes('transfer')
+      blobEndpoint.includes(TUTORIAL_FORMS.MINT) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.TRANSFER) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.BURN)
     );
   };
 

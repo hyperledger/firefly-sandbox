@@ -6,7 +6,9 @@ import {
 } from '@mui/icons-material';
 import {
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   Grid,
   InputLabel,
   MenuItem,
@@ -72,6 +74,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const { formID, categoryID, isBlob, setIsBlob } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const [datatypes, setDatatypes] = useState<IDatatype[]>([]);
+  const [withDatatype, setWithDatatype] = useState<boolean>(true);
   const { jsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
 
@@ -110,6 +113,15 @@ export const MessageTypeGroup: React.FC<Props> = ({
     }
     checkMissingFields();
   }, [formID, messageType]);
+
+  useEffect(() => {
+    if (messageType !== POST_BODY_TYPE.JSON) return;
+    if (!withDatatype) {
+      onSetDatatype(undefined);
+      onSetJsonValue(undefined);
+    }
+    setDefaultJsonDatatype();
+  }, [withDatatype]);
 
   const checkMissingFields = () => {
     if (isBlob) {
@@ -150,19 +162,21 @@ export const MessageTypeGroup: React.FC<Props> = ({
   }, [datatype, formID]);
 
   const setDefaultJsonDatatype = () => {
-    fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
-      .then((dtRes: IDatatype[]) => {
-        setDatatypes(dtRes);
-        if (dtRes.length > 0) {
-          onSetDatatype(dtRes[0]);
-          setDatatypeBasedJson(dtRes[0]);
-          return;
-        }
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      });
-    if (!datatype) {
+    if (withDatatype) {
+      fetchCatcher(`${SDK_PATHS.messagesDatatypes}`)
+        .then((dtRes: IDatatype[]) => {
+          setDatatypes(dtRes);
+          if (dtRes.length > 0) {
+            onSetDatatype(dtRes[0]);
+            setDatatypeBasedJson(dtRes[0]);
+            return;
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+    }
+    if (!datatype || !withDatatype) {
       onSetJsonValue(JSON.stringify(DEFAULT_MESSAGE_JSON, null, 2));
     }
   };
@@ -253,7 +267,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
         </ToggleButton>
       </ToggleButtonGroup>
       {
-        <Grid container item xs={12} pt={1}>
+        <Grid container item xs={12}>
           {messageType !== POST_BODY_TYPE.FILE ? (
             <>
               {messageType === POST_BODY_TYPE.JSON ? (
@@ -264,37 +278,51 @@ export const MessageTypeGroup: React.FC<Props> = ({
                   spacing={1}
                   pb={DEFAULT_PADDING}
                 >
-                  <Grid item width="100%">
-                    <FormControl
-                      fullWidth
-                      required
-                      disabled={datatypes.length ? false : true}
-                    >
-                      <InputLabel>
-                        {datatypes.length ? t('datatypes') : t('noDatatypes')}
-                      </InputLabel>
-                      <Select
-                        fullWidth
-                        value={datatype?.id ?? ''}
-                        label={
-                          datatypes.length ? t('datatypes') : t('noDatatypes')
-                        }
-                        onChange={(e) =>
-                          onSetDatatype(
-                            datatypes.find((t) => t.id === e.target.value)
-                          )
-                        }
-                      >
-                        {datatypes.map((tp, idx) => (
-                          <MenuItem key={idx} value={tp.id}>
-                            <Typography color="primary">
-                              {tp.name}&nbsp;({tp.version})
-                            </Typography>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
+                  <Grid item xs={12}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={withDatatype}
+                          onChange={() => {
+                            setWithDatatype(!withDatatype);
+                          }}
+                        />
+                      }
+                      label={t('specifyDatatype')}
+                    />
                   </Grid>
+                  {withDatatype && (
+                    <Grid item width="100%">
+                      <FormControl
+                        fullWidth
+                        disabled={datatypes.length ? false : true}
+                      >
+                        <InputLabel>
+                          {datatypes.length ? t('datatypes') : t('noDatatypes')}
+                        </InputLabel>
+                        <Select
+                          fullWidth
+                          value={datatype?.id ?? ''}
+                          label={
+                            datatypes.length ? t('datatypes') : t('noDatatypes')
+                          }
+                          onChange={(e) =>
+                            onSetDatatype(
+                              datatypes.find((t) => t.id === e.target.value)
+                            )
+                          }
+                        >
+                          {datatypes.map((tp, idx) => (
+                            <MenuItem key={idx} value={tp.id}>
+                              <Typography color="primary">
+                                {tp.name}&nbsp;({tp.version})
+                              </Typography>
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  )}
                 </Grid>
               ) : (
                 <></>

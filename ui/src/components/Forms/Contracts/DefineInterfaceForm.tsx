@@ -158,6 +158,7 @@ export const DefineInterfaceForm: React.FC = () => {
         )}
         <Grid item xs={12}>
           <TextField
+            inputProps={{ sx: { fontSize: '14px' } }}
             label={t('schema')}
             multiline
             required

@@ -15,7 +15,7 @@ export const DownloadButton: React.FC<Props> = ({ filename, url }) => {
         downloadExternalFile(url, filename);
       }}
     >
-      <Download />
+      <Download sx={{ fontSize: '20px' }} />
     </IconButton>
   );
 };

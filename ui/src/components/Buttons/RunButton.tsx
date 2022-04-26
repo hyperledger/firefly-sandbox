@@ -6,11 +6,15 @@ import {
   Grid,
   Snackbar,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { setDumbAwaitedEventId } from '../../AppWrapper';
-import { TUTORIAL_CATEGORIES } from '../../constants/TutorialSections';
+import {
+  TUTORIAL_CATEGORIES,
+  TUTORIAL_FORMS,
+} from '../../constants/TutorialSections';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
@@ -24,6 +28,7 @@ interface Props {
 }
 
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
+  const theme = useTheme();
   const { t } = useTranslation();
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
@@ -56,14 +61,17 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
+    const postEndpoint = isBlob ? endpoint + 'blob' : endpoint;
     const reqDetails: any = {
       method: 'POST',
-      body: isBlob ? buildFormData(payload, endpoint) : JSON.stringify(payload),
+      body: isBlob
+        ? buildFormData(payload, postEndpoint)
+        : JSON.stringify(payload),
     };
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(isBlob ? endpoint + 'blob' : endpoint, reqDetails)
+    fetch(postEndpoint, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,
@@ -104,7 +112,16 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     data.append('file', file.files[0]);
     data.append('tag', payload.tag);
     data.append('topic', payload.topic);
-    if (blobEndpoint.includes('privateblob')) {
+    if (isTokenOperation(blobEndpoint)) {
+      data.append('pool', payload.pool);
+      data.append('amount', payload.amount ?? '0');
+      data.append('tokenIndex', payload.tokenIndex ?? '');
+      data.append('to', payload.to);
+    }
+    if (
+      blobEndpoint.includes('privateblob') ||
+      payload.messagingMethod === TUTORIAL_FORMS.PRIVATE
+    ) {
       for (const r of payload.recipients) {
         data.append('recipients[]', r);
       }
@@ -112,23 +129,22 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     return data;
   };
 
+  const isTokenOperation = (blobEndpoint: string) => {
+    return (
+      blobEndpoint.includes(TUTORIAL_FORMS.MINT) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.TRANSFER) ||
+      blobEndpoint.includes(TUTORIAL_FORMS.BURN)
+    );
+  };
+
   return (
     <>
       {dumbAwaitedEventID || justSubmitted ? (
-        <Grid
-          justifyContent="space-between"
-          direction="row"
-          container
-          alignItems={'center'}
-        >
-          <Grid item xs={11}>
-            <Typography sx={{ fontSize: '14px', fontWeight: '500' }}>
-              {t('waitingForTxEventsToFinish')}
-            </Typography>
-          </Grid>
-          <Grid item xs={1} container justifyContent="flex-end">
-            <CircularProgress size={16} color="warning" />
-          </Grid>
+        <Grid container alignItems={'center'}>
+          <Typography sx={{ fontSize: '14px' }} pr={1}>
+            {t('waitingForTxEventsToFinish')}
+          </Typography>
+          <CircularProgress size={20} color="warning" />
         </Grid>
       ) : (
         <>
@@ -136,11 +152,14 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
             endIcon={<ArrowForwardIos />}
             variant="contained"
             disabled={disabled || payloadMissingFields}
-            sx={{ borderRadius: DEFAULT_BORDER_RADIUS }}
+            sx={{
+              borderRadius: DEFAULT_BORDER_RADIUS,
+              backgroundColor: theme.palette.success.main,
+            }}
             onClick={handlePost}
             size="small"
           >
-            <Typography>{t('run')}</Typography>
+            <Typography sx={{ textTransform: 'none' }}>{t('run')}</Typography>
           </Button>
           <Snackbar
             open={showSnackbar}

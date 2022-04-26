@@ -9,7 +9,7 @@ export const FFListItem: React.FC<Props> = ({ item }) => {
   return (
     <Grid
       xs={12}
-      py={1}
+      py={0.5}
       sx={{
         minHeight: '20px',
       }}

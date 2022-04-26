@@ -1,3 +1,5 @@
+import { TUTORIAL_FORMS } from '../constants/TutorialSections';
+
 export const getShortHash = (hash: string): string => {
   return hash?.length >= 10 ? `${hash.slice(0, 5)}...${hash.slice(-5)}` : hash;
 };
@@ -23,6 +25,22 @@ export const isSuccessfulResponse = (statusCode: number) => {
     return true;
   } else if (statusCode >= 400 && statusCode < 600) {
     return false;
+  }
+  return false;
+};
+
+export const isTokenMessage = (formID?: string) => {
+  if (
+    formID &&
+    (
+      [
+        TUTORIAL_FORMS.MINT,
+        TUTORIAL_FORMS.BURN,
+        TUTORIAL_FORMS.TRANSFER,
+      ] as string[]
+    ).includes(formID)
+  ) {
+    return true;
   }
   return false;
 };

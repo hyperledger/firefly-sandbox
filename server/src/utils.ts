@@ -7,6 +7,18 @@ import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 
+export enum FF_MESSAGES {
+  // Definition
+  DEFINITON = 'definition',
+  // Broadcast
+  BROADCAST = 'broadcast',
+  TRANSFER_BROADCAST = 'transfer_broadcast',
+  // Private
+  PRIVATE = 'private',
+  TRANSFER_PRIVATE = 'transfer_private',
+  GROUP_INIT = 'groupinit',
+}
+
 export function genOpenAPI(options: RoutingControllersOptions) {
   return routingControllersToSpec(getMetadataArgsStorage(), options, {
     info: {
@@ -96,6 +108,32 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
       : "'undefined'";
   result = `(${varName} ? (${result}) : ${emptyVal})`;
   return result;
+}
+
+export function getBroadcastMessageBody(body: any, blobId?: string) {
+  const dataBody = blobId ? { id: blobId } : getMessageBody(body);
+  return {
+    header: {
+      tag: body.tag || undefined,
+      topics: body.topic ? [body.topic] : undefined,
+    },
+    data: [dataBody],
+  };
+}
+
+export function getPrivateMessageBody(body: any, blobId?: string) {
+  const dataBody = blobId ? { id: blobId } : getMessageBody(body);
+  return {
+    header: {
+      tag: body.tag || undefined,
+      topics: body.topic ? [body.topic] : undefined,
+      type: FF_MESSAGES.TRANSFER_PRIVATE,
+    },
+    group: {
+      members: body.recipients.map((r) => ({ identity: r })),
+    },
+    data: [dataBody],
+  };
 }
 
 export function getMessageBody(body: any) {

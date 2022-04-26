@@ -1,4 +1,13 @@
-import { Post, Get, HttpCode, UploadedFile, Req, Body, JsonController } from 'routing-controllers';
+import {
+  Post,
+  Get,
+  HttpCode,
+  UploadedFile,
+  Req,
+  Body,
+  JsonController,
+  Redirect,
+} from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
@@ -7,7 +16,8 @@ import {
   formatTemplate,
   quoteAndEscape as q,
   FormDataSchema,
-  getMessageBody,
+  getBroadcastMessageBody,
+  getPrivateMessageBody,
   EmptyVal,
 } from '../utils';
 import {
@@ -30,14 +40,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
   async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = getMessageBody(body);
-    const message = await firefly.sendBroadcast({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      data: [dataBody],
-    });
+    const message = await firefly.sendBroadcast(getBroadcastMessageBody(body));
     return { type: 'message', id: message.header.id };
   }
 
@@ -53,13 +56,7 @@ export class MessagesController {
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
-    const message = await firefly.sendBroadcast({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      data: [{ id: data.id }],
-    });
+    const message = await firefly.sendBroadcast(getBroadcastMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
 
@@ -69,17 +66,7 @@ export class MessagesController {
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
   async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
     // See MessagesTemplateController and keep template code up to date.
-    const dataBody = getMessageBody(body);
-    const message = await firefly.sendPrivateMessage({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      group: {
-        members: body.recipients.map((r) => ({ identity: r })),
-      },
-      data: [dataBody],
-    });
+    const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body));
     return { type: 'message', id: message.header.id };
   }
 
@@ -95,16 +82,7 @@ export class MessagesController {
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
     const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
-    const message = await firefly.sendPrivateMessage({
-      header: {
-        tag: body.tag || undefined,
-        topics: body.topic ? [body.topic] : undefined,
-      },
-      group: {
-        members: body.recipients.map((r) => ({ identity: r })),
-      },
-      data: [{ id: data.id }],
-    });
+    const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
 }
@@ -121,20 +99,17 @@ export class MessagesTemplateController {
   broadcastTemplate() {
     return formatTemplate(`
       const message = await firefly.sendBroadcast({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
-        data: [<% if(jsonValue) { %>
-          {
-            datatype: { 
+        data: [<% if (jsonValue) { %>
+          {<% if (datatypename || datatypeversion) { %>
+            datatype: {
               name: <%= ${q('datatypename')} %>,
               version: <%= ${q('datatypeversion')} %>,
-            },
-            value: <%= ${q('jsonValue', {
-              isObject: true,
-              truncate: true,
-            })} %>,
+            },<% } %>
+            value: <%= ${q('jsonValue', { isObject: true, truncate: true })} %>,
           },
         <% } else { %>
           { value: <%= ${q('value', { empty: EmptyVal.STRING })} %> },
@@ -153,9 +128,9 @@ export class MessagesTemplateController {
         <%= ${q('filename')} %>,
       );
       const message = await firefly.sendBroadcast({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         data: [{ id: data.id }],
       });
@@ -167,19 +142,21 @@ export class MessagesTemplateController {
   sendTemplate() {
     return formatTemplate(`
       const message = await firefly.sendPrivateMessage({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         group: {
-          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+          members: [<% for (const r of recipients) { %>
+            <% print('{ identity: ' + ${q('r')} + ' },') } %>
+          ],
         },
-        data: [<% if(jsonValue) { %>
-          {
-            datatype: { 
+        data: [<% if (jsonValue) { %>
+          {<% if (datatypename || datatypeversion) { %>
+            datatype: {
               name: <%= ${q('datatypename')} %>,
               version: <%= ${q('datatypeversion')} %>,
-            },
+            },<% } %>
             value: <%= ${q('jsonValue', {
               isObject: true,
               truncate: true,
@@ -202,12 +179,14 @@ export class MessagesTemplateController {
         <%= ${q('filename')} %>,
       );
       const message = await firefly.sendPrivateMessage({
-        header: {
-          tag: <%= ${q('tag')} %>,
-          topics: [<%= ${q('topic', { empty: EmptyVal.OMIT })} %>],
+        header: {<% if (tag) { %>
+          <% print('tag: ' + ${q('tag')} + ',') } if (topic) { %>
+          <% print('topics: [' + ${q('topic')} + '],') } %>
         },
         group: {
-          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+          members: [<% for (const r of recipients) { %>
+            <% print('{ identity: ' + ${q('r')} + ' },') } %>
+          ],
         },
         data: [{ id: data.id }],
       });
@@ -216,13 +195,9 @@ export class MessagesTemplateController {
   }
 
   @Get('/datatypes')
-  createDatatypeTemplate() {
-    return formatTemplate(`
-      const datatype = await firefly.createDatatype({
-        name: <%= ${q('name')}  %>,
-        version: <%=  ${q('version')} %>,
-      }, <%= ${q('schema', { isObject: true, truncate: true })}  %>) ;
-      return { type: 'datatype', id: datatype.id };
-    `);
+  @Redirect('../../datatypes/template')
+  datatypesTemplate() {
+    // This template actually lives in DatatypesTemplateController, but a redirect is
+    // provided here because the UI displays datatypes in the Messages category.
   }
 }

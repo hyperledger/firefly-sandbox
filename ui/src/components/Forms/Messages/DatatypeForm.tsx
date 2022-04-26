@@ -111,6 +111,7 @@ export const DatatypeForm: React.FC = () => {
             maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
+            helperText={t('datatypeSchemaHelperText')}
           />
         </Grid>
       </Grid>

@@ -103,6 +103,7 @@ export const PoolForm: React.FC = () => {
               onChange={(event) => {
                 setAddress(event?.target.value);
               }}
+              helperText={t('tokenPoolAddressHelperText')}
             />
           </Grid>
         </Grid>

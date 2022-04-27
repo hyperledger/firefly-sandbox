@@ -1,6 +1,7 @@
 import {
   Checkbox,
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   ListItemText,
@@ -168,6 +169,7 @@ export const PrivateForm: React.FC<Props> = ({
               label={t('tag')}
               placeholder={t('exampleTag')}
               onChange={handleTagChange}
+              helperText={t('tagHelperText')}
             />
           </Grid>
           {/* Topic */}
@@ -177,6 +179,7 @@ export const PrivateForm: React.FC<Props> = ({
               label={t('topic')}
               placeholder={t('exampleTopic')}
               onChange={handleTopicsChange}
+              helperText={t('topicHelperText')}
             />
           </Grid>
         </Grid>
@@ -198,6 +201,7 @@ export const PrivateForm: React.FC<Props> = ({
                 </MenuItem>
               ))}
             </Select>
+            <FormHelperText>{t('recipientsHelperText')}</FormHelperText>
           </FormControl>
         </Grid>
       </Grid>

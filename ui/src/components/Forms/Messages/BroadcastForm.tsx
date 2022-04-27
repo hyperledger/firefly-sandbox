@@ -115,6 +115,7 @@ export const BroadcastForm: React.FC<Props> = ({
                 label={t('tag')}
                 placeholder={t('exampleTag')}
                 onChange={handleTagChange}
+                helperText={t('tagHelperText')}
               />
             </Grid>
             {/* Topic */}
@@ -124,6 +125,7 @@ export const BroadcastForm: React.FC<Props> = ({
                 label={t('topic')}
                 placeholder={t('exampleTopic')}
                 onChange={handleTopicsChange}
+                helperText={t('topicHelperText')}
               />
             </Grid>
           </Grid>

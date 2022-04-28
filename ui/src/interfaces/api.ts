@@ -229,8 +229,7 @@ export interface ITokenApproval {
 }
 
 export interface ITokenBalance {
-  pool: string;
-  poolObject: any;
+  pool: ITokenPool;
   key: string;
   balance: string;
   tokenIndex?: string;

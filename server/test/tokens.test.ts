@@ -1,6 +1,7 @@
 import * as request from 'supertest';
 import FireFly, {
   FireFlyTokenBalanceFilter,
+  FireFlyTokenBalanceResponse,
   FireFlyTokenPoolResponse,
   FireFlyTokenTransferResponse,
 } from '@hyperledger/firefly-sdk';
@@ -135,7 +136,7 @@ describe('Tokens', () => {
       type: 'fungible',
       id: 'poolA',
     } as FireFlyTokenPoolResponse;
-    const balances = [{ key: '0x123', balance: '1', pool: 'poolA' } as FireFlyTokenBalanceFilter];
+    const balances = [{ key: '0x123', balance: '1', pool: 'poolA' }] as FireFlyTokenBalanceResponse;
 
     mockFireFly.getTokenPool.mockResolvedValueOnce(pool);
     mockFireFly.getTokenBalances.mockResolvedValueOnce(balances);
@@ -143,7 +144,7 @@ describe('Tokens', () => {
     await request(server)
       .get('/api/tokens/balances?pool=poolA&key=0x123')
       .expect(200)
-      .expect([{ key: '0x123', balance: '1', pool: 'poolA', poolObject: pool }]);
+      .expect([{ key: '0x123', balance: '1', pool: pool }]);
 
     expect(mockFireFly.getTokenBalances).toHaveBeenCalledWith({
       pool: 'poolA',

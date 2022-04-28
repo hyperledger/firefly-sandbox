@@ -51,10 +51,10 @@ export const TokenStateBox: React.FC = () => {
               if (b.key !== selfIdentity?.ethereum_address) {
                 return;
               }
-              const balanceArr = balanceMap[b.poolObject.name]?.balances ?? [];
+              const balanceArr = balanceMap[b.pool.name]?.balances ?? [];
               balanceMap = {
                 ...balanceMap,
-                [b.poolObject.name]: {
+                [b.pool.name]: {
                   balances: [...balanceArr, b],
                 },
               };
@@ -168,8 +168,7 @@ export const TokenStateBox: React.FC = () => {
                     ? makeNonFungibleString(tokenBalanceMap[poolIDKey].balances)
                     : `${t('---')} ${t('total')}: ${decimalToAmount(
                         tokenBalanceMap[poolIDKey].balances[0].balance,
-                        tokenBalanceMap[poolIDKey].balances[0].poolObject
-                          .decimals
+                        tokenBalanceMap[poolIDKey].balances[0].pool.decimals
                       )}`}
                 </Typography>
               </Grid>

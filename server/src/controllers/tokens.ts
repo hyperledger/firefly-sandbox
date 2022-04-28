@@ -228,8 +228,7 @@ export class TokensController {
       }
     }
     return balances.map((b) => ({
-      pool: b.pool,
-      poolObject: poolMap.get(b.pool),
+      pool: poolMap.get(b.pool),
       key: b.key,
       balance: b.balance,
       tokenIndex: b.tokenIndex,

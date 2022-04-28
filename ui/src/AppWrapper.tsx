@@ -15,6 +15,7 @@ import {
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { EventContext } from './contexts/EventContext';
 import { FormContext } from './contexts/FormContext';
+import { FINISHED_EVENT_SUFFIX } from './ff_models/eventTypes';
 import { IEvent } from './interfaces/api';
 import { IEventHistoryItem } from './interfaces/events';
 import { ITutorial } from './interfaces/tutorialSection';
@@ -132,9 +133,10 @@ export const AppWrapper: React.FC = () => {
 
   const isFinalEvent = (event: IEvent) => {
     if (
-      event.type.endsWith('confirmed') ||
-      event.type.endsWith('rejected') ||
-      event.type.endsWith('failed')
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.CONFIRMED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.SUCCEEDED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.REJECTED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.FAILED)
     )
       return true;
 
@@ -144,7 +146,10 @@ export const AppWrapper: React.FC = () => {
   };
 
   const isFailed = (t: string) => {
-    return t.endsWith('rejected') || t.endsWith('failed');
+    return (
+      t.endsWith(FINISHED_EVENT_SUFFIX.REJECTED) ||
+      t.endsWith(FINISHED_EVENT_SUFFIX.FAILED)
+    );
   };
 
   const addLogToHistory = (event: IEvent) => {

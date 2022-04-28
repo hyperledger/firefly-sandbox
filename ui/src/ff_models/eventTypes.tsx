@@ -21,6 +21,13 @@ export enum EventCategoryEnum {
   TOKENS = 'Tokens',
 }
 
+export enum FINISHED_EVENT_SUFFIX {
+  CONFIRMED = 'confirmed',
+  REJECTED = 'rejected',
+  FAILED = 'failed',
+  SUCCEEDED = 'succeeded',
+}
+
 export enum FF_EVENTS {
   // Blockchain Event
   BLOCKCHAIN_EVENT_RECEIVED = 'blockchain_event_received',

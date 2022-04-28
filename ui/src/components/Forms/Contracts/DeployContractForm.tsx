@@ -73,7 +73,7 @@ export const DeployContractForm: React.FC = () => {
               {step.description}
               <Box mt={2}>
                 <Button variant="contained" onClick={handleNext}>
-                  <Typography sx={{ textTransform: 'none', fontSize: '14px' }}>
+                  <Typography sx={{ textTransform: 'none' }}>
                     {index === steps.length - 1 ? t('finish') : t('continue')}
                   </Typography>
                 </Button>
@@ -82,7 +82,7 @@ export const DeployContractForm: React.FC = () => {
                   sx={{ ml: 1 }}
                   onClick={handleBack}
                 >
-                  <Typography sx={{ textTransform: 'none', fontSize: '14px' }}>
+                  <Typography sx={{ textTransform: 'none' }}>
                     {t('back')}
                   </Typography>
                 </Button>
@@ -93,13 +93,11 @@ export const DeployContractForm: React.FC = () => {
       </Stepper>
       {activeStep === steps.length && (
         <Paper square elevation={0} sx={{ pl: 3 }}>
-          <Typography sx={{ fontSize: '14px' }}>
-            {t('contractDeployedToFirefly')}
-          </Typography>
+          <Typography>{t('contractDeployedToFirefly')}</Typography>
           <Button
             variant="outlined"
             onClick={handleReset}
-            sx={{ mt: 1, mr: 1, textTransform: 'none', fontSize: '14px' }}
+            sx={{ mt: 1, mr: 1, textTransform: 'none' }}
           >
             {t('backToStepOne')}
           </Button>

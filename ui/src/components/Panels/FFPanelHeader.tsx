@@ -15,7 +15,7 @@ export const FFPanelHeader: React.FC<Props> = ({ title }) => {
       direction="row"
       alignItems={'center'}
     >
-      <Typography variant="h5" sx={{ fontWeight: 600 }}>
+      <Typography variant="h3" sx={{ fontWeight: 600, fontSize: '28px' }}>
         {title}
       </Typography>
     </Grid>

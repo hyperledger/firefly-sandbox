@@ -138,14 +138,8 @@ export const TokenStateBox: React.FC = () => {
                 xs={11}
                 alignItems="center"
               >
-                <Typography sx={{ fontSize: '14px' }}>{poolIDKey}</Typography>
-                <Typography
-                  sx={{
-                    fontSize: '14px',
-                  }}
-                  color={'secondary'}
-                  variant="body2"
-                >
+                <Typography>{poolIDKey}</Typography>
+                <Typography color={'secondary'} variant="body2">
                   &nbsp;
                   {`(${
                     tokenBalanceMap[poolIDKey].balances.every(
@@ -156,12 +150,7 @@ export const TokenStateBox: React.FC = () => {
                   })`}
                 </Typography>
                 &nbsp;
-                <Typography
-                  sx={{
-                    fontSize: '14px',
-                  }}
-                  noWrap
-                >
+                <Typography noWrap>
                   {tokenBalanceMap[poolIDKey].balances.every(
                     (b) => b.tokenIndex !== undefined
                   )

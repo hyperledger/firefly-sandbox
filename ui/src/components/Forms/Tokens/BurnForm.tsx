@@ -198,7 +198,7 @@ export const BurnForm: React.FC = () => {
             amount: amount.toString(),
             tokenIndex: tokenIndex?.toString(),
           }}
-          label={t('burnWithData')}
+          label={t('burnWithMessage')}
         />
       </Grid>
     </Grid>

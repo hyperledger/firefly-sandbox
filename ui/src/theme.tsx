@@ -95,6 +95,13 @@ export const themeOptions: ThemeOptions = {
         },
       },
     },
+    MuiTypography: {
+      styleOverrides: {
+        root: {
+          fontSize: '14px',
+        },
+      },
+    },
     MuiCssBaseline: {
       styleOverrides: {
         body: {

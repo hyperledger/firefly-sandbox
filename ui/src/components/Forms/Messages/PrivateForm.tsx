@@ -1,7 +1,6 @@
 import {
   Checkbox,
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   ListItemText,

@@ -140,8 +140,10 @@ export const RegisterContractApiListenerForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
-              label={t('name')}
-              onChange={(e) => setName(e.target.value)}
+              required
+              label={t('topic')}
+              onChange={(e) => setTopic(e.target.value)}
+              helperText={t('contractTopicHelperText')}
             />
           </FormControl>
         </Grid>
@@ -149,10 +151,9 @@ export const RegisterContractApiListenerForm: React.FC = () => {
           <FormControl fullWidth required>
             <TextField
               fullWidth
-              required
-              label={t('topic')}
-              onChange={(e) => setTopic(e.target.value)}
-              helperText={t('contractTopicHelperText')}
+              label={t('name')}
+              onChange={(e) => setName(e.target.value)}
+              helperText={t('contractListenerNameHelperText')}
             />
           </FormControl>
         </Grid>

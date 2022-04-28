@@ -1,7 +1,6 @@
 import {
   Autocomplete,
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -200,7 +199,6 @@ export const TransferForm: React.FC = () => {
                 setRecipient(addressFound ? addressFound.value : value);
               }}
             />
-            <FormHelperText>{t('tokenPoolRecipientHelperText')}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={6}>

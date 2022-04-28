@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -10,6 +11,7 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MAX_FORM_ROWS } from '../../../App';
+import { ResourceUrls } from '../../../constants/ResourceUrls';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
@@ -118,10 +120,31 @@ export const DefineInterfaceForm: React.FC = () => {
               >
                 {CONTRACT_INTERFACE_FORMATS.map((f, idx) => (
                   <MenuItem key={idx} value={f}>
-                    <Typography color="primary">{t(`${f}`)}</Typography>
+                    <Typography color="primary">{t(f)}</Typography>
                   </MenuItem>
                 ))}
               </Select>
+              <FormHelperText>
+                {t('either')}&nbsp;
+                <a
+                  href={ResourceUrls.fireflyFFI}
+                  target="_blank"
+                  style={{ color: 'white', textDecoration: 'none' }}
+                >
+                  {t('ffiShort')}
+                </a>
+                &nbsp;
+                {t('or')}&nbsp;
+                <a
+                  href={ResourceUrls.solidityABI}
+                  target="_blank"
+                  style={{ color: 'white', textDecoration: 'none' }}
+                >
+                  {t('solidityABI')}
+                </a>
+                &nbsp;
+                {t('format')}
+              </FormHelperText>
             </FormControl>
           </Grid>
         </Grid>

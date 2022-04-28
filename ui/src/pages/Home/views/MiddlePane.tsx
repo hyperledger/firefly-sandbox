@@ -124,6 +124,7 @@ export const MiddlePane = () => {
               variant="body1"
               sx={{
                 fontWeight: 600,
+                fontSize: '16px',
               }}
             >
               {t('applicationCode')}
@@ -193,6 +194,7 @@ export const MiddlePane = () => {
               sx={{
                 padding: 1,
                 fontWeight: 600,
+                fontSize: '16px',
               }}
             >
               {t('serverResponse')}

@@ -8,9 +8,8 @@ import {
   Typography,
   useTheme,
 } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setDumbAwaitedEventId } from '../../AppWrapper';
 import {
   TUTORIAL_CATEGORIES,
   TUTORIAL_FORMS,
@@ -33,22 +32,8 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
-  const {
-    addAwaitedEventID,
-    dumbAwaitedEventID,
-    justSubmitted,
-    setJustSubmitted,
-  } = useContext(EventContext);
-  const { formID, categoryID, isBlob } = useContext(FormContext);
-
-  useEffect(() => {
-    setJustSubmitted(false);
-    setDumbAwaitedEventId(undefined);
-  }, [formID]);
-
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
+  const { addAwaitedEventID, awaitedEventID } = useContext(EventContext);
+  const { categoryID, isBlob } = useContext(FormContext);
 
   const handleCloseSnackbar = (_: any, reason?: string) => {
     if (reason === 'clickaway') {
@@ -84,11 +69,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
         setShowSnackbar(true);
         setApiResponse(data);
         if (response.status === 202) {
-          setJustSubmitted(true);
           addAwaitedEventID(data);
         } else if (!isSuccessfulResponse(response.status)) {
-          setJustSubmitted(false);
-          setDumbAwaitedEventId(undefined);
+          addAwaitedEventID(undefined);
         }
       })
       .catch((err) => {
@@ -139,11 +122,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   return (
     <>
-      {dumbAwaitedEventID || justSubmitted ? (
+      {awaitedEventID ? (
         <Grid container alignItems={'center'}>
-          <Typography sx={{ fontSize: '14px' }} pr={1}>
-            {t('waitingForTxEventsToFinish')}
-          </Typography>
+          <Typography pr={1}>{t('waitingForTxEventsToFinish')}</Typography>
           <CircularProgress size={20} color="warning" />
         </Grid>
       ) : (
@@ -159,7 +140,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
             onClick={handlePost}
             size="small"
           >
-            <Typography sx={{ textTransform: 'none' }}>{t('run')}</Typography>
+            <Typography sx={{ textTransform: 'none', fontSize: '16px' }}>
+              {t('run')}
+            </Typography>
           </Button>
           <Snackbar
             open={showSnackbar}

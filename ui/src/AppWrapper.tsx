@@ -30,11 +30,6 @@ const RootDiv = styled('div')({
   display: 'flex',
 });
 
-let dumbAwaitedEventID: string | undefined = undefined;
-export const setDumbAwaitedEventId = (eventId: string | undefined) => {
-  dumbAwaitedEventID = eventId;
-};
-
 export const ACTION_QUERY_KEY = 'action';
 export const ACTION_DELIM = '.';
 export const DEFAULT_ACTION = [
@@ -54,7 +49,9 @@ export const AppWrapper: React.FC = () => {
   const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
     new Map()
   );
-  const [justSubmitted, setJustSubmitted] = useState<boolean>(false);
+  const [awaitedEventID, setAwaitedEventID] = useState<string | undefined>(
+    undefined
+  );
 
   useEffect(() => {
     initializeFocusedForm();
@@ -133,14 +130,17 @@ export const AppWrapper: React.FC = () => {
     return action.split(ACTION_DELIM);
   };
 
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
+  const isFinalEvent = (event: IEvent) => {
+    if (
+      event.type.endsWith('confirmed') ||
+      event.type.endsWith('rejected') ||
+      event.type.endsWith('failed')
+    )
+      return true;
 
-  const isFinalEvent = (t: string) => {
-    return (
-      t.endsWith('confirmed') || t.endsWith('rejected') || t.endsWith('failed')
-    );
+    if (event.reference === awaitedEventID || event.correlator) return true;
+
+    return false;
   };
 
   const isFailed = (t: string) => {
@@ -149,26 +149,21 @@ export const AppWrapper: React.FC = () => {
 
   const addLogToHistory = (event: IEvent) => {
     setLogHistory((logHistory) => {
-      // This is bad practice, and should be optimized in the future
+      // Must deep copy map since it has nested json data
       const deepCopyMap: Map<string, IEventHistoryItem> = new Map(
         JSON.parse(JSON.stringify(Array.from(logHistory)))
       );
       const txMap = deepCopyMap.get(event.tx);
 
       if (txMap !== undefined) {
-        // TODO: Need better logic
-        const isComplete = !!(
-          event.reference === dumbAwaitedEventID || event.correlator
-        );
-        if (isComplete || isFailed(event.type)) {
-          dumbAwaitedEventID = undefined;
-          setJustSubmitted(false);
+        if (isFailed(event.type) || isFinalEvent(event)) {
+          setAwaitedEventID(undefined);
         }
         return new Map(
           deepCopyMap.set(event.tx, {
             events: [event, ...txMap.events],
             created: event.created,
-            isComplete: isFinalEvent(event.type),
+            isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
           })
         );
@@ -177,7 +172,7 @@ export const AppWrapper: React.FC = () => {
           deepCopyMap.set(event.tx, {
             events: [event],
             created: event.created,
-            isComplete: isFinalEvent(event.type),
+            isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
           })
         );
@@ -187,7 +182,7 @@ export const AppWrapper: React.FC = () => {
 
   const addAwaitedEventID = (apiRes: any) => {
     if (apiRes?.id && apiRes?.id) {
-      dumbAwaitedEventID = apiRes.id;
+      setAwaitedEventID(apiRes.id);
     }
   };
 
@@ -203,9 +198,7 @@ export const AppWrapper: React.FC = () => {
             logHistory,
             addLogToHistory,
             addAwaitedEventID,
-            justSubmitted,
-            setJustSubmitted,
-            dumbAwaitedEventID,
+            awaitedEventID,
           }}
         >
           <FormContext.Provider

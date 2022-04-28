@@ -84,17 +84,6 @@ export const themeOptions: ThemeOptions = {
         },
       },
     },
-    MuiButton: {
-      styleOverrides: {
-        contained: {
-          backgroundColor: '#462DE0',
-          color: '#fff',
-          ':hover': {
-            backgroundColor: '#231770',
-          },
-        },
-      },
-    },
     MuiTypography: {
       styleOverrides: {
         root: {

@@ -1,11 +1,5 @@
 import { ArrowForwardIos } from '@mui/icons-material';
-import {
-  Button,
-  CircularProgress,
-  Grid,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -26,7 +20,6 @@ interface Props {
 }
 
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
-  const theme = useTheme();
   const { t } = useTranslation();
   // const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
@@ -128,8 +121,8 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
             disabled={disabled || payloadMissingFields}
             sx={{
               borderRadius: DEFAULT_BORDER_RADIUS,
-              backgroundColor: theme.palette.success.main,
             }}
+            color="success"
             onClick={handlePost}
             size="small"
           >

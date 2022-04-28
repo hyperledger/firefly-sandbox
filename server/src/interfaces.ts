@@ -186,11 +186,8 @@ export class TransferBlob extends TokenTransfer {
 }
 
 export class TokenBalance {
-  @IsUUID()
-  pool: string;
-
-  @IsString()
-  poolName: string;
+  @IsInstance(TokenPool)
+  pool: TokenPool;
 
   @IsString()
   key: string;

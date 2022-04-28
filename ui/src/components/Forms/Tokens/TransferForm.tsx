@@ -1,7 +1,6 @@
 import {
   Autocomplete,
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -18,7 +17,9 @@ import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool, IVerifier } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
+import { amountToDecimal } from '../../../utils/decimals';
 import { fetchCatcher } from '../../../utils/fetches';
+import { isAmountInvalid } from '../../../utils/strings';
 import { MessageForm } from './MessageForm';
 
 export const TransferForm: React.FC = () => {
@@ -31,6 +32,9 @@ export const TransferForm: React.FC = () => {
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
+  const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
+    undefined
+  );
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
@@ -57,15 +61,20 @@ export const TransferForm: React.FC = () => {
         !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
       );
     }
-    const body = {
-      pool: pool?.name,
-      amount: amount.toString(),
-      tokenIndex: tokenIndex?.toString(),
-      to: recipient,
-      messagingMethod: withMessage ? messageMethod : null,
-    };
-    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-  }, [pool, amount, recipient, messageMethod, tokenIndex, formID]);
+    if (pool) {
+      if (decimalAmount === undefined)
+        setDecimalAmount(amountToDecimal('1', pool.decimals));
+
+      const body = {
+        pool: pool?.name,
+        amount: decimalAmount,
+        tokenIndex: tokenIndex?.toString(),
+        to: recipient,
+        messagingMethod: withMessage ? messageMethod : null,
+      };
+      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+    }
+  }, [pool, decimalAmount, recipient, messageMethod, tokenIndex, formID]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
@@ -111,6 +120,12 @@ export const TransferForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!pool || isAmountInvalid(event.target.value)) return;
+
+    const formattedAmount = amountToDecimal(event.target.value, pool?.decimals);
+    if (!formattedAmount) return;
+
+    setDecimalAmount(formattedAmount);
     setAmount(event.target.value);
   };
 
@@ -184,7 +199,6 @@ export const TransferForm: React.FC = () => {
                 setRecipient(addressFound ? addressFound.value : value);
               }}
             />
-            <FormHelperText>{t('tokenPoolRecipientHelperText')}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={6}>

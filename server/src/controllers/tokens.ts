@@ -41,7 +41,13 @@ export class TokensController {
   @OpenAPI({ summary: 'List all token pools' })
   async tokenpools(): Promise<TokenPool[]> {
     const pools = await firefly.getTokenPools();
-    return pools.map((p) => ({ id: p.id, name: p.name, symbol: p.symbol, type: p.type }));
+    return pools.map((p) => ({
+      id: p.id,
+      name: p.name,
+      symbol: p.symbol,
+      type: p.type,
+      decimals: p.decimals,
+    }));
   }
 
   @Post('/pools')
@@ -213,17 +219,16 @@ export class TokensController {
     @QueryParam('pool') pool: string,
     @QueryParam('key') key: string,
   ): Promise<TokenBalance[]> {
-    const poolMap = new Map<string, string>();
+    const poolMap = new Map<string, TokenPool>();
     const balances = await firefly.getTokenBalances({ pool, key, balance: '>0' });
     for (const b of balances) {
       if (!poolMap.has(b.pool)) {
         const pool = await firefly.getTokenPool(b.pool);
-        poolMap.set(b.pool, pool.name);
+        poolMap.set(b.pool, pool);
       }
     }
     return balances.map((b) => ({
-      pool: b.pool,
-      poolName: poolMap.get(b.pool),
+      pool: poolMap.get(b.pool),
       key: b.key,
       balance: b.balance,
       tokenIndex: b.tokenIndex,

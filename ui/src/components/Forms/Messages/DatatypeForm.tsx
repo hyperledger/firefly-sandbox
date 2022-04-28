@@ -104,14 +104,13 @@ export const DatatypeForm: React.FC = () => {
 
         <Grid item xs={12}>
           <TextField
-            label={t('schema')}
+            label={t('jsonSchema')}
             multiline
             required
             fullWidth
             maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
-            helperText={t('datatypeSchemaHelperText')}
           />
         </Grid>
       </Grid>

@@ -17,7 +17,9 @@ import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
+import { amountToDecimal } from '../../../utils/decimals';
 import { MessageForm } from './MessageForm';
+import { isAmountInvalid } from '../../../utils/strings';
 
 export const MintForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
@@ -30,6 +32,9 @@ export const MintForm: React.FC = () => {
 
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
+  const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
+    undefined
+  );
   const [withMessage, setWithMessage] = useState<boolean>(false);
   const [messageMethod, setMessageMethod] = useState<string>(
     TUTORIAL_FORMS.BROADCAST
@@ -51,14 +56,19 @@ export const MintForm: React.FC = () => {
     if (!withMessage) {
       setPayloadMissingFields(!amount || !pool);
     }
-    const body = {
-      pool: pool?.name,
-      amount: amount.toString(),
-      tokenIndex: '',
-      messagingMethod: withMessage ? messageMethod : null,
-    };
-    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-  }, [pool, amount, messageMethod, formID]);
+
+    if (pool) {
+      if (decimalAmount === undefined)
+        setDecimalAmount(amountToDecimal('1', pool.decimals));
+      const body = {
+        pool: pool.name,
+        amount: decimalAmount,
+        tokenIndex: '',
+        messagingMethod: withMessage ? messageMethod : null,
+      };
+      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+    }
+  }, [pool, decimalAmount, messageMethod, formID]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
@@ -85,6 +95,12 @@ export const MintForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!pool || isAmountInvalid(event.target.value)) return;
+
+    const formattedAmount = amountToDecimal(event.target.value, pool?.decimals);
+    if (!formattedAmount) return;
+
+    setDecimalAmount(formattedAmount);
     setAmount(event.target.value);
   };
 

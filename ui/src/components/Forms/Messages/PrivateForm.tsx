@@ -1,7 +1,6 @@
 import {
   Checkbox,
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   ListItemText,
@@ -161,6 +160,26 @@ export const PrivateForm: React.FC<Props> = ({
             setDatatype(dt);
           }}
         />
+        <Grid container item>
+          {/* Recipient Select box */}
+          <FormControl fullWidth required>
+            <InputLabel>{t('recipients')}</InputLabel>
+            <Select
+              multiple
+              value={recipients}
+              onChange={handleRecipientChange}
+              input={<OutlinedInput label={t('recipients')} />}
+              renderValue={(selected) => selected.join(', ')}
+            >
+              {identities.map((identity, idx) => (
+                <MenuItem key={idx} value={identity.did}>
+                  <Checkbox checked={recipients.indexOf(identity.did) > -1} />
+                  <ListItemText primary={identity.did} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
         <Grid container item justifyContent="space-between" spacing={1}>
           {/* Tag */}
           <Grid item xs={6}>
@@ -182,27 +201,6 @@ export const PrivateForm: React.FC<Props> = ({
               helperText={t('topicHelperText')}
             />
           </Grid>
-        </Grid>
-        <Grid container item>
-          {/* Recipient Select box */}
-          <FormControl fullWidth required>
-            <InputLabel>{t('recipients')}</InputLabel>
-            <Select
-              multiple
-              value={recipients}
-              onChange={handleRecipientChange}
-              input={<OutlinedInput label={t('recipients')} />}
-              renderValue={(selected) => selected.join(', ')}
-            >
-              {identities.map((identity, idx) => (
-                <MenuItem key={idx} value={identity.did}>
-                  <Checkbox checked={recipients.indexOf(identity.did) > -1} />
-                  <ListItemText primary={identity.did} />
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{t('recipientsHelperText')}</FormHelperText>
-          </FormControl>
         </Grid>
       </Grid>
     </Grid>

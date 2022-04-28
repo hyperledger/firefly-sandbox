@@ -131,7 +131,11 @@ export const MiddlePane = () => {
             </Typography>
             {/* Header */}
             <Grid container item alignItems="center">
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: '12px' }}
+              >
                 {t('appCodeInstructions')}
               </Typography>
             </Grid>

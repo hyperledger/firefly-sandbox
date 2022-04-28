@@ -1,14 +1,12 @@
 import { ArrowForwardIos } from '@mui/icons-material';
 import {
-  Alert,
   Button,
   CircularProgress,
   Grid,
-  Snackbar,
   Typography,
   useTheme,
 } from '@mui/material';
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   TUTORIAL_CATEGORIES,
@@ -17,6 +15,7 @@ import {
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
+import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { isSuccessfulResponse } from '../../utils/strings';
 
@@ -29,20 +28,16 @@ interface Props {
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const theme = useTheme();
   const { t } = useTranslation();
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  // const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
   const { addAwaitedEventID, awaitedEventID } = useContext(EventContext);
   const { categoryID, isBlob } = useContext(FormContext);
-
-  const handleCloseSnackbar = (_: any, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setShowSnackbar(false);
-  };
+  const { setMessage, setMessageType } = useContext(SnackbarContext);
 
   const handlePost = () => {
+    setMessageType('success');
+    setMessage(`${t('postSentTo')}${endpoint}`);
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
@@ -66,7 +61,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       })
       .then((result) => {
         const [response, data] = result;
-        setShowSnackbar(true);
         setApiResponse(data);
         if (response.status === 202) {
           addAwaitedEventID(data);
@@ -75,7 +69,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
         }
       })
       .catch((err) => {
-        setShowSnackbar(true);
         setApiResponse(err);
       });
   };
@@ -144,20 +137,6 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
               {t('run')}
             </Typography>
           </Button>
-          <Snackbar
-            open={showSnackbar}
-            autoHideDuration={6000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={'success'}
-              sx={{ width: '100%' }}
-              variant={'filled'}
-            >
-              {`${t('postSentTo')}${endpoint}`}
-            </Alert>
-          </Snackbar>
         </>
       )}
     </>

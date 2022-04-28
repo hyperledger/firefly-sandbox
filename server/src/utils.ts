@@ -4,6 +4,7 @@ import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-contr
 import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
+import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 
 export enum FF_MESSAGES {
@@ -135,8 +136,8 @@ export function getPrivateMessageBody(body: any, blobId?: string) {
   };
 }
 
-export function getMessageBody(body: any): any {
-  const dataBody = {} as any;
+export function getMessageBody(body: any) {
+  const dataBody: FireFlyDataRequest = {};
   dataBody.value = body.value || body.jsonValue;
   if (body.jsonValue && body.datatypename && body.datatypeversion) {
     dataBody.datatype = {

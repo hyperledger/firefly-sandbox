@@ -72,7 +72,11 @@ export const DeployContractForm: React.FC = () => {
             <StepContent>
               {step.description}
               <Box mt={2}>
-                <Button variant="contained" onClick={handleNext}>
+                <Button
+                  variant="contained"
+                  onClick={handleNext}
+                  color="success"
+                >
                   <Typography sx={{ textTransform: 'none' }}>
                     {index === steps.length - 1 ? t('finish') : t('continue')}
                   </Typography>
@@ -81,6 +85,7 @@ export const DeployContractForm: React.FC = () => {
                   disabled={index === 0}
                   sx={{ ml: 1 }}
                   onClick={handleBack}
+                  variant="outlined"
                 >
                   <Typography sx={{ textTransform: 'none' }}>
                     {t('back')}
@@ -95,9 +100,10 @@ export const DeployContractForm: React.FC = () => {
         <Paper square elevation={0} sx={{ pl: 3 }}>
           <Typography>{t('contractDeployedToFirefly')}</Typography>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={handleReset}
             sx={{ mt: 1, mr: 1, textTransform: 'none' }}
+            color="success"
           >
             {t('backToStepOne')}
           </Button>

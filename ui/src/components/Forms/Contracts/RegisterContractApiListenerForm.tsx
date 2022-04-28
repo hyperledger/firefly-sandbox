@@ -152,6 +152,7 @@ export const RegisterContractApiListenerForm: React.FC = () => {
               required
               label={t('topic')}
               onChange={(e) => setTopic(e.target.value)}
+              helperText={t('contractTopicHelperText')}
             />
           </FormControl>
         </Grid>

@@ -230,7 +230,7 @@ export interface ITokenApproval {
 
 export interface ITokenBalance {
   pool: string;
-  poolName: string;
+  poolObject: any;
   key: string;
   balance: string;
   tokenIndex?: string;
@@ -267,6 +267,7 @@ export interface ITokenPool {
     type: string;
     id?: string;
   };
+  decimals?: number;
 }
 
 export interface ITokenTransfer {

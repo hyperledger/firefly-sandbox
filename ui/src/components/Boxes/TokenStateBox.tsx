@@ -14,6 +14,7 @@ import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
+import { decimalToAmount } from '../../utils/decimals';
 import { fetchCatcher } from '../../utils/fetches';
 import { getShortHash, jsNumberForAddress } from '../../utils/strings';
 
@@ -50,10 +51,10 @@ export const TokenStateBox: React.FC = () => {
               if (b.key !== selfIdentity?.ethereum_address) {
                 return;
               }
-              const balanceArr = balanceMap[b.poolName]?.balances ?? [];
+              const balanceArr = balanceMap[b.poolObject.name]?.balances ?? [];
               balanceMap = {
                 ...balanceMap,
-                [b.poolName]: {
+                [b.poolObject.name]: {
                   balances: [...balanceArr, b],
                 },
               };
@@ -165,9 +166,11 @@ export const TokenStateBox: React.FC = () => {
                     (b) => b.tokenIndex !== undefined
                   )
                     ? makeNonFungibleString(tokenBalanceMap[poolIDKey].balances)
-                    : `${t('---')} ${t('total')}: ${
-                        tokenBalanceMap[poolIDKey].balances[0].balance
-                      }`}
+                    : `${t('---')} ${t('total')}: ${decimalToAmount(
+                        tokenBalanceMap[poolIDKey].balances[0].balance,
+                        tokenBalanceMap[poolIDKey].balances[0].poolObject
+                          .decimals
+                      )}`}
                 </Typography>
               </Grid>
             </Grid>

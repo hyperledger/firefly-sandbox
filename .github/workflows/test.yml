@@ -15,12 +15,16 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16.x'
+          node-version: "16.x"
       - run: npm ci
         working-directory: ./server
       - run: npm run test
         working-directory: ./server
       - run: npm ci
+        working-directory: ./ui
+      - run: npm run lint
+        working-directory: ./ui
+      - run: npm run test
         working-directory: ./ui
       - run: npm run build
         working-directory: ./ui

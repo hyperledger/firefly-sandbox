@@ -44,3 +44,13 @@ export const isTokenMessage = (formID?: string) => {
   }
   return false;
 };
+
+export const onlyNumberRegex = /^(?:[1-9]\d*|0)?(?:\.\d+)?$/;
+
+export const isAmountInvalid = (amount: string): boolean => {
+  return (
+    amount !== '' &&
+    amount.charAt(amount.length - 1) !== '.' &&
+    amount.match(onlyNumberRegex) === null
+  );
+};

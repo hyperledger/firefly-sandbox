@@ -16,7 +16,9 @@ import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
+import { amountToDecimal } from '../../../utils/decimals';
 import { fetchCatcher } from '../../../utils/fetches';
+import { isAmountInvalid } from '../../../utils/strings';
 import { MessageForm } from './MessageForm';
 
 export const BurnForm: React.FC = () => {
@@ -28,7 +30,10 @@ export const BurnForm: React.FC = () => {
 
   const [tokenPools, setTokenPools] = useState<ITokenPool[]>([]);
   const [pool, setPool] = useState<ITokenPool>();
-  const [amount, setAmount] = useState<string>('0');
+  const [amount, setAmount] = useState<string>('1');
+  const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
+    undefined
+  );
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [withMessage, setWithMessage] = useState<boolean>(false);
   const [messageMethod, setMessageMethod] = useState<string>(
@@ -53,14 +58,19 @@ export const BurnForm: React.FC = () => {
         !amount || !pool || (!isFungible() && !tokenIndex)
       );
     }
-    const body = {
-      pool: pool?.name,
-      amount: amount.toString(),
-      tokenIndex: tokenIndex?.toString(),
-      messagingMethod: withMessage ? messageMethod : null,
-    };
-    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-  }, [pool, amount, tokenIndex, formID]);
+    if (pool) {
+      if (decimalAmount === undefined)
+        setDecimalAmount(amountToDecimal('1', pool.decimals));
+
+      const body = {
+        pool: pool?.name,
+        amount: decimalAmount,
+        tokenIndex: tokenIndex?.toString(),
+        messagingMethod: withMessage ? messageMethod : null,
+      };
+      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+    }
+  }, [pool, decimalAmount, tokenIndex, formID]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
@@ -97,6 +107,12 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!pool || isAmountInvalid(event.target.value)) return;
+
+    const formattedAmount = amountToDecimal(event.target.value, pool?.decimals);
+    if (!formattedAmount) return;
+
+    setDecimalAmount(formattedAmount);
     setAmount(event.target.value);
   };
 

@@ -26,7 +26,7 @@
   },
   "homepage": "https://github.com/hyperledger/firefly-sandbox#readme",
   "dependencies": {
-    "@hyperledger/firefly-sdk": "^0.1.0-alpha.8",
+    "@hyperledger/firefly-sdk": "^0.1.0-alpha.10",
     "body-parser": "^1.20.0",
     "class-transformer": "^0.3.1",
     "class-validator": "^0.12.2",

@@ -189,8 +189,8 @@ export class TokenBalance {
   @IsUUID()
   pool: string;
 
-  @IsString()
-  poolName: string;
+  @IsInstance(TokenPool)
+  poolObject: TokenPool;
 
   @IsString()
   key: string;

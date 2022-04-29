@@ -7,12 +7,7 @@ interface Props {
 
 export const FFListText: React.FC<Props> = ({ color, text }) => {
   return (
-    <Typography
-      noWrap
-      sx={{ fontSize: '14px', fontWeight: '500' }}
-      color={color}
-      variant="body2"
-    >
+    <Typography noWrap sx={{ fontWeight: '500' }} color={color} variant="body2">
       {text}
     </Typography>
   );

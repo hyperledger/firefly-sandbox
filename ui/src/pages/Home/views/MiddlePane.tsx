@@ -124,13 +124,18 @@ export const MiddlePane = () => {
               variant="body1"
               sx={{
                 fontWeight: 600,
+                fontSize: '16px',
               }}
             >
               {t('applicationCode')}
             </Typography>
             {/* Header */}
             <Grid container item alignItems="center">
-              <Typography variant="caption" color="text.secondary">
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ fontSize: '12px' }}
+              >
                 {t('appCodeInstructions')}
               </Typography>
             </Grid>
@@ -193,6 +198,7 @@ export const MiddlePane = () => {
               sx={{
                 padding: 1,
                 fontWeight: 600,
+                fontSize: '16px',
               }}
             >
               {t('serverResponse')}

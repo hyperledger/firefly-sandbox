@@ -1,33 +1,24 @@
-import { Launch, Refresh } from '@mui/icons-material';
-import {
-  Grid,
-  IconButton,
-  Link,
-  Skeleton,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Launch } from '@mui/icons-material';
+import { Grid, IconButton, Link, Typography } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { SDK_PATHS } from '../../constants/SDK_PATHS';
+import { EventContext } from '../../contexts/EventContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { IContractApi, IContractListener } from '../../interfaces/api';
-import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import { DownloadButton } from '../Buttons/DownloadButton';
+import { FFLinearProgress } from '../Loaders/FFLinearProgress';
 import { HashPopover } from '../Popovers/HashPopover';
+import { FFStateBox } from './FFStateBox';
 
 export const ContractStateBox: React.FC = () => {
   const { reportFetchError } = useContext(SnackbarContext);
-  const theme = useTheme();
   const { t } = useTranslation();
-
+  const { refreshAPIs } = useContext(EventContext);
   const [contractApis, setContractApis] = useState<IContractApi[]>();
   const [contractListeners, setContractListeners] =
     useState<IContractListener[]>();
-  const [lastRefreshTime, setLastRefreshTime] = useState<string>(
-    new Date().toISOString()
-  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -46,7 +37,7 @@ export const ContractStateBox: React.FC = () => {
         .catch((err) => {
           reportFetchError(err);
         });
-  }, [lastRefreshTime, isMounted]);
+  }, [refreshAPIs, isMounted]);
 
   useEffect(() => {
     setContractListeners([]);
@@ -69,42 +60,10 @@ export const ContractStateBox: React.FC = () => {
   }, [contractApis, isMounted]);
 
   return (
-    <Grid
-      container
-      direction="column"
-      width="100%"
-      p={1}
-      sx={{
-        border: `3px solid ${theme.palette.background.paper}`,
-        borderRadius: DEFAULT_BORDER_RADIUS,
-        maxHeight: '250px',
-        overflow: 'auto',
-      }}
-    >
-      {/* Header */}
-      <Grid container direction="row" item alignItems="center">
-        <Grid xs={8} item container>
-          <Typography variant="body1" sx={{ fontWeight: '600' }}>
-            {t('apisKnownToFirefly')}
-          </Typography>
-        </Grid>
-        <Grid xs={4} item container justifyContent="flex-end">
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setLastRefreshTime(new Date().toISOString());
-            }}
-          >
-            <Refresh />
-          </IconButton>
-        </Grid>
-      </Grid>
+    <FFStateBox header={t('apisKnownToFirefly')}>
       {/* API List */}
       {!contractApis ? (
-        <>
-          <Skeleton width={'40%'} />
-          <Skeleton width={'50%'} />
-        </>
+        <FFLinearProgress />
       ) : contractApis.length ? (
         contractApis.map((api) => {
           return (
@@ -169,10 +128,10 @@ export const ContractStateBox: React.FC = () => {
           );
         })
       ) : (
-        <Typography variant="subtitle2" sx={{ textAlign: 'center' }}>
+        <Typography variant="subtitle2" color="secondary">
           {t('noAPIsRegisteredWithFireFly')}
         </Typography>
       )}
-    </Grid>
+    </FFStateBox>
   );
 };

@@ -10,6 +10,7 @@ import {
   CircularProgress,
   Divider,
   Grid,
+  Typography,
 } from '@mui/material';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -45,12 +46,32 @@ export const TransactionAccordion: React.FC<Props> = ({
           leftContent={
             <>
               <Grid item xs={12} container direction="row">
-                <FFAccordionText
-                  text={t('transactionID')}
-                  color="primary"
-                  isHeader
-                />
-
+                <Grid item>
+                  <Typography
+                    component={'span'}
+                    sx={{
+                      fontSize: '16px',
+                      fontWeight: '600',
+                    }}
+                    color="primary"
+                    variant="body2"
+                    noWrap
+                  >
+                    {`${t('transaction')}: `}
+                  </Typography>
+                  <Typography
+                    component={'span'}
+                    sx={{
+                      fontSize: '16px',
+                      fontWeight: '500',
+                    }}
+                    color="secondary"
+                    variant="caption"
+                    noWrap
+                  >
+                    {value.txName}
+                  </Typography>
+                </Grid>
                 <Grid item pl={1}>
                   {!value.isComplete ? (
                     <CircularProgress color="warning" size="20px" />

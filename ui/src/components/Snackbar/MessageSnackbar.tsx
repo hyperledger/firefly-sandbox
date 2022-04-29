@@ -14,17 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import ErrorIcon from '@mui/icons-material/Error';
-import {
-  Grid,
-  IconButton,
-  Slide,
-  SlideProps,
-  Snackbar,
-  useTheme,
-} from '@mui/material';
+import { Alert, Snackbar } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 
 const TRANSITION_TIMEOUT = 400;
@@ -36,18 +26,13 @@ interface MessageSnackbarProps {
   messageType?: SnackbarMessageType;
 }
 
-function SlideTransition(props: SlideProps) {
-  return <Slide {...props} direction="up" timeout={TRANSITION_TIMEOUT} />;
-}
-
 export const MessageSnackbar: React.FC<MessageSnackbarProps> = ({
   message,
   setMessage,
-  messageType = 'error',
+  messageType = 'success',
 }) => {
   const [open, setOpen] = useState(message ? true : false);
   const timeoutRef = useRef<number>(0);
-  const theme = useTheme();
 
   useEffect(() => {
     return () => window.clearTimeout(timeoutRef.current);
@@ -71,37 +56,16 @@ export const MessageSnackbar: React.FC<MessageSnackbarProps> = ({
       open={open}
       onClose={handleClose}
       anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-      autoHideDuration={messageType === 'error' ? 60000 : 6000}
-      sx={{
-        backgroundColor:
-          messageType === 'error'
-            ? theme.palette.error.main
-            : theme.palette.success.main,
-        color: theme.palette.text.primary,
-      }}
-      TransitionComponent={SlideTransition}
-      message={
-        <Grid container justifyContent="center" alignItems="center">
-          {messageType === 'error' && (
-            <ErrorIcon sx={{ marginRight: theme.spacing(1) }} />
-          )}
-          {messageType === 'success' && (
-            <CheckIcon sx={{ marginRight: theme.spacing(1) }} />
-          )}
-          {message}
-        </Grid>
-      }
-      action={[
-        <IconButton
-          key="close"
-          aria-label="close"
-          color="inherit"
-          onClick={handleClose}
-          size="large"
-        >
-          <CloseIcon />
-        </IconButton>,
-      ]}
-    />
+      autoHideDuration={messageType === 'error' ? 60000 : 4000}
+    >
+      <Alert
+        onClose={handleClose}
+        severity={messageType}
+        sx={{ width: '100%' }}
+        variant={'filled'}
+      >
+        {message}
+      </Alert>
+    </Snackbar>
   );
 };

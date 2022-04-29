@@ -21,20 +21,35 @@ export enum EventCategoryEnum {
   TOKENS = 'Tokens',
 }
 
+export enum FINISHED_EVENT_SUFFIX {
+  CONFIRMED = 'confirmed',
+  REJECTED = 'rejected',
+  FAILED = 'failed',
+  SUCCEEDED = 'succeeded',
+}
+
 export enum FF_EVENTS {
   // Blockchain Event
   BLOCKCHAIN_EVENT_RECEIVED = 'blockchain_event_received',
+  BLOCKCHAIN_INVOKE_OP_SUCCEEDED = 'blockchain_invoke_op_succeeded',
+  BLOCKCHAIN_INVOKE_OP_FAILED = 'blockchain_invoke_op_failed',
   CONTRACT_API_CONFIRMED = 'contract_api_confirmed',
   CONTRACT_INTERFACE_CONFIRMED = 'contract_interface_confirmed',
   DATATYPE_CONFIRMED = 'datatype_confirmed',
+  IDENTITY_CONFIRMED = 'identity_confirmed',
+  IDENTITY_UPDATED = 'identity_updated',
+  NS_CONFIRMED = 'namespace_confirmed',
   // Message/Definitions
   MSG_CONFIRMED = 'message_confirmed',
   MSG_REJECTED = 'message_rejected',
   TX_SUBMITTED = 'transaction_submitted',
   // Transfers
   TOKEN_POOL_CONFIRMED = 'token_pool_confirmed',
+  TOKEN_POOL_OP_FAILED = 'token_pool_op_failed',
+  TOKEN_APPROVAL_CONFIRMED = 'token_approval_confirmed',
+  TOKEN_APPROVAL_OP_FAILED = 'token_approval_op_failed',
   TOKEN_TRANSFER_CONFIRMED = 'token_transfer_confirmed',
-  TOKEN_TRANSFER_FAILED = 'token_transfer_op_failed',
+  TOKEN_TRANSFER_OP_FAILED = 'token_transfer_op_failed',
 }
 
 interface IEventCategory {
@@ -79,6 +94,49 @@ export const FF_EVENTS_CATEGORY_MAP: {
           <FFListText
             color="secondary"
             text={event.blockchainEvent?.protocolId ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.BLOCKCHAIN_INVOKE_OP_SUCCEEDED]: {
+    category: EventCategoryEnum.BLOCKCHAIN,
+    color: FFColors.Yellow,
+    nicename: 'blockchainInvokeSucceeded',
+    enrichedEventKey: 'operation',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('operationID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.id ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.BLOCKCHAIN_INVOKE_OP_FAILED]: {
+    category: EventCategoryEnum.BLOCKCHAIN,
+    color: FFColors.Yellow,
+    nicename: 'blockchainInvokeFailed',
+    enrichedEventKey: 'operation',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('operationErrorID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.id ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('operationError') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.error ?? t('---')}
           />
         ),
       },
@@ -172,6 +230,78 @@ export const FF_EVENTS_CATEGORY_MAP: {
           <FFListText
             color="secondary"
             text={event.datatype?.version ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.IDENTITY_CONFIRMED]: {
+    category: EventCategoryEnum.BLOCKCHAIN,
+    color: FFColors.Yellow,
+    nicename: 'identityConfirmed',
+    enrichedEventKey: 'identity',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('identityID') + ':',
+        value: (
+          <FFListText color="secondary" text={event.identity?.id ?? t('---')} />
+        ),
+      },
+      {
+        label: t('did') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.identity?.did ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.IDENTITY_UPDATED]: {
+    category: EventCategoryEnum.BLOCKCHAIN,
+    color: FFColors.Yellow,
+    nicename: 'identityUpdated',
+    enrichedEventKey: 'identity',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('identityID') + ':',
+        value: (
+          <FFListText color="secondary" text={event.identity?.id ?? t('---')} />
+        ),
+      },
+      {
+        label: t('did') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.identity?.did ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.NS_CONFIRMED]: {
+    category: EventCategoryEnum.BLOCKCHAIN,
+    color: FFColors.Yellow,
+    nicename: 'namespaceConfirmed',
+    enrichedEventKey: 'namespaceDetails',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('namespaceID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.namespaceDetails?.id ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('name') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.namespaceDetails?.name ?? t('---')}
           />
         ),
       },
@@ -360,69 +490,215 @@ export const FF_EVENTS_CATEGORY_MAP: {
       },
     ],
   },
+  [FF_EVENTS.TOKEN_POOL_OP_FAILED]: {
+    category: EventCategoryEnum.TOKENS,
+    color: FFColors.Pink,
+    nicename: 'tokenPoolFailed',
+    enrichedEventKey: 'operation',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('operationErrorID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.id ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('poolID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.correlator ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('operationError') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.error ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.TOKEN_APPROVAL_CONFIRMED]: {
+    category: EventCategoryEnum.TOKENS,
+    color: FFColors.Pink,
+    nicename: 'tokenApprovalConfirmed',
+    enrichedEventKey: 'tokenApproval',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('approvalID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.tokenApproval?.localId ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('subject') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={t(event.tokenApproval?.subject ?? '') ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
+  [FF_EVENTS.TOKEN_APPROVAL_OP_FAILED]: {
+    category: EventCategoryEnum.TOKENS,
+    color: FFColors.Pink,
+    nicename: 'tokenApprovalOpFailed',
+    enrichedEventKey: 'operation',
+    eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('operationErrorID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.id ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('approvalID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.correlator ?? t('---')}
+          />
+        ),
+      },
+      {
+        label: t('operationError') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.error ?? t('---')}
+          />
+        ),
+      },
+    ],
+  },
   [FF_EVENTS.TOKEN_TRANSFER_CONFIRMED]: {
     category: EventCategoryEnum.TOKENS,
     color: FFColors.Pink,
     nicename: 'tokenTransferConfirmed',
     enrichedEventKey: 'tokenTransfer',
+    eventKeyList: (event: IEvent): IDataListItem[] => {
+      const list: IDataListItem[] = [
+        {
+          label: t('transferID') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.localId ?? t('---')}
+            />
+          ),
+        },
+        {
+          label: t('transferType') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={t(event.tokenTransfer?.type ?? '') ?? t('---')}
+            />
+          ),
+        },
+        {
+          label: t('fromAddress') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.from ?? t('nullAddress')}
+            />
+          ),
+        },
+        {
+          label: t('toAddress') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.to ?? t('nullAddress')}
+            />
+          ),
+        },
+        {
+          label: t('amount') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.amount ?? t('---')}
+            />
+          ),
+        },
+        {
+          label: t('tokenIndex') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.tokenIndex ?? t('---')}
+            />
+          ),
+        },
+      ];
+
+      if (event.tokenTransfer?.tokenIndex) {
+        list.push({
+          label: t('tokenIndex') + ':',
+          value: (
+            <FFListText
+              color="secondary"
+              text={event.tokenTransfer?.tokenIndex ?? t('---')}
+            />
+          ),
+        });
+      }
+
+      return list;
+    },
+  },
+  [FF_EVENTS.TOKEN_TRANSFER_OP_FAILED]: {
+    category: EventCategoryEnum.TOKENS,
+    color: FFColors.Pink,
+    nicename: 'tokenTransferFailed',
+    enrichedEventKey: 'operation',
     eventKeyList: (event: IEvent): IDataListItem[] => [
+      {
+        label: t('operationErrorID') + ':',
+        value: (
+          <FFListText
+            color="secondary"
+            text={event.operation?.id ?? t('---')}
+          />
+        ),
+      },
       {
         label: t('transferID') + ':',
         value: (
           <FFListText
             color="secondary"
-            text={event.tokenTransfer?.localId ?? t('---')}
+            text={event.operation?.correlator ?? t('---')}
           />
         ),
       },
       {
-        label: t('transferType') + ':',
+        label: t('operationError') + ':',
         value: (
           <FFListText
             color="secondary"
-            text={t(event.tokenTransfer?.type ?? '') ?? t('---')}
-          />
-        ),
-      },
-      {
-        label: t('fromAddress') + ':',
-        value: (
-          <FFListText
-            color="secondary"
-            text={event.tokenTransfer?.from ?? t('nullAddress')}
-          />
-        ),
-      },
-      {
-        label: t('toAddress') + ':',
-        value: (
-          <FFListText
-            color="secondary"
-            text={event.tokenTransfer?.to ?? t('nullAddress')}
-          />
-        ),
-      },
-      {
-        label: t('amount') + ':',
-        value: (
-          <FFListText
-            color="secondary"
-            text={event.tokenTransfer?.amount ?? t('---')}
+            text={event.operation?.error ?? t('---')}
           />
         ),
       },
     ],
   },
-  [FF_EVENTS.TOKEN_TRANSFER_FAILED]: {
-    category: EventCategoryEnum.TOKENS,
-    color: FFColors.Pink,
-    nicename: 'tokenTransferFailed',
-    enrichedEventKey: 'tokenTransfer',
-    eventKeyList: (event: IEvent): IDataListItem[] => [
-      {
-        label: t('operationErrorID') + ':',
-        value: <FFListText color="secondary" text={event.reference} />,
-      },
-    ],
-  },
+  // Default:
+  // event.type, referenceID, correlatorID
 };

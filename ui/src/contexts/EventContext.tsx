@@ -14,17 +14,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { createContext, Dispatch, SetStateAction } from 'react';
+import { createContext } from 'react';
 import { IEvent } from '../interfaces/api';
 import { IEventHistoryItem } from '../interfaces/events';
 
 export interface IEventContext {
   addLogToHistory: (event: IEvent) => void;
   logHistory: Map<string, IEventHistoryItem>;
-  dumbAwaitedEventID: string | undefined;
+  awaitedEventID: string | undefined;
   addAwaitedEventID: (apiRes: any) => void;
-  justSubmitted: boolean;
-  setJustSubmitted: Dispatch<SetStateAction<boolean>>;
+  refreshBalances: string;
+  refreshAPIs: string;
 }
 
 export const EventContext = createContext({} as IEventContext);

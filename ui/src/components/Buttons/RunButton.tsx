@@ -1,16 +1,7 @@
 import { ArrowForwardIos } from '@mui/icons-material';
-import {
-  Alert,
-  Button,
-  CircularProgress,
-  Grid,
-  Snackbar,
-  Typography,
-  useTheme,
-} from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { Button, CircularProgress, Grid, Typography } from '@mui/material';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
-import { setDumbAwaitedEventId } from '../../AppWrapper';
 import {
   TUTORIAL_CATEGORIES,
   TUTORIAL_FORMS,
@@ -18,6 +9,7 @@ import {
 import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
+import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { isSuccessfulResponse } from '../../utils/strings';
 
@@ -28,36 +20,17 @@ interface Props {
 }
 
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
-  const theme = useTheme();
   const { t } = useTranslation();
-  const [showSnackbar, setShowSnackbar] = useState(false);
+  // const [showSnackbar, setShowSnackbar] = useState(false);
   const { setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
-  const {
-    addAwaitedEventID,
-    dumbAwaitedEventID,
-    justSubmitted,
-    setJustSubmitted,
-  } = useContext(EventContext);
-  const { formID, categoryID, isBlob } = useContext(FormContext);
-
-  useEffect(() => {
-    setJustSubmitted(false);
-    setDumbAwaitedEventId(undefined);
-  }, [formID]);
-
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
-
-  const handleCloseSnackbar = (_: any, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setShowSnackbar(false);
-  };
+  const { addAwaitedEventID, awaitedEventID } = useContext(EventContext);
+  const { categoryID, isBlob } = useContext(FormContext);
+  const { setMessage, setMessageType } = useContext(SnackbarContext);
 
   const handlePost = () => {
+    setMessageType('success');
+    setMessage(`${t('postSentTo')}${endpoint}`);
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
@@ -81,18 +54,14 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       })
       .then((result) => {
         const [response, data] = result;
-        setShowSnackbar(true);
         setApiResponse(data);
         if (response.status === 202) {
-          setJustSubmitted(true);
           addAwaitedEventID(data);
         } else if (!isSuccessfulResponse(response.status)) {
-          setJustSubmitted(false);
-          setDumbAwaitedEventId(undefined);
+          addAwaitedEventID(undefined);
         }
       })
       .catch((err) => {
-        setShowSnackbar(true);
         setApiResponse(err);
       });
   };
@@ -139,11 +108,9 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
 
   return (
     <>
-      {dumbAwaitedEventID || justSubmitted ? (
+      {awaitedEventID ? (
         <Grid container alignItems={'center'}>
-          <Typography sx={{ fontSize: '14px' }} pr={1}>
-            {t('waitingForTxEventsToFinish')}
-          </Typography>
+          <Typography pr={1}>{t('waitingForTxEventsToFinish')}</Typography>
           <CircularProgress size={20} color="warning" />
         </Grid>
       ) : (
@@ -154,27 +121,15 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
             disabled={disabled || payloadMissingFields}
             sx={{
               borderRadius: DEFAULT_BORDER_RADIUS,
-              backgroundColor: theme.palette.success.main,
             }}
+            color="success"
             onClick={handlePost}
             size="small"
           >
-            <Typography sx={{ textTransform: 'none' }}>{t('run')}</Typography>
+            <Typography sx={{ textTransform: 'none', fontSize: '16px' }}>
+              {t('run')}
+            </Typography>
           </Button>
-          <Snackbar
-            open={showSnackbar}
-            autoHideDuration={6000}
-            onClose={handleCloseSnackbar}
-          >
-            <Alert
-              onClose={handleCloseSnackbar}
-              severity={'success'}
-              sx={{ width: '100%' }}
-              variant={'filled'}
-            >
-              {`${t('postSentTo')}${endpoint}`}
-            </Alert>
-          </Snackbar>
         </>
       )}
     </>

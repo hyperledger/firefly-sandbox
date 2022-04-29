@@ -1,5 +1,6 @@
 import { styled } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Navigate,
   Outlet,
@@ -15,6 +16,8 @@ import {
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { EventContext } from './contexts/EventContext';
 import { FormContext } from './contexts/FormContext';
+import { FF_EVENTS, FINISHED_EVENT_SUFFIX } from './ff_models/eventTypes';
+import { FF_TX_CATEGORY_MAP } from './ff_models/transactionTypes';
 import { IEvent } from './interfaces/api';
 import { IEventHistoryItem } from './interfaces/events';
 import { ITutorial } from './interfaces/tutorialSection';
@@ -30,11 +33,6 @@ const RootDiv = styled('div')({
   display: 'flex',
 });
 
-let dumbAwaitedEventID: string | undefined = undefined;
-export const setDumbAwaitedEventId = (eventId: string | undefined) => {
-  dumbAwaitedEventID = eventId;
-};
-
 export const ACTION_QUERY_KEY = 'action';
 export const ACTION_DELIM = '.';
 export const DEFAULT_ACTION = [
@@ -45,6 +43,7 @@ export const DEFAULT_ACTION = [
 export const AppWrapper: React.FC = () => {
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { setPayloadMissingFields } = useContext(ApplicationContext);
   const [action, setAction] = useState<string | null>(null);
   const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
@@ -54,7 +53,11 @@ export const AppWrapper: React.FC = () => {
   const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
     new Map()
   );
-  const [justSubmitted, setJustSubmitted] = useState<boolean>(false);
+  const [awaitedEventID, setAwaitedEventID] = useState<string | undefined>(
+    undefined
+  );
+  const [refreshBalances, setRefreshBalances] = useState(new Date().toString());
+  const [refreshAPIs, setRefreshAPIs] = useState(new Date().toString());
 
   useEffect(() => {
     initializeFocusedForm();
@@ -133,43 +136,52 @@ export const AppWrapper: React.FC = () => {
     return action.split(ACTION_DELIM);
   };
 
-  useEffect(() => {
-    setJustSubmitted(false);
-  }, [dumbAwaitedEventID]);
+  const isFinalEvent = (event: IEvent) => {
+    if (
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.CONFIRMED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.SUCCEEDED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.REJECTED) ||
+      event.type.endsWith(FINISHED_EVENT_SUFFIX.FAILED)
+    )
+      return true;
 
-  const isFinalEvent = (t: string) => {
-    return (
-      t.endsWith('confirmed') || t.endsWith('rejected') || t.endsWith('failed')
-    );
+    if (event.reference === awaitedEventID || event.correlator) return true;
+
+    return false;
   };
 
   const isFailed = (t: string) => {
-    return t.endsWith('rejected') || t.endsWith('failed');
+    return (
+      t.endsWith(FINISHED_EVENT_SUFFIX.REJECTED) ||
+      t.endsWith(FINISHED_EVENT_SUFFIX.FAILED)
+    );
   };
 
-  const addLogToHistory = (event: IEvent) => {
+  const addLogToHistory = async (event: IEvent) => {
+    // Update balance and API boxes, if those events are confirmed
+    if (event.type === FF_EVENTS.TOKEN_TRANSFER_CONFIRMED)
+      setRefreshBalances(new Date().toString());
+    if (event.type === FF_EVENTS.CONTRACT_API_CONFIRMED)
+      setRefreshAPIs(new Date().toString());
+
     setLogHistory((logHistory) => {
-      // This is bad practice, and should be optimized in the future
+      // Must deep copy map since it has nested json data
       const deepCopyMap: Map<string, IEventHistoryItem> = new Map(
         JSON.parse(JSON.stringify(Array.from(logHistory)))
       );
       const txMap = deepCopyMap.get(event.tx);
 
       if (txMap !== undefined) {
-        // TODO: Need better logic
-        const isComplete = !!(
-          event.reference === dumbAwaitedEventID || event.correlator
-        );
-        if (isComplete || isFailed(event.type)) {
-          dumbAwaitedEventID = undefined;
-          setJustSubmitted(false);
+        if (isFailed(event.type) || isFinalEvent(event)) {
+          setAwaitedEventID(undefined);
         }
         return new Map(
           deepCopyMap.set(event.tx, {
             events: [event, ...txMap.events],
             created: event.created,
-            isComplete: isFinalEvent(event.type),
+            isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
+            txName: txMap.txName,
           })
         );
       } else {
@@ -177,8 +189,11 @@ export const AppWrapper: React.FC = () => {
           deepCopyMap.set(event.tx, {
             events: [event],
             created: event.created,
-            isComplete: isFinalEvent(event.type),
+            isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
+            txName: event.transaction?.type
+              ? t(FF_TX_CATEGORY_MAP[event.transaction?.type].nicename)
+              : '',
           })
         );
       }
@@ -187,7 +202,7 @@ export const AppWrapper: React.FC = () => {
 
   const addAwaitedEventID = (apiRes: any) => {
     if (apiRes?.id && apiRes?.id) {
-      dumbAwaitedEventID = apiRes.id;
+      setAwaitedEventID(apiRes.id);
     }
   };
 
@@ -203,9 +218,9 @@ export const AppWrapper: React.FC = () => {
             logHistory,
             addLogToHistory,
             addAwaitedEventID,
-            justSubmitted,
-            setJustSubmitted,
-            dumbAwaitedEventID,
+            awaitedEventID,
+            refreshBalances,
+            refreshAPIs,
           }}
         >
           <FormContext.Provider

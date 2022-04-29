@@ -1,5 +1,6 @@
 import { FF_EVENTS } from '../ff_models/eventTypes';
 import { FF_MESSAGES, MessageStatus } from '../ff_models/messageTypes';
+import { FF_OPS, OperationStatus } from '../ff_models/operationTypes';
 import { FF_TX } from '../ff_models/transactionTypes';
 
 export interface IApiStatus {
@@ -95,6 +96,7 @@ export interface IEvent {
   identity?: IOrganization;
   message?: IMessage;
   namespaceDetails?: INamespace;
+  operation?: IOperation;
   tokenApproval?: ITokenApproval;
   tokenPool?: ITokenPool;
   transaction?: ITransaction;
@@ -178,6 +180,25 @@ export interface INetworkIdentity {
   }[];
 }
 
+export interface IOperation {
+  id: string;
+  namespace: string;
+  tx: string;
+  type: FF_OPS;
+  status: OperationStatus;
+  plugin: string;
+  input?: any;
+  output?: {
+    id: string;
+    success: boolean;
+  };
+  correlator: string;
+  created: string;
+  updated: string;
+  retry?: string;
+  error?: string;
+}
+
 export interface IOrganization {
   id: string;
   did: string;
@@ -220,6 +241,8 @@ export interface ITokenApproval {
   approved: boolean;
   namespace: string;
   protocolId: string;
+  subject: string;
+  active: boolean;
   created: string;
   tx: {
     type: string;
@@ -289,6 +312,7 @@ export interface ITokenTransfer {
     id?: string;
   };
   blockchainEvent: string;
+  tokenIndex?: string;
 }
 
 export interface ITransaction {

@@ -160,7 +160,7 @@ export const MintForm: React.FC = () => {
             pool: pool?.name,
             amount: amount.toString(),
           }}
-          label={t('mintWithData')}
+          label={t('attachAMessage')}
         />
       </Grid>
     </Grid>

@@ -238,7 +238,7 @@ export const TransferForm: React.FC = () => {
             tokenIndex: tokenIndex?.toString(),
             to: recipient,
           }}
-          label={t('transferWithMessage')}
+          label={t('attachAMessage')}
         />
       </Grid>
     </Grid>

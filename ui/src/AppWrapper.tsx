@@ -1,5 +1,6 @@
 import { styled } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Navigate,
   Outlet,
@@ -15,7 +16,8 @@ import {
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { EventContext } from './contexts/EventContext';
 import { FormContext } from './contexts/FormContext';
-import { FINISHED_EVENT_SUFFIX } from './ff_models/eventTypes';
+import { FF_EVENTS, FINISHED_EVENT_SUFFIX } from './ff_models/eventTypes';
+import { FF_TX_CATEGORY_MAP } from './ff_models/transactionTypes';
 import { IEvent } from './interfaces/api';
 import { IEventHistoryItem } from './interfaces/events';
 import { ITutorial } from './interfaces/tutorialSection';
@@ -41,6 +43,7 @@ export const DEFAULT_ACTION = [
 export const AppWrapper: React.FC = () => {
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { setPayloadMissingFields } = useContext(ApplicationContext);
   const [action, setAction] = useState<string | null>(null);
   const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
@@ -53,6 +56,8 @@ export const AppWrapper: React.FC = () => {
   const [awaitedEventID, setAwaitedEventID] = useState<string | undefined>(
     undefined
   );
+  const [refreshBalances, setRefreshBalances] = useState(new Date().toString());
+  const [refreshAPIs, setRefreshAPIs] = useState(new Date().toString());
 
   useEffect(() => {
     initializeFocusedForm();
@@ -152,7 +157,13 @@ export const AppWrapper: React.FC = () => {
     );
   };
 
-  const addLogToHistory = (event: IEvent) => {
+  const addLogToHistory = async (event: IEvent) => {
+    // Update balance and API boxes, if those events are confirmed
+    if (event.type === FF_EVENTS.TOKEN_TRANSFER_CONFIRMED)
+      setRefreshBalances(new Date().toString());
+    if (event.type === FF_EVENTS.CONTRACT_API_CONFIRMED)
+      setRefreshAPIs(new Date().toString());
+
     setLogHistory((logHistory) => {
       // Must deep copy map since it has nested json data
       const deepCopyMap: Map<string, IEventHistoryItem> = new Map(
@@ -170,6 +181,7 @@ export const AppWrapper: React.FC = () => {
             created: event.created,
             isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
+            txName: txMap.txName,
           })
         );
       } else {
@@ -179,6 +191,9 @@ export const AppWrapper: React.FC = () => {
             created: event.created,
             isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
+            txName: event.transaction?.type
+              ? t(FF_TX_CATEGORY_MAP[event.transaction?.type].nicename)
+              : '',
           })
         );
       }
@@ -204,6 +219,8 @@ export const AppWrapper: React.FC = () => {
             addLogToHistory,
             addAwaitedEventID,
             awaitedEventID,
+            refreshBalances,
+            refreshAPIs,
           }}
         >
           <FormContext.Provider

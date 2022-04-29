@@ -29,6 +29,7 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useTheme,
 } from '@mui/material';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -43,6 +44,7 @@ import { InstructionModal } from './Modals/InstructionModal';
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { addLogToHistory } = useContext(EventContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
@@ -86,7 +88,14 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <AppBar position="sticky" elevation={0} sx={{ px: DEFAULT_PADDING }}>
+      <AppBar
+        position="sticky"
+        elevation={0}
+        sx={{
+          px: DEFAULT_PADDING,
+          backgroundColor: theme.palette.background.paper,
+        }}
+      >
         <Toolbar disableGutters>
           <Grid container direction="row" alignItems={'center'}>
             <Grid item container justifyContent={'flex-start'} xs={6}>

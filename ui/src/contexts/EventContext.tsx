@@ -23,6 +23,8 @@ export interface IEventContext {
   logHistory: Map<string, IEventHistoryItem>;
   awaitedEventID: string | undefined;
   addAwaitedEventID: (apiRes: any) => void;
+  refreshBalances: string;
+  refreshAPIs: string;
 }
 
 export const EventContext = createContext({} as IEventContext);

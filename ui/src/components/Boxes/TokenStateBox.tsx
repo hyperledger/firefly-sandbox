@@ -1,35 +1,27 @@
-import { Refresh } from '@mui/icons-material';
-import {
-  Grid,
-  IconButton,
-  Skeleton,
-  Typography,
-  useTheme,
-} from '@mui/material';
+import { Grid, Typography } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Jazzicon from 'react-jazzicon';
 import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import { ApplicationContext } from '../../contexts/ApplicationContext';
+import { EventContext } from '../../contexts/EventContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { ITokenBalance } from '../../interfaces/api';
-import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { decimalToAmount } from '../../utils/decimals';
 import { fetchCatcher } from '../../utils/fetches';
 import { getShortHash, jsNumberForAddress } from '../../utils/strings';
+import { FFLinearProgress } from '../Loaders/FFLinearProgress';
+import { FFStateBox } from './FFStateBox';
 
 export const TokenStateBox: React.FC = () => {
-  const theme = useTheme();
   const { selfIdentity } = useContext(ApplicationContext);
+  const { refreshBalances } = useContext(EventContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
   const [tokenBalanceMap, setTokenBalanceMap] = useState<{
     [key: string]: { balances: ITokenBalance[] };
   }>();
-  const [lastRefreshTime, setLastRefreshTime] = useState<string>(
-    new Date().toISOString()
-  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -65,7 +57,7 @@ export const TokenStateBox: React.FC = () => {
         .catch((err) => {
           reportFetchError(err);
         });
-  }, [lastRefreshTime, isMounted, selfIdentity]);
+  }, [isMounted, selfIdentity, refreshBalances]);
 
   const makeNonFungibleString = (balances: ITokenBalance[]): string => {
     return `${t('total')}: ${balances.length} (${balances
@@ -79,44 +71,14 @@ export const TokenStateBox: React.FC = () => {
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      width="100%"
-      p={1}
-      sx={{
-        border: `3px solid ${theme.palette.background.paper}`,
-        borderRadius: DEFAULT_BORDER_RADIUS,
-        maxHeight: '250px',
-        overflow: 'auto',
-      }}
+    <FFStateBox
+      header={`${t('balancesFor')} ${getShortHash(
+        selfIdentity?.ethereum_address ?? ''
+      )}`}
     >
-      {/* Header */}
-      <Grid direction="row" container item alignItems="center">
-        <Grid container item xs={8}>
-          <Typography variant="body1" sx={{ fontWeight: '600' }}>{`${t(
-            'balancesFor'
-          )} ${getShortHash(
-            selfIdentity?.ethereum_address ?? ''
-          )}`}</Typography>
-        </Grid>
-        <Grid xs={4} item container justifyContent="flex-end">
-          <IconButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setLastRefreshTime(new Date().toISOString());
-            }}
-          >
-            <Refresh />
-          </IconButton>
-        </Grid>
-      </Grid>
       {/* Pool list */}
       {!tokenBalanceMap ? (
-        <>
-          <Skeleton width={'40%'} />
-          <Skeleton width={'50%'} />
-        </>
+        <FFLinearProgress />
       ) : Object.keys(tokenBalanceMap).length ? (
         Object.keys(tokenBalanceMap).map((poolIDKey) => {
           return (
@@ -165,10 +127,10 @@ export const TokenStateBox: React.FC = () => {
           );
         })
       ) : (
-        <Typography variant="subtitle2" sx={{ textAlign: 'center' }}>
+        <Typography variant="subtitle2" color="secondary">
           {t('noBalancesForWallet')}
         </Typography>
       )}
-    </Grid>
+    </FFStateBox>
   );
 };

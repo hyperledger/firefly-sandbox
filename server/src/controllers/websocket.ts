@@ -24,10 +24,30 @@ export class SimpleWebSocket {
       };
 
       const ffSocket = firefly.listen(sub, async (socket, event) => {
-        if (event.type === 'transaction_submitted' && event.transaction?.type === 'batch_pin') {
-          // Enrich batch_pin transaction events with details on the batch
-          const batches = await firefly.getBatches({ 'tx.id': event.tx });
-          event['batch'] = batches[0];
+        if (event.type === 'transaction_submitted') {
+          if (event.transaction?.type === 'batch_pin') {
+            // Enrich batch_pin transaction events with details on the batch
+            const batches = await firefly.getBatches({ 'tx.id': event.tx });
+            event['batch'] = batches[0];
+          } else if (event.transaction?.type === 'token_transfer') {
+            // Enrich token_transfer transaction events with pool ID
+            const operations = await firefly.getOperations({
+              tx: event.tx,
+              type: 'token_transfer',
+            });
+            if (operations.length > 0) {
+              event['pool'] = operations[0].input?.pool;
+            }
+          } else if (event.transaction?.type === 'token_approval') {
+            // Enrich token_approval transaction events with pool ID
+            const operations = await firefly.getOperations({
+              tx: event.tx,
+              type: 'token_approval',
+            });
+            if (operations.length > 0) {
+              event['pool'] = operations[0].input?.pool;
+            }
+          }
         }
 
         // Forward the event to the client

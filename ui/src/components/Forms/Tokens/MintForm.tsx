@@ -86,6 +86,7 @@ export const MintForm: React.FC = () => {
 
   const resetValues = () => {
     setAmount('1');
+    setJsonPayload({ ...jsonPayload, recipients: null, messagingMethod: null });
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {

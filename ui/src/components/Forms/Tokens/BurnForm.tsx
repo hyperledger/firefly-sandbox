@@ -35,7 +35,6 @@ export const BurnForm: React.FC = () => {
     undefined
   );
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
@@ -110,6 +109,8 @@ export const BurnForm: React.FC = () => {
 
   const resetValues = () => {
     setAmount('1');
+    setTokenIndex('');
+    setJsonPayload({ ...jsonPayload, recipients: null, messagingMethod: null });
   };
 
   return (

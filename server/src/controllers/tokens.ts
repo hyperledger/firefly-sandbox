@@ -269,7 +269,12 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-          },
+          },<% if(messagingMethod === 'private') { %>
+          group: {
+            members: [<% for (const r of recipients) { %>
+              <% print('{ identity: ' + ${q('r')} + ' },') } %>
+            ],
+          },<% } %>
           data: [<% if(jsonValue) { %>
             {
               datatype: { 
@@ -343,7 +348,12 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-          },
+          },<% if(messagingMethod === 'private') { %>
+            group: {
+              members: [<% for (const r of recipients) { %>
+                <% print('{ identity: ' + ${q('r')} + ' },') } %>
+              ],
+            },<% } %>
           data: [<% if(jsonValue) { %>
             {
               datatype: { 
@@ -418,7 +428,12 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-          },
+          },<% if(messagingMethod === 'private') { %>
+            group: {
+              members: [<% for (const r of recipients) { %>
+                <% print('{ identity: ' + ${q('r')} + ' },') } %>
+              ],
+          },<% } %>
           data: [<% if(jsonValue) { %>
             {
               datatype: { 

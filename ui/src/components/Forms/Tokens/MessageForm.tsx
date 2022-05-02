@@ -37,6 +37,7 @@ export const MessageForm: React.FC<Props> = ({
 
   useEffect(() => {
     setWithMessage(false);
+    setJsonPayload({ ...jsonPayload, messagingMethod: null, recipients: null });
   }, [formID]);
 
   return (

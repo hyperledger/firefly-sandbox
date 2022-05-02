@@ -58,7 +58,6 @@ export const TransferForm: React.FC = () => {
       if (decimalAmount === undefined)
         setDecimalAmount(amountToDecimal('1', pool.decimals));
       const { messagingMethod } = jsonPayload as any;
-
       const body = {
         pool: pool?.name,
         amount: decimalAmount,
@@ -133,6 +132,7 @@ export const TransferForm: React.FC = () => {
     setAmount('1');
     setRecipient('');
     setTokenIndex('');
+    setJsonPayload({ ...jsonPayload, recipients: null, messagingMethod: null });
   };
 
   return (

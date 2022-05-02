@@ -9,5 +9,6 @@ export interface IEventHistoryItem {
   created: string;
   isComplete: boolean;
   isFailed?: boolean;
+  showIcon: boolean;
   txName?: string;
 }

@@ -46,7 +46,7 @@ export class TokensController {
       name: p.name,
       symbol: p.symbol,
       type: p.type,
-      decimals: p.decimals,
+      decimals: p.decimals ?? 0,
     }));
   }
 

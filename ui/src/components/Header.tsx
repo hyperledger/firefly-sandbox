@@ -42,6 +42,8 @@ import { DEFAULT_PADDING, FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
 import { InstructionModal } from './Modals/InstructionModal';
 
+const WS_PATH = process.env.REACT_APP_WS_PATH || '/api/ws';
+
 export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -64,8 +66,8 @@ export const Header: React.FC = () => {
       // Open websocket
       webSocket.current = new ReconnectingWebSocket(
         process.env.NODE_ENV === 'development'
-          ? 'ws://localhost:3001/api/ws'
-          : `ws://${window.location.host}/api/ws`
+          ? `ws://localhost:3001${WS_PATH}`
+          : `ws://${window.location.host}${WS_PATH}`
       );
       // On Open
       webSocket.current.onopen = function () {

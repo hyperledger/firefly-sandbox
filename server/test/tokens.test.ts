@@ -24,7 +24,10 @@ describe('Tokens', () => {
     await request(server)
       .get('/api/tokens/pools')
       .expect(200)
-      .expect([{ id: 'pool1' }, { id: 'pool2' }]);
+      .expect([
+        { id: 'pool1', decimals: 0, dataSupport: true },
+        { id: 'pool2', decimals: 0, dataSupport: true },
+      ]);
 
     expect(mockFireFly.getTokenPools).toHaveBeenCalledWith();
   });
@@ -144,7 +147,19 @@ describe('Tokens', () => {
     await request(server)
       .get('/api/tokens/balances?pool=poolA&key=0x123')
       .expect(200)
-      .expect([{ key: '0x123', balance: '1', pool: pool }]);
+      .expect([
+        {
+          key: '0x123',
+          balance: '1',
+          pool: {
+            name: 'poolA',
+            type: 'fungible',
+            id: 'poolA',
+            decimals: 0,
+            dataSupport: true,
+          },
+        },
+      ]);
 
     expect(mockFireFly.getTokenBalances).toHaveBeenCalledWith({
       pool: 'poolA',

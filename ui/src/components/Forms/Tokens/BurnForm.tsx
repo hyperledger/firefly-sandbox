@@ -35,10 +35,6 @@ export const BurnForm: React.FC = () => {
     undefined
   );
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-  const [withMessage, setWithMessage] = useState<boolean>(false);
-  const [messageMethod, setMessageMethod] = useState<string>(
-    TUTORIAL_FORMS.BROADCAST
-  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -53,22 +49,19 @@ export const BurnForm: React.FC = () => {
       resetValues();
       return;
     }
-    if (!withMessage) {
-      setPayloadMissingFields(
-        !amount || !pool || (!isFungible() && !tokenIndex)
-      );
-    }
+    setPayloadMissingFields(!amount || !pool || (!isFungible() && !tokenIndex));
     if (pool) {
       if (decimalAmount === undefined)
         setDecimalAmount(amountToDecimal('1', pool.decimals));
-
+      const { messagingMethod } = jsonPayload as any;
       const body = {
         pool: pool?.name,
         amount: decimalAmount,
         tokenIndex: tokenIndex?.toString(),
-        messagingMethod: withMessage ? messageMethod : null,
+        messagingMethod: messagingMethod ? messagingMethod : null,
       };
-      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+      console.log(messagingMethod, jsonPayload, body);
+      setJsonPayload(messagingMethod ? { ...jsonPayload, ...body } : body);
     }
   }, [pool, decimalAmount, tokenIndex, formID]);
 
@@ -118,8 +111,6 @@ export const BurnForm: React.FC = () => {
 
   const resetValues = () => {
     setAmount('1');
-    setWithMessage(false);
-    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
   };
 
   return (

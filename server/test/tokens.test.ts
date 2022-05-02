@@ -60,6 +60,7 @@ describe('Tokens', () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '10',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',
@@ -84,6 +85,7 @@ describe('Tokens', () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '1',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',
@@ -109,6 +111,7 @@ describe('Tokens', () => {
       pool: 'my-pool',
       amount: '1',
       to: '0x111',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',

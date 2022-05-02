@@ -6,6 +6,7 @@ import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
+import { BroadcastValue, PrivateValue } from './interfaces';
 
 export enum FF_MESSAGES {
   // Definition
@@ -110,7 +111,7 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return result;
 }
 
-export function getBroadcastMessageBody(body: any, blobId?: string) {
+export function getBroadcastMessageBody(body: BroadcastValue, blobId?: string) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
@@ -121,7 +122,7 @@ export function getBroadcastMessageBody(body: any, blobId?: string) {
   };
 }
 
-export function getPrivateMessageBody(body: any, blobId?: string) {
+export function getPrivateMessageBody(body: PrivateValue, blobId?: string) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {

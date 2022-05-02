@@ -3,6 +3,7 @@ import { nanoid } from 'nanoid';
 import { firefly } from '../clients/firefly';
 import { WebsocketHandler } from '../utils';
 import Logger from '../logger';
+import { FF_EVENTS, FF_TX } from '../enums';
 
 /**
  * Simple WebSocket Server
@@ -24,25 +25,25 @@ export class SimpleWebSocket {
       };
 
       const ffSocket = firefly.listen(sub, async (socket, event) => {
-        if (event.type === 'transaction_submitted') {
-          if (event.transaction?.type === 'batch_pin') {
+        if (event.type === FF_EVENTS.TX_SUBMITTED) {
+          if (event.transaction?.type === FF_TX.BATCH_PIN) {
             // Enrich batch_pin transaction events with details on the batch
             const batches = await firefly.getBatches({ 'tx.id': event.tx });
             event['batch'] = batches[0];
-          } else if (event.transaction?.type === 'token_transfer') {
+          } else if (event.transaction?.type === FF_TX.TOKEN_TRANSFER) {
             // Enrich token_transfer transaction events with pool ID
             const operations = await firefly.getOperations({
               tx: event.tx,
-              type: 'token_transfer',
+              type: FF_TX.TOKEN_TRANSFER,
             });
             if (operations.length > 0) {
               event['pool'] = operations[0].input?.pool;
             }
-          } else if (event.transaction?.type === 'token_approval') {
+          } else if (event.transaction?.type === FF_TX.TOKEN_APPROVAL) {
             // Enrich token_approval transaction events with pool ID
             const operations = await firefly.getOperations({
               tx: event.tx,
-              type: 'token_approval',
+              type: FF_TX.TOKEN_APPROVAL,
             });
             if (operations.length > 0) {
               event['pool'] = operations[0].input?.pool;

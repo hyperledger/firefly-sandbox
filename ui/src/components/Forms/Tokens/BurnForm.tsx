@@ -60,7 +60,6 @@ export const BurnForm: React.FC = () => {
         tokenIndex: tokenIndex?.toString(),
         messagingMethod: messagingMethod ? messagingMethod : null,
       };
-      console.log(messagingMethod, jsonPayload, body);
       setJsonPayload(messagingMethod ? { ...jsonPayload, ...body } : body);
     }
   }, [pool, decimalAmount, tokenIndex, formID]);

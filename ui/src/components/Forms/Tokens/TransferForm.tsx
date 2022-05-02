@@ -38,11 +38,6 @@ export const TransferForm: React.FC = () => {
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
-  const [withMessage, setWithMessage] = useState<boolean>(false);
-  const [messageMethod, setMessageMethod] = useState<string>(
-    TUTORIAL_FORMS.BROADCAST
-  );
-
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
     setIsMounted(true);
@@ -56,25 +51,24 @@ export const TransferForm: React.FC = () => {
       resetValues();
       return;
     }
-    if (!withMessage) {
-      setPayloadMissingFields(
-        !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
-      );
-    }
+    setPayloadMissingFields(
+      !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
+    );
     if (pool) {
       if (decimalAmount === undefined)
         setDecimalAmount(amountToDecimal('1', pool.decimals));
+      const { messagingMethod } = jsonPayload as any;
 
       const body = {
         pool: pool?.name,
         amount: decimalAmount,
         tokenIndex: tokenIndex?.toString(),
         to: recipient,
-        messagingMethod: withMessage ? messageMethod : null,
+        messagingMethod: messagingMethod ? messagingMethod : null,
       };
-      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+      setJsonPayload(messagingMethod ? { ...jsonPayload, ...body } : body);
     }
-  }, [pool, decimalAmount, recipient, messageMethod, tokenIndex, formID]);
+  }, [pool, decimalAmount, recipient, tokenIndex, formID]);
 
   useEffect(() => {
     const qParams = `?limit=25`;
@@ -137,10 +131,8 @@ export const TransferForm: React.FC = () => {
 
   const resetValues = () => {
     setAmount('1');
-    setWithMessage(false);
     setRecipient('');
     setTokenIndex('');
-    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
   };
 
   return (

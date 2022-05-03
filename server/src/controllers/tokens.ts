@@ -7,15 +7,18 @@ import {
   QueryParam,
   Req,
   UploadedFile,
+  Param,
 } from 'routing-controllers';
 import { Request } from 'express';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
+import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
 import {
   formatTemplate,
   FormDataSchema,
   getBroadcastMessageBody,
   getPrivateMessageBody,
+  mapPool,
   quoteAndEscape as q,
 } from '../utils';
 import {
@@ -28,7 +31,6 @@ import {
   MintBurnBlob,
   TransferBlob,
 } from '../interfaces';
-import { plainToClassFromExist } from 'class-transformer';
 
 /**
  * Tokens - API Server
@@ -41,13 +43,15 @@ export class TokensController {
   @OpenAPI({ summary: 'List all token pools' })
   async tokenpools(): Promise<TokenPool[]> {
     const pools = await firefly.getTokenPools();
-    return pools.map((p) => ({
-      id: p.id,
-      name: p.name,
-      symbol: p.symbol,
-      type: p.type,
-      decimals: p.decimals,
-    }));
+    return pools.map((p) => mapPool(p));
+  }
+
+  @Get('/pools/:id')
+  @ResponseSchema(TokenPool)
+  @OpenAPI({ summary: 'Look up a token pool by ID' })
+  async tokenpool(@Param('id') id: string): Promise<TokenPool> {
+    const pool = await firefly.getTokenPool(id);
+    return mapPool(pool);
   }
 
   @Post('/pools')
@@ -224,7 +228,7 @@ export class TokensController {
     for (const b of balances) {
       if (!poolMap.has(b.pool)) {
         const pool = await firefly.getTokenPool(b.pool);
-        poolMap.set(b.pool, pool);
+        poolMap.set(b.pool, mapPool(pool));
       }
     }
     return balances.map((b) => ({

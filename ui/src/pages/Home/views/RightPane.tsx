@@ -18,6 +18,7 @@ export const RightPane: React.FC = () => {
         {logHistory.size > 0 ? (
           Array.from(logHistory.entries())
             .reverse()
+            .slice(0, 50)
             .map(([txID, value], idx) => (
               <Grid pb={1} key={txID} width="100%">
                 {idx === 0 ? (

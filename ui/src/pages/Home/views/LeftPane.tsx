@@ -29,7 +29,8 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 export const LeftPane = () => {
   const { t } = useTranslation();
   const { setPayloadMissingFields } = useContext(ApplicationContext);
-  const { formID, categoryID, setActionParam } = useContext(FormContext);
+  const { formID, categoryID, setActionParam, setPoolObject } =
+    useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
 
   // Set tab index when category ID changes
@@ -49,6 +50,7 @@ export const LeftPane = () => {
   }, [formID, categoryID]);
 
   const handleTabChange = (_: React.SyntheticEvent, newTabIdx: number) => {
+    setPoolObject(undefined);
     const selectedTutorial = TutorialSections.find(
       (t) => t.category === TutorialSections[newTabIdx].category
     );

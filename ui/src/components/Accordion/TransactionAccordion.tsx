@@ -72,19 +72,23 @@ export const TransactionAccordion: React.FC<Props> = ({
                     {value.txName}
                   </Typography>
                 </Grid>
-                <Grid item pl={1}>
-                  {!value.isComplete ? (
-                    <CircularProgress color="warning" size="20px" />
-                  ) : !value.isFailed ? (
-                    <CheckCircleOutline sx={{ color: FFColors.Green }} />
-                  ) : (
-                    <ErrorOutline color={'error'} />
-                  )}
+                {value.showIcons && (
+                  <Grid item pl={1}>
+                    {!value.isComplete ? (
+                      <CircularProgress color="warning" size="20px" />
+                    ) : !value.isFailed ? (
+                      <CheckCircleOutline sx={{ color: FFColors.Green }} />
+                    ) : (
+                      <ErrorOutline color={'error'} />
+                    )}
+                  </Grid>
+                )}
+              </Grid>
+              {value.showTxHash && (
+                <Grid item xs={12} pt={1}>
+                  <HashPopover address={txID} />
                 </Grid>
-              </Grid>
-              <Grid item xs={12} pt={1}>
-                <HashPopover address={txID} />
-              </Grid>
+              )}
             </>
           }
           rightContent={

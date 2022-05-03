@@ -1,8 +1,10 @@
 import {
   ArrayNotEmpty,
+  IsBoolean,
   IsDefined,
   IsEnum,
   IsInstance,
+  IsInt,
   IsNumberString,
   IsObject,
   IsOptional,
@@ -146,6 +148,12 @@ export class TokenPoolInput {
 export class TokenPool extends TokenPoolInput {
   @IsUUID()
   id: string;
+
+  @IsInt()
+  decimals: number;
+
+  @IsBoolean()
+  dataSupport: boolean;
 }
 
 export class TokenMintBurn extends BroadcastValue{

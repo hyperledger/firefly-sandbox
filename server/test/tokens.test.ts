@@ -1,13 +1,12 @@
-import * as request from 'supertest';
 import FireFly, {
-  FireFlyTokenBalanceFilter,
   FireFlyTokenBalanceResponse,
   FireFlyTokenPoolResponse,
   FireFlyTokenTransferResponse,
 } from '@hyperledger/firefly-sdk';
-import server from '../src/server';
+import * as request from 'supertest';
 import { firefly } from '../src/clients/firefly';
-import { TokenMintBurn, TokenPool, TokenPoolInput, TokenTransfer } from '../src/interfaces';
+import { TokenMintBurn, TokenPoolInput, TokenTransfer } from '../src/interfaces';
+import server from '../src/server';
 
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
@@ -24,7 +23,10 @@ describe('Tokens', () => {
     await request(server)
       .get('/api/tokens/pools')
       .expect(200)
-      .expect([{ id: 'pool1' }, { id: 'pool2' }]);
+      .expect([
+        { id: 'pool1', decimals: 0, dataSupport: true },
+        { id: 'pool2', decimals: 0, dataSupport: true },
+      ]);
 
     expect(mockFireFly.getTokenPools).toHaveBeenCalledWith();
   });
@@ -147,7 +149,19 @@ describe('Tokens', () => {
     await request(server)
       .get('/api/tokens/balances?pool=poolA&key=0x123')
       .expect(200)
-      .expect([{ key: '0x123', balance: '1', pool: pool }]);
+      .expect([
+        {
+          key: '0x123',
+          balance: '1',
+          pool: {
+            name: 'poolA',
+            type: 'fungible',
+            id: 'poolA',
+            decimals: 0,
+            dataSupport: true,
+          },
+        },
+      ]);
 
     expect(mockFireFly.getTokenBalances).toHaveBeenCalledWith({
       pool: 'poolA',

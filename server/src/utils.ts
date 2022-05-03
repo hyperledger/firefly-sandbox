@@ -4,7 +4,7 @@ import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-contr
 import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import { FireFlyDataRequest } from '@hyperledger/firefly-sdk';
+import { FireFlyDataRequest, FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 import { BroadcastValue, PrivateValue } from './interfaces';
 
@@ -147,4 +147,18 @@ export function getMessageBody(body: any) {
     };
   }
   return dataBody;
+}
+
+export function mapPool(pool: FireFlyTokenPoolResponse) {
+  // Some contracts (base ERC20/ERC721) do not support passing extra data.
+  // The UI needs to adjust for this, as some items won't reliably confirm.
+  const schema: string = pool.info?.schema ?? '';
+  return {
+    id: pool.id,
+    name: pool.name,
+    symbol: pool.symbol,
+    type: pool.type,
+    decimals: pool.decimals ?? 0,
+    dataSupport: schema.indexOf('NoData') === -1,
+  };
 }

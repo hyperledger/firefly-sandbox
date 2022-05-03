@@ -30,6 +30,11 @@ export interface IHistTransferTimeMap {
   [key: string]: IHistTransferBucket;
 }
 
+export enum PoolType {
+  NF = 'nonfungible',
+  F = 'fungible',
+}
+
 export enum TransferCategoryEnum {
   MINT = 'Mint',
   BURN = 'Burn',

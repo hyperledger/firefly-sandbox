@@ -13,6 +13,7 @@ import CopyToClipboard from 'react-copy-to-clipboard';
 import * as _ from 'underscore';
 import { FFCodeSnippet } from '../../../components/Boxes/FFCodeSnippet';
 import { RunButton } from '../../../components/Buttons/RunButton';
+import { FFSkeleton } from '../../../components/Loaders/FFSkeleton';
 import { FFPanelHeader } from '../../../components/Panels/FFPanelHeader';
 import { SDK_PATHS } from '../../../constants/SDK_PATHS';
 import {
@@ -140,9 +141,13 @@ export const MiddlePane = () => {
             </Grid>
           </Grid>
           {/* Code Snippet */}
-          <Grid p={1} item>
-            <FFCodeSnippet codeBlock={codeBlock} language={'typescript'} />
-          </Grid>
+          {codeBlock ? (
+            <Grid p={1} item>
+              <FFCodeSnippet codeBlock={codeBlock} language={'typescript'} />
+            </Grid>
+          ) : (
+            <FFSkeleton numLines={formObject?.linesOfCode ?? 0} />
+          )}
           {/* Button row */}
           <Grid
             p={1}

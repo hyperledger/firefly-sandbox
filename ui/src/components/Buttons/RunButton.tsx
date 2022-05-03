@@ -25,7 +25,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { setApiStatus, setApiResponse, payloadMissingFields } =
     useContext(ApplicationContext);
   const { addAwaitedEventID, awaitedEventID } = useContext(EventContext);
-  const { categoryID, isBlob } = useContext(FormContext);
+  const { categoryID, isBlob, poolObject } = useContext(FormContext);
   const { setMessage, setMessageType } = useContext(SnackbarContext);
 
   const handlePost = () => {
@@ -56,6 +56,8 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
         const [response, data] = result;
         setApiResponse(data);
         if (response.status === 202) {
+          if (poolObject && !poolObject.dataSupport) return;
+
           addAwaitedEventID(data);
         } else if (!isSuccessfulResponse(response.status)) {
           addAwaitedEventID(undefined);

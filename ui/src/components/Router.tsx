@@ -5,7 +5,7 @@ import { HomeRoutes } from '../pages/Home/Routes';
 
 export const FF_Router: () => JSX.Element = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={process.env.REACT_APP_BASENAME}>
       <Routes />
     </BrowserRouter>
   );

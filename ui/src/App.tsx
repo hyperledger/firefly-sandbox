@@ -13,7 +13,12 @@ import {
 import { SDK_PATHS } from './constants/SDK_PATHS';
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
-import { IApiStatus, ISelfIdentity, IVerifier } from './interfaces/api';
+import {
+  IApiStatus,
+  IPlugins,
+  ISelfIdentity,
+  IVerifier,
+} from './interfaces/api';
 import { themeOptions } from './theme';
 import { fetchCatcher, summarizeFetchError } from './utils/fetches';
 
@@ -33,6 +38,7 @@ function App() {
     type: '',
     id: '',
   });
+  const [tokensDisabled, setTokensDisabled] = useState(false);
 
   useEffect(() => {
     fetchCatcher(`${SDK_PATHS.organizations}/self`)
@@ -49,6 +55,17 @@ function App() {
           .catch((err) => {
             reportFetchError(err);
           });
+      })
+      .catch((err) => {
+        reportFetchError(err);
+      })
+      .finally(() => {
+        setInitialized(true);
+      });
+    fetchCatcher(`${SDK_PATHS.plugins}`)
+      .then((plugins: IPlugins) => {
+        (!plugins.tokens || plugins.tokens.length === 0) &&
+          setTokensDisabled(true);
       })
       .catch((err) => {
         reportFetchError(err);
@@ -87,6 +104,7 @@ function App() {
             setApiResponse,
             apiStatus,
             setApiStatus,
+            tokensDisabled,
           }}
         >
           <StyledEngineProvider injectFirst>

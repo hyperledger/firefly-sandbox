@@ -15,7 +15,10 @@ import { ContractStateBox } from '../../../components/Boxes/ContractStateBox';
 import { FFAccordionHeader } from '../../../components/Accordion/FFAccordionHeader';
 import { FFAccordionText } from '../../../components/Accordion/FFAccordionText';
 import { TokenStateBox } from '../../../components/Boxes/TokenStateBox';
-import { TutorialSections } from '../../../constants/TutorialSections';
+import {
+  TutorialSections,
+  TUTORIAL_CATEGORIES,
+} from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { DEFAULT_PADDING } from '../../../theme';
@@ -28,7 +31,8 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 
 export const LeftPane = () => {
   const { t } = useTranslation();
-  const { setPayloadMissingFields } = useContext(ApplicationContext);
+  const { setPayloadMissingFields, tokensDisabled } =
+    useContext(ApplicationContext);
   const { formID, categoryID, setActionParam, setPoolObject } =
     useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
@@ -85,6 +89,10 @@ export const LeftPane = () => {
                 fontSize: '16px',
                 maxHeight: 65,
               }}
+              disabled={
+                tokensDisabled &&
+                section.category === TUTORIAL_CATEGORIES.TOKENS
+              }
             />
           );
         })}

@@ -17,6 +17,7 @@
 import {
   DescriptionOutlined,
   GitHub,
+  MoreVert,
   QuestionMarkOutlined,
 } from '@mui/icons-material';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -25,6 +26,7 @@ import {
   Chip,
   Grid,
   IconButton,
+  Menu,
   styled,
   Toolbar,
   Tooltip,
@@ -38,11 +40,13 @@ import { ReactComponent as DiscordLogo } from '../assets/Discord-Logo-White.svg'
 import { ResourceUrls } from '../constants/ResourceUrls';
 import { EventContext } from '../contexts/EventContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
-import { DEFAULT_PADDING, FFColors } from '../theme';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING, FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
+import { FFMenuItem } from './Menus/FFMenuItem';
 import { InstructionModal } from './Modals/InstructionModal';
 
 const WS_PATH = process.env.REACT_APP_WS_PATH || '/api/ws';
+const menuID = 'ff-dropdown-menu';
 
 export const Header: React.FC = () => {
   const { t } = useTranslation();
@@ -51,14 +55,16 @@ export const Header: React.FC = () => {
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const isMenuOpen = Boolean(anchorEl);
 
   useEffect(() => {
     connectToWS();
   }, []);
 
   const StyledDiscordLogo = styled(DiscordLogo)({
-    width: 25,
-    height: 25,
+    width: 20,
+    height: 20,
   });
 
   const connectToWS = () => {
@@ -87,6 +93,54 @@ export const Header: React.FC = () => {
       setWsConnected(false);
     }
   };
+
+  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const menuItems = [
+    {
+      icon: <DescriptionOutlined />,
+      title: t('docs'),
+      url: ResourceUrls.fireflyTutorial,
+    },
+    {
+      icon: <GitHub />,
+      title: t('github'),
+      url: ResourceUrls.sandBoxGH,
+    },
+    {
+      icon: <StyledDiscordLogo />,
+      title: t('discord'),
+      url: ResourceUrls.fireflyDiscordInvite,
+    },
+  ];
+
+  const dropdownMenu = (
+    <Menu
+      anchorEl={anchorEl}
+      id={menuID}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+      keepMounted
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'left',
+      }}
+      open={isMenuOpen}
+      onClose={handleMenuClose}
+    >
+      {menuItems.map((item) => (
+        <FFMenuItem icon={item.icon} title={item.title} url={item.url} />
+      ))}
+    </Menu>
+  );
 
   return (
     <>
@@ -132,43 +186,31 @@ export const Header: React.FC = () => {
                   sx={{
                     color: FFColors.White,
                     cursor: 'pointer',
-                    width: '20%',
+                    width: 130,
+                    borderRadius: DEFAULT_BORDER_RADIUS,
+                    fontSize: '12px',
                   }}
                   variant="outlined"
                   onClick={connectToWS}
                 />
               </Tooltip>
-              {/* Docs */}
               <IconButton
-                color="secondary"
-                onClick={() => window.open(ResourceUrls.fireflyTutorial)}
-                size="small"
-              >
-                <DescriptionOutlined />
-              </IconButton>
-              {/* Github */}
-              <IconButton
-                color="secondary"
-                onClick={() => window.open(ResourceUrls.sandBoxGH)}
-                size="small"
-              >
-                <GitHub />
-              </IconButton>
-              {/* Discord */}
-              <IconButton
-                color="secondary"
-                onClick={() => window.open(ResourceUrls.fireflyDiscordInvite)}
-                size="small"
-              >
-                <StyledDiscordLogo />
-              </IconButton>
-              {/* Help */}
-              <IconButton
-                color="secondary"
+                color="inherit"
                 onClick={() => setIsModalOpen(true)}
                 size="small"
               >
                 <QuestionMarkOutlined />
+              </IconButton>
+              <IconButton
+                edge="end"
+                aria-controls={menuID}
+                aria-haspopup="true"
+                onClick={handleMenuOpen}
+                color="inherit"
+                sx={{ mr: 1 }}
+                size="small"
+              >
+                <MoreVert />
               </IconButton>
             </Grid>
           </Grid>
@@ -180,6 +222,7 @@ export const Header: React.FC = () => {
           handleModalOpen={(open: boolean) => setIsModalOpen(open)}
         />
       )}
+      {dropdownMenu}
     </>
   );
 };

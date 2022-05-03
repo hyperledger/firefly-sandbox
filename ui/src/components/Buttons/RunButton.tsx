@@ -86,6 +86,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       data.append('amount', payload.amount ?? '0');
       data.append('tokenIndex', payload.tokenIndex ?? '');
       data.append('to', payload.to);
+      data.append('messagingMethod', payload.messagingMethod);
     }
     if (
       blobEndpoint.includes('privateblob') ||

@@ -12,13 +12,13 @@ import {
 import { Request } from 'express';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { plainToClassFromExist } from 'class-transformer';
-import { FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
 import { firefly } from '../clients/firefly';
 import {
   formatTemplate,
   FormDataSchema,
   getBroadcastMessageBody,
   getPrivateMessageBody,
+  mapPool,
   quoteAndEscape as q,
 } from '../utils';
 import {
@@ -238,20 +238,6 @@ export class TokensController {
       tokenIndex: b.tokenIndex,
     }));
   }
-}
-
-function mapPool(pool: FireFlyTokenPoolResponse) {
-  // Some contracts (base ERC20/ERC721) do not support passing extra data.
-  // The UI needs to adjust for this, as some items won't reliably confirm.
-  const schema: string = pool.info?.schema ?? '';
-  return {
-    id: pool.id,
-    name: pool.name,
-    symbol: pool.symbol,
-    type: pool.type,
-    decimals: pool.decimals ?? 0,
-    dataSupport: schema.indexOf('NoData') === -1,
-  };
 }
 
 /**

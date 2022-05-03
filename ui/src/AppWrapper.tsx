@@ -18,7 +18,7 @@ import { EventContext } from './contexts/EventContext';
 import { FormContext } from './contexts/FormContext';
 import { FF_EVENTS, FINISHED_EVENT_SUFFIX } from './ff_models/eventTypes';
 import { FF_TX_CATEGORY_MAP } from './ff_models/transactionTypes';
-import { IEvent } from './interfaces/api';
+import { IEvent, ITokenPool } from './interfaces/api';
 import { IEventHistoryItem } from './interfaces/events';
 import { ITutorial } from './interfaces/tutorialSection';
 
@@ -54,6 +54,9 @@ export const AppWrapper: React.FC = () => {
     new Map()
   );
   const [awaitedEventID, setAwaitedEventID] = useState<string | undefined>(
+    undefined
+  );
+  const [poolObject, setPoolObject] = useState<ITokenPool | undefined>(
     undefined
   );
   const [refreshBalances, setRefreshBalances] = useState(new Date().toString());
@@ -157,7 +160,7 @@ export const AppWrapper: React.FC = () => {
     );
   };
 
-  const addLogToHistory = async (event: IEvent) => {
+  const addLogToHistory = (event: IEvent) => {
     // Update balance and API boxes, if those events are confirmed
     if (event.type === FF_EVENTS.TOKEN_TRANSFER_CONFIRMED)
       setRefreshBalances(new Date().toString());
@@ -171,6 +174,7 @@ export const AppWrapper: React.FC = () => {
       );
       const txMap = deepCopyMap.get(event.tx);
 
+      // If transaction is already in map, append the event
       if (txMap !== undefined) {
         if (isFailed(event.type) || isFinalEvent(event)) {
           setAwaitedEventID(undefined);
@@ -181,22 +185,43 @@ export const AppWrapper: React.FC = () => {
             created: event.created,
             isComplete: isFinalEvent(event),
             isFailed: isFailed(event.type),
+            showIcons: txMap.showIcons,
+            showTxHash: txMap.showTxHash,
             txName: txMap.txName,
           })
         );
-      } else {
+      }
+
+      const newEvent: IEventHistoryItem = {
+        events: [event],
+        created: event.created,
+        isComplete: isFinalEvent(event),
+        isFailed: isFailed(event.type),
+        showIcons: true,
+        showTxHash: true,
+        txName: event.transaction?.type
+          ? t(FF_TX_CATEGORY_MAP[event.transaction.type].nicename)
+          : t('none'),
+      };
+
+      // If transactionID is unknown
+      if (event.tx === undefined) {
         return new Map(
-          deepCopyMap.set(event.tx, {
-            events: [event],
-            created: event.created,
-            isComplete: isFinalEvent(event),
-            isFailed: isFailed(event.type),
-            txName: event.transaction?.type
-              ? t(FF_TX_CATEGORY_MAP[event.transaction?.type].nicename)
-              : '',
+          deepCopyMap.set(event.id, {
+            ...newEvent,
+            showIcons: false,
+            showTxHash: false,
+            txName: t('none'),
           })
         );
       }
+
+      return new Map(
+        deepCopyMap.set(event.tx, {
+          ...newEvent,
+          showIcons: event.pool ? event.pool.dataSupport : true,
+        })
+      );
     });
   };
 
@@ -233,6 +258,8 @@ export const AppWrapper: React.FC = () => {
               isBlob,
               setIsBlob,
               searchParams,
+              poolObject,
+              setPoolObject,
             }}
           >
             <Header></Header>

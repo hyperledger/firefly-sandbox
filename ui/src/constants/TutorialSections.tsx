@@ -66,6 +66,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'broadcastShortInfo',
         title: 'broadcastTitle',
         icon: <CellTowerOutlined />,
+        linesOfCode: 8,
       },
       {
         formID: TUTORIAL_FORMS.PRIVATE,
@@ -77,6 +78,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'privateShortInfo',
         title: 'privateTitle',
         icon: <Group />,
+        linesOfCode: 12,
       },
       {
         formID: TUTORIAL_FORMS.DATATYPE,
@@ -88,6 +90,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'createDatatypeInfo',
         title: 'createDatatypeTitle',
         icon: <DataObject />,
+        linesOfCode: 8,
       },
     ],
   },
@@ -105,6 +108,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'poolShortInfo',
         title: 'poolTitle',
         icon: <TokenOutlined />,
+        linesOfCode: 7,
       },
       {
         formID: TUTORIAL_FORMS.MINT,
@@ -116,6 +120,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'mintShortInfo',
         title: 'mintTitle',
         icon: <ApprovalOutlined />,
+        linesOfCode: 5,
       },
       {
         formID: TUTORIAL_FORMS.TRANSFER,
@@ -127,6 +132,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'transferShortInfo',
         title: 'transferTitle',
         icon: <SwapHoriz />,
+        linesOfCode: 7,
       },
       {
         formID: TUTORIAL_FORMS.BURN,
@@ -138,6 +144,7 @@ export const TutorialSections: ITutorialSection[] = [
         shortInfo: 'burnShortInfo',
         title: 'burnTitle',
         icon: <LocalFireDepartmentOutlined />,
+        linesOfCode: 6,
       },
     ],
   },
@@ -154,6 +161,7 @@ export const TutorialSections: ITutorialSection[] = [
         title: 'deployContractTitle',
         runnable: false,
         icon: <TerminalOutlined />,
+        linesOfCode: 3,
       },
       {
         docsURL:
@@ -165,6 +173,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         title: 'contractInterfaceTitle',
         icon: <SaveAsOutlined />,
+        linesOfCode: 3,
       },
       {
         docsURL:
@@ -176,6 +185,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         title: 'registerContractApiTitle',
         icon: <IntegrationInstructionsOutlined />,
+        linesOfCode: 11,
       },
       {
         docsURL:
@@ -187,6 +197,7 @@ export const TutorialSections: ITutorialSection[] = [
         runnable: true,
         title: 'registerApiListenerTitle',
         icon: <HearingOutlined />,
+        linesOfCode: 12,
       },
     ],
   },

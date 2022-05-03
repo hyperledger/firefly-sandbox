@@ -3,6 +3,8 @@ const API_PREFIX = process.env.REACT_APP_API_PREFIX || '/api';
 export const SDK_PATHS = {
   // Common
   organizations: `${API_PREFIX}/common/organizations`,
+  transactionsByID: (txID: string) =>
+    `${API_PREFIX}/common/transactions/${txID}`,
   verifiers: `${API_PREFIX}/common/verifiers`,
   // Contracts
   contractsApi: `${API_PREFIX}/contracts/api`,

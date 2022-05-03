@@ -1,9 +1,9 @@
 import { FireFlySubscriptionBase } from '@hyperledger/firefly-sdk';
 import { nanoid } from 'nanoid';
 import { firefly } from '../clients/firefly';
-import { WebsocketHandler } from '../utils';
-import Logger from '../logger';
 import { FF_EVENTS, FF_TX } from '../enums';
+import Logger from '../logger';
+import { mapPool, WebsocketHandler } from '../utils';
 
 /**
  * Simple WebSocket Server
@@ -37,7 +37,7 @@ export class SimpleWebSocket {
               type: FF_TX.TOKEN_TRANSFER,
             });
             if (operations.length > 0) {
-              event['pool'] = operations[0].input?.pool;
+              event['pool'] = mapPool(await firefly.getTokenPool(operations[0].input?.pool));
             }
           } else if (event.transaction?.type === FF_TX.TOKEN_APPROVAL) {
             // Enrich token_approval transaction events with pool ID
@@ -46,7 +46,7 @@ export class SimpleWebSocket {
               type: FF_TX.TOKEN_APPROVAL,
             });
             if (operations.length > 0) {
-              event['pool'] = operations[0].input?.pool;
+              event['pool'] = mapPool(await firefly.getTokenPool(operations[0].input?.pool));
             }
           }
         }

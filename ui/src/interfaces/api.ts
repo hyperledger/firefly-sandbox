@@ -97,6 +97,7 @@ export interface IEvent {
   message?: IMessage;
   namespaceDetails?: INamespace;
   operation?: IOperation;
+  pool?: ITokenPool;
   tokenApproval?: ITokenApproval;
   tokenPool?: ITokenPool;
   transaction?: ITransaction;
@@ -290,6 +291,7 @@ export interface ITokenPool {
     id?: string;
   };
   decimals?: number;
+  dataSupport: boolean;
 }
 
 export interface ITokenTransfer {
@@ -321,4 +323,9 @@ export interface ITransaction {
   type: FF_TX;
   created: string;
   blockchainIds?: string[];
+}
+
+export interface ITransactionType {
+  id: string;
+  type: string;
 }

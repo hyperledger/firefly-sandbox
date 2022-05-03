@@ -13,4 +13,6 @@ export interface ITutorial {
   runnable: boolean;
   shortInfo: string;
   title: string;
+  // This should be equal to the number of lines in the template
+  linesOfCode: number;
 }

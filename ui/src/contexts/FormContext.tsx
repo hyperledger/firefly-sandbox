@@ -15,6 +15,7 @@
 // limitations under the License.
 
 import { createContext, Dispatch, SetStateAction } from 'react';
+import { ITokenPool } from '../interfaces/api';
 import { ITutorial } from '../interfaces/tutorialSection';
 
 export interface IFormContext {
@@ -26,6 +27,8 @@ export interface IFormContext {
   isBlob: boolean;
   setIsBlob: Dispatch<SetStateAction<boolean>>;
   searchParams: URLSearchParams;
+  poolObject: ITokenPool | undefined;
+  setPoolObject: Dispatch<SetStateAction<ITokenPool | undefined>>;
 }
 
 export const FormContext = createContext({} as IFormContext);

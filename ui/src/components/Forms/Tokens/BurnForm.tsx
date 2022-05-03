@@ -14,6 +14,7 @@ import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { PoolType } from '../../../ff_models/transferTypes';
 import { ITokenPool } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { amountToDecimal } from '../../../utils/decimals';
@@ -24,7 +25,7 @@ import { MessageForm } from './MessageForm';
 export const BurnForm: React.FC = () => {
   const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
-  const { formID } = useContext(FormContext);
+  const { formID, setPoolObject } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
 
@@ -64,7 +65,7 @@ export const BurnForm: React.FC = () => {
 
       const body = {
         pool: pool?.name,
-        amount: decimalAmount,
+        amount: pool.type === PoolType.F ? decimalAmount : amount,
         tokenIndex: tokenIndex?.toString(),
         messagingMethod: withMessage ? messageMethod : null,
       };
@@ -73,6 +74,7 @@ export const BurnForm: React.FC = () => {
   }, [pool, decimalAmount, tokenIndex, formID]);
 
   useEffect(() => {
+    if (formID !== TUTORIAL_FORMS.BURN) return;
     const qParams = `?limit=25`;
     isMounted &&
       fetchCatcher(`${SDK_PATHS.tokensPools}${qParams}`)
@@ -81,6 +83,7 @@ export const BurnForm: React.FC = () => {
             setTokenPools(poolRes);
             if (poolRes.length > 0) {
               setPool(poolRes[0]);
+              setPoolObject(poolRes[0]);
             }
           }
         })
@@ -107,6 +110,11 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (pool && pool.type === PoolType.NF) {
+      setAmount(event.target.value);
+      return;
+    }
+
     if (!pool || isAmountInvalid(event.target.value)) return;
 
     const formattedAmount = amountToDecimal(event.target.value, pool?.decimals);
@@ -140,9 +148,12 @@ export const BurnForm: React.FC = () => {
                 fullWidth
                 value={pool?.id ?? ''}
                 label={tokenPools.length ? t('tokenPool') : t('noTokenPools')}
-                onChange={(e) =>
-                  setPool(tokenPools.find((t) => t.id === e.target.value))
-                }
+                onChange={(e) => {
+                  setPool(tokenPools.find((t) => t.id === e.target.value));
+                  setPoolObject(
+                    tokenPools.find((t) => t.id === e.target.value)
+                  );
+                }}
               >
                 {tokenPools.map((tp, idx) => (
                   <MenuItem key={idx} value={tp.id}>

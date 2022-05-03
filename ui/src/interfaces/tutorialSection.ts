@@ -13,4 +13,5 @@ export interface ITutorial {
   runnable: boolean;
   shortInfo: string;
   title: string;
+  linesOfCode: number;
 }

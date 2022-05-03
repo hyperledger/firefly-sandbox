@@ -160,7 +160,7 @@ export const AppWrapper: React.FC = () => {
     );
   };
 
-  const addLogToHistory = async (event: IEvent) => {
+  const addLogToHistory = (event: IEvent) => {
     // Update balance and API boxes, if those events are confirmed
     if (event.type === FF_EVENTS.TOKEN_TRANSFER_CONFIRMED)
       setRefreshBalances(new Date().toString());

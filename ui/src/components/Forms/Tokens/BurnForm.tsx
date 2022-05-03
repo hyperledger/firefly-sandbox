@@ -59,18 +59,17 @@ export const BurnForm: React.FC = () => {
         !amount || !pool || (!isFungible() && !tokenIndex)
       );
     }
-    if (pool) {
-      if (decimalAmount === undefined)
-        setDecimalAmount(amountToDecimal('1', pool.decimals));
 
-      const body = {
-        pool: pool?.name,
-        amount: pool.type === PoolType.F ? decimalAmount : amount,
-        tokenIndex: tokenIndex?.toString(),
-        messagingMethod: withMessage ? messageMethod : null,
-      };
-      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-    }
+    if (decimalAmount === undefined)
+      setDecimalAmount(amountToDecimal('1', pool?.decimals));
+
+    const body = {
+      pool: pool?.name,
+      amount: pool?.type === PoolType.F ? decimalAmount : amount,
+      tokenIndex: tokenIndex?.toString(),
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
   }, [pool, decimalAmount, tokenIndex, formID]);
 
   useEffect(() => {

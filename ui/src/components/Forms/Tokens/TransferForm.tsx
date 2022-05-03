@@ -62,19 +62,17 @@ export const TransferForm: React.FC = () => {
         !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
       );
     }
-    if (pool) {
-      if (decimalAmount === undefined)
-        setDecimalAmount(amountToDecimal('1', pool.decimals));
+    if (decimalAmount === undefined)
+      setDecimalAmount(amountToDecimal('1', pool?.decimals));
 
-      const body = {
-        pool: pool?.name,
-        amount: pool.type === PoolType.F ? decimalAmount : amount,
-        tokenIndex: tokenIndex?.toString(),
-        to: recipient,
-        messagingMethod: withMessage ? messageMethod : null,
-      };
-      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-    }
+    const body = {
+      pool: pool?.name,
+      amount: pool?.type === PoolType.F ? decimalAmount : amount,
+      tokenIndex: tokenIndex?.toString(),
+      to: recipient,
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
   }, [pool, decimalAmount, recipient, messageMethod, tokenIndex, formID]);
 
   useEffect(() => {

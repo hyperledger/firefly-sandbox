@@ -58,17 +58,17 @@ export const MintForm: React.FC = () => {
       setPayloadMissingFields(!amount || !pool);
     }
 
-    if (pool) {
-      if (decimalAmount === undefined)
-        setDecimalAmount(amountToDecimal('1', pool.decimals));
-      const body = {
-        pool: pool.name,
-        amount: pool.type === PoolType.F ? decimalAmount : amount,
-        tokenIndex: '',
-        messagingMethod: withMessage ? messageMethod : null,
-      };
-      setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-    }
+    // if (pool) {
+    if (decimalAmount === undefined)
+      setDecimalAmount(amountToDecimal('1', pool?.decimals));
+    const body = {
+      pool: pool?.name,
+      amount: pool?.type === PoolType.F ? decimalAmount : amount,
+      tokenIndex: '',
+      messagingMethod: withMessage ? messageMethod : null,
+    };
+    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
+    // }
   }, [pool, decimalAmount, messageMethod, formID]);
 
   useEffect(() => {

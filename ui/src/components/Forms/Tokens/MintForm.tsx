@@ -58,7 +58,6 @@ export const MintForm: React.FC = () => {
       setPayloadMissingFields(!amount || !pool);
     }
 
-    // if (pool) {
     if (decimalAmount === undefined)
       setDecimalAmount(amountToDecimal('1', pool?.decimals));
     const body = {
@@ -68,7 +67,6 @@ export const MintForm: React.FC = () => {
       messagingMethod: withMessage ? messageMethod : null,
     };
     setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-    // }
   }, [pool, decimalAmount, messageMethod, formID]);
 
   useEffect(() => {

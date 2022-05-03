@@ -12,7 +12,6 @@ import {
 import { Request } from 'express';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { plainToClassFromExist } from 'class-transformer';
-import { FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
 import { firefly } from '../clients/firefly';
 import {
   formatTemplate,

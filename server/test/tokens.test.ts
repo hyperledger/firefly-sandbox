@@ -1,13 +1,12 @@
-import * as request from 'supertest';
 import FireFly, {
-  FireFlyTokenBalanceFilter,
   FireFlyTokenBalanceResponse,
   FireFlyTokenPoolResponse,
   FireFlyTokenTransferResponse,
 } from '@hyperledger/firefly-sdk';
-import server from '../src/server';
+import * as request from 'supertest';
 import { firefly } from '../src/clients/firefly';
-import { TokenMintBurn, TokenPool, TokenPoolInput, TokenTransfer } from '../src/interfaces';
+import { TokenMintBurn, TokenPoolInput, TokenTransfer } from '../src/interfaces';
+import server from '../src/server';
 
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;

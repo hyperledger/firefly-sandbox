@@ -7,6 +7,7 @@ import {
   Select,
   TextField,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,11 +16,11 @@ import { ResourceUrls } from '../../../constants/ResourceUrls';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
-import { DEFAULT_SPACING } from '../../../theme';
+import { BLOCKCHAIN_TYPE } from '../../../enums/enums';
+import { altScrollbarStyle, DEFAULT_SPACING } from '../../../theme';
 import { isJsonString } from '../../../utils/strings';
 
-export const CONTRACT_INTERFACE_FORMATS = ['ffi', 'abi'];
-const DEFAULT_FFI_SCHEMA = {
+export const DEFAULT_FFI_SCHEMA = {
   name: 'my-contract',
   version: '1.0',
   methods: [{ name: 'method1' }],
@@ -63,9 +64,10 @@ const DEFAULT_ABI_SCHEMA = [
 ];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { blockchainPlugin, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
   const [name, setName] = useState<string>('');
@@ -75,6 +77,7 @@ export const DefineInterfaceForm: React.FC = () => {
     JSON.stringify(DEFAULT_FFI_SCHEMA, null, 2)
   );
   const [version, setVersion] = useState<string>('');
+  const [interfaceFormats, setInterfaceFormats] = useState(['ffi', 'abi']);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.DEFINE_CONTRACT_INTERFACE) {
@@ -90,6 +93,11 @@ export const DefineInterfaceForm: React.FC = () => {
       schema,
     });
   }, [interfaceFormat, schema, name, version, formID]);
+
+  useEffect(() => {
+    blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC;
+    setInterfaceFormats(['ffi']);
+  }, [blockchainPlugin]);
 
   useEffect(() => {
     if (isJsonString(schemaString)) {
@@ -118,14 +126,15 @@ export const DefineInterfaceForm: React.FC = () => {
                 label={t('interfaceFormat')}
                 onChange={(e) => setInterfaceFormat(e.target.value)}
               >
-                {CONTRACT_INTERFACE_FORMATS.map((f, idx) => (
-                  <MenuItem key={idx} value={f}>
+                {interfaceFormats.map((f) => (
+                  <MenuItem key={f} value={f}>
                     <Typography color="primary">{t(f)}</Typography>
                   </MenuItem>
                 ))}
               </Select>
               <FormHelperText>
-                {t('either')}&nbsp;
+                {blockchainPlugin === BLOCKCHAIN_TYPE.ETHEREUM && t('either')}
+                &nbsp;
                 <a
                   href={ResourceUrls.fireflyFFI}
                   target="_blank"
@@ -134,15 +143,17 @@ export const DefineInterfaceForm: React.FC = () => {
                   {t('ffiShort')}
                 </a>
                 &nbsp;
-                {t('or')}&nbsp;
-                <a
-                  href={ResourceUrls.solidityABI}
-                  target="_blank"
-                  style={{ color: 'white', textDecoration: 'none' }}
-                >
-                  {t('solidityABI')}
-                </a>
-                &nbsp;
+                {blockchainPlugin === BLOCKCHAIN_TYPE.ETHEREUM && (
+                  <a
+                    href={ResourceUrls.solidityABI}
+                    target="_blank"
+                    style={{ color: 'white', textDecoration: 'none' }}
+                  >
+                    {t('or')}&nbsp;
+                    {t('solidityABI')}
+                    &nbsp;
+                  </a>
+                )}
                 {t('format')}
               </FormHelperText>
             </FormControl>
@@ -189,6 +200,10 @@ export const DefineInterfaceForm: React.FC = () => {
             maxRows={MAX_FORM_ROWS}
             value={schemaString}
             onChange={(e) => setSchemaString(e.target.value)}
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              ...altScrollbarStyle,
+            }}
           />
         </Grid>
       </Grid>

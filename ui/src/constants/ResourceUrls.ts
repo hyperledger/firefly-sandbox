@@ -3,14 +3,15 @@ export const ResourceUrls = {
   fireflyFFI:
     'https://hyperledger.github.io/firefly/reference/firefly_interface_format',
   fireflySDK: 'https://github.com/hyperledger/firefly-sdk-nodejs',
-  fireflyTutorial:
-    'https://hyperledger.github.io/firefly/tutorials/tutorials.html',
+  fireflyTutorial: 'https://hyperledger.github.io/firefly/tutorials',
   fireflyTutorialExampleSC:
     'https://hyperledger.github.io/firefly/tutorials/custom_contracts.html#example-smart-contract',
   fireflyTutorialEvents:
     'https://hyperledger.github.io/firefly/tutorials/events.html',
   fireflyTutorialDeployContract:
     'https://hyperledger.github.io/firefly/tutorials/custom_contracts.html#contract-deployment',
+  fireflyTutorialDeployContractFabric:
+    'https://hyperledger.github.io/firefly/tutorials/custom_contracts/fabric.html',
   sandBoxGH: 'https://github.com/hyperledger/firefly-sandbox',
   solidityABI:
     'https://docs.ethers.io/v5/api/utils/abi/formats/#abi-formats--solidity',

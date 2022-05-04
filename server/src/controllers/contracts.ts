@@ -175,8 +175,10 @@ export class ContractsTemplateController {
           name: <%= ${q('interfaceName')} %>,
           version: <%= ${q('interfaceVersion')} %>,
         },
-        location: {
-          address: <%= ${q('address')} %>,
+        location: {<% if (address) { %>
+          address: <%= ${q('address')} %>,<% } else { %>
+          chaincode: <%= ${q('chaincode')} %>,
+          channel: <%= ${q('channel')} %>,<% } %>
         },
       });
       return { type: 'message', id: api.message };

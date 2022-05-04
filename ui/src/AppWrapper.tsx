@@ -99,11 +99,12 @@ export const AppWrapper: React.FC = () => {
   };
 
   const setActionParam = (categoryID: string, formID: string) => {
+    const oldAction = action;
     const newAction = `${categoryID}.${formID}`;
     searchParams.set(ACTION_QUERY_KEY, newAction);
     setSearchParams(searchParams, { replace: true });
     setAction(newAction);
-    setPayloadMissingFields(false);
+    oldAction !== newAction && setPayloadMissingFields(false);
   };
 
   const isValidAction = (action: string) => {

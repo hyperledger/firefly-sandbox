@@ -17,6 +17,7 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -31,7 +32,7 @@ import { FormContext } from '../../contexts/FormContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { POST_BODY_TYPE } from '../../enums/enums';
 import { IDatatype } from '../../interfaces/api';
-import { DEFAULT_PADDING } from '../../theme';
+import { altScrollbarStyle, DEFAULT_PADDING } from '../../theme';
 import { fetchCatcher } from '../../utils/fetches';
 import { isTokenMessage } from '../../utils/strings';
 
@@ -68,6 +69,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   tokenMissingFields,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
     POST_BODY_TYPE.STRING
   );
@@ -345,6 +347,10 @@ export const MessageTypeGroup: React.FC<Props> = ({
                     ? onSetMessage(e.target.value)
                     : onSetJsonValue(e.target.value)
                 }
+                sx={{
+                  backgroundColor: theme.palette.background.paper,
+                  ...altScrollbarStyle,
+                }}
               />
             </>
           ) : (

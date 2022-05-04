@@ -1,5 +1,6 @@
 import {
   ArrayNotEmpty,
+  IsArray,
   IsBoolean,
   IsDefined,
   IsEnum,
@@ -320,6 +321,30 @@ export class Transaction {
 
   @IsString()
   type: string;
+}
+
+export class Plugin {
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsString()
+  @IsDefined()
+  pluginType: string;
+}
+
+export class Plugins {
+  @IsInstance(Plugin, {
+    each: true,
+  })
+  @IsOptional()
+  blockchain?: Plugin[];
+
+  @IsInstance(Plugin, {
+    each: true,
+  })
+  @IsOptional()
+  tokens?: Plugin[];
 }
 
 export class DatatypeInterface {

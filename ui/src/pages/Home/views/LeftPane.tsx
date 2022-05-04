@@ -31,8 +31,7 @@ const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
 
 export const LeftPane = () => {
   const { t } = useTranslation();
-  const { setPayloadMissingFields, tokensDisabled } =
-    useContext(ApplicationContext);
+  const { tokensDisabled } = useContext(ApplicationContext);
   const { formID, categoryID, setActionParam, setPoolObject } =
     useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
@@ -122,10 +121,9 @@ export const LeftPane = () => {
                       >
                         <Accordion
                           expanded={formID === tutorial.formID}
-                          onChange={() => {
-                            setActionParam(ts.category, tutorial.formID);
-                            setPayloadMissingFields(false);
-                          }}
+                          onChange={() =>
+                            setActionParam(ts.category, tutorial.formID)
+                          }
                         >
                           <AccordionSummary expandIcon={<ExpandMore />}>
                             <FFAccordionHeader

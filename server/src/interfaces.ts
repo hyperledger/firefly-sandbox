@@ -157,7 +157,7 @@ export class TokenPool extends TokenPoolInput {
   dataSupport: boolean;
 }
 
-export class TokenMintBurn {
+export class TokenMintBurn extends BroadcastValue{
   @IsString()
   pool: string;
 
@@ -175,6 +175,10 @@ export class TokenMintBurn {
   @IsString()
   @IsOptional()
   tokenIndex?: string;
+
+  @IsString({ each: true })
+  @IsOptional()
+  recipients: string[];
 }
 
 export class MintBurnBlob extends TokenMintBurn {

@@ -1,4 +1,6 @@
 import FireFly, {
+  FireFlyDataResponse,
+  FireFlyMessageResponse,
   FireFlyTokenBalanceResponse,
   FireFlyTokenPoolResponse,
   FireFlyTokenTransferResponse,
@@ -62,6 +64,7 @@ describe('Tokens', () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '10',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',
@@ -82,10 +85,209 @@ describe('Tokens', () => {
     });
   });
 
+  test('Mint tokens with broadcast message', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/mint')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Mint tokens with broadcast JSON', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      jsonValue: { content: 'This is a message'},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/mint')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": { content: 'This is a message'},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Mint tokens with private message', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/mint')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Mint tokens with private JSON', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      jsonValue: { content: 'This is a message'},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.mintTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/mint')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": { content: 'This is a message'},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],          
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  // test('Mint tokens with broadcast blob', async () => {
+  //   const data = {
+  //     id: 'data1',
+  //   } as FireFlyDataResponse;
+  //   const msg = {
+  //     header: { id: 'msg1' },
+  //   } as FireFlyMessageResponse;
+
+  //   mockFireFly.uploadDataBlob.mockResolvedValueOnce(data);
+
+  //   await request(server)
+  //     .post('/api/tokens/mintblob')
+  //     .field('pool', 'test-pool')
+  //     .field('amount', '10000')
+  //     .field('messagingMethod', 'broadcast')
+  //     .attach('file', 'test/data/simple-file.txt')
+  //     .expect(202)
+  //     .expect({ type: 'token_transfer', id: 'msg1' });
+
+  //   expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
+  //   expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({
+  //     header: { tag: 'test-tag' },
+  //     data: [data],
+  //   });
+  // });
+
   test('Burn tokens', async () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '1',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',
@@ -106,11 +308,184 @@ describe('Tokens', () => {
     });
   });
 
+  test('Burn tokens with broadcast message', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/burn')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Burn tokens with broadcast JSON', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      jsonValue: {content: 'This is a message'},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/burn')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": {content: 'This is a message'},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Burn tokens with private message', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/burn')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
+  test('Burn tokens with private JSON', async () => {
+    const req: TokenMintBurn = {
+      pool: 'my-pool',
+      amount: '1',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      jsonValue: {content: 'This is a message'},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.burnTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/burn')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            value: {content: 'This is a message'},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+       "tokenIndex": undefined,
+    });
+  });
+
   test('Transfer tokens', async () => {
     const req: TokenTransfer = {
       pool: 'my-pool',
       amount: '1',
       to: '0x111',
+      recipients: null
     };
     const transfer = {
       localId: 'transfer1',
@@ -129,6 +504,186 @@ describe('Tokens', () => {
       pool: 'my-pool',
       amount: '1',
       to: '0x111',
+    });
+  });
+
+  test('Transfer tokens with broadcast message', async () => {
+    const req: TokenTransfer = {
+      pool: 'my-pool',
+      amount: '1',
+      to: '0x111',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/transfer')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+        "to": '0x111',
+        "tokenIndex": undefined,
+    });
+  });
+
+  test('Transfer tokens with broadcast JSON', async () => {
+    const req: TokenTransfer = {
+      pool: 'my-pool',
+      amount: '1',
+      to: '0x111',
+      recipients: null,
+      messagingMethod: 'broadcast',
+      jsonValue: {content: 'This is a message'},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/transfer')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            value: {content: 'This is a message'},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+        },
+       },
+        "pool": "my-pool",
+        "to": '0x111',
+        "tokenIndex": undefined,
+    });
+  });
+
+  test('Transfer tokens with private message', async () => {
+    const req: TokenTransfer = {
+      pool: 'my-pool',
+      amount: '1',
+      to: '0x111',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      value: 'hello',
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/transfer')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": 'hello',
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+        "to": '0x111',
+        "tokenIndex": undefined,
+    });
+  });
+
+  test('Transfer tokens with private JSON', async () => {
+    const req: TokenTransfer = {
+      pool: 'my-pool',
+      amount: '1',
+      to: '0x111',
+      recipients: ['alpha', 'beta'],
+      messagingMethod: 'private',
+      jsonValue: {content: "This is a message"},
+      tag: 'test',
+      topic: 'one'
+    };
+    const transfer = {
+      localId: 'transfer1',
+      tx: { id: 'tx1' },
+    } as FireFlyTokenTransferResponse;
+
+    mockFireFly.transferTokens.mockResolvedValueOnce(transfer);
+
+    await request(server)
+      .post('/api/tokens/transfer')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'token_transfer', id: 'transfer1' });
+
+    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
+      "amount": "1",
+      "message": {
+        "data": [
+          {
+            "value": {content: "This is a message"},
+          },
+        ],
+        "header": {
+          "tag": 'test',
+          "topics": ['one'],
+          "type": "transfer_private",
+        },
+        group: {
+          members: [{ identity: 'alpha' }, { identity: 'beta' }],
+        },
+       },
+        "pool": "my-pool",
+        "to": '0x111',
+        "tokenIndex": undefined,
     });
   });
 

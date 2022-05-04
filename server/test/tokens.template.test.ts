@@ -1,3 +1,4 @@
+
 import * as request from 'supertest';
 import * as _ from 'underscore';
 import server from '../src/server';
@@ -57,6 +58,45 @@ describe('Templates: Tokens', () => {
       });
   });
 
+  test('Mint blob template', () => {
+    return request(server)
+      .get('/api/tokens/template/mintblob')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 10,
+            messagingMethod: 'broadcast',
+            tokenIndex: '',
+            tag: 'test-tag',
+            topic: 'test-topic',
+            filename: 'document.pdf',
+          }),
+        ).toBe(
+          formatTemplate(`
+          const data = await firefly.uploadDataBlob(
+            file.buffer,
+            'document.pdf',
+          );
+            const transfer = await firefly.mintTokens({
+              pool: 'pool1',
+              amount: '10',,
+              message: {
+                header: {
+                  tag: 'test-tag',
+                  topics: ['test-topic'],
+                },
+                data: [{ id: data.id }],
+              }
+            });
+            return { type: 'token_transfer', id: transfer.localId };
+        `),
+        );
+      });
+  });
+
   test('Burn template', () => {
     return request(server)
       .get('/api/tokens/template/burn')
@@ -83,6 +123,46 @@ describe('Templates: Tokens', () => {
       });
   });
 
+  test('Burn blob template', () => {
+    return request(server)
+      .get('/api/tokens/template/burnblob')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            tokenIndex: '1',
+            amount: 1,
+            messagingMethod: 'broadcast',
+            tag: 'test-tag',
+            topic: 'test-topic',
+            filename: 'document.pdf',
+          }),
+        ).toBe(
+          formatTemplate(`
+          const data = await firefly.uploadDataBlob(
+            file.buffer,
+            'document.pdf',
+          );
+            const transfer = await firefly.burnTokens({
+              pool: 'pool1',
+              amount: '1',
+                tokenIndex: '1',,
+              message: {
+                header: {
+                  tag: 'test-tag',
+                  topics: ['test-topic'],
+                },
+                data: [{ id: data.id }],
+              }
+            });
+            return { type: 'token_transfer', id: transfer.localId };`
+          ),
+        );
+      });
+  });
+
   test('Transfer template', () => {
     return request(server)
       .get('/api/tokens/template/transfer')
@@ -104,6 +184,47 @@ describe('Templates: Tokens', () => {
               to: '0x1111',
               tokenIndex: '1',
               amount: '1',
+            });
+            return { type: 'token_transfer', id: transfer.localId };
+        `),
+        );
+      });
+  });
+
+  test('Transfer blob template', () => {
+    return request(server)
+      .get('/api/tokens/template/transferblob')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 1,
+            tokenIndex: '1',
+            to: '0x1111',
+            messagingMethod: 'broadcast',
+            tag: 'test-tag',
+            topic: 'test-topic',
+            filename: 'document.pdf',
+          }),
+        ).toBe(
+          formatTemplate(`
+          const data = await firefly.uploadDataBlob(
+            file.buffer,
+            'document.pdf',
+          );
+            const transfer = await firefly.transferTokens({
+              pool: 'pool1',
+              amount: '1',
+                tokenIndex: '1',,
+              message: {
+                header: {
+                  tag: 'test-tag',
+                  topics: ['test-topic'],
+                },
+                data: [{ id: data.id }],
+              }
             });
             return { type: 'token_transfer', id: transfer.localId };
         `),

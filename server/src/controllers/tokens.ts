@@ -323,8 +323,7 @@ export class TokensTemplateController {
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
           },
           data: [{ id: data.id }],
-        }
-        <% } else { %>
+        }<% } else { %>
           message: {
             header: {
               tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -369,7 +368,7 @@ export class TokensTemplateController {
                 truncate: true,
               })} : ${q('value')}%>
             }
-              <% } else { %>
+            <% } else { %>
                 { value: <%= jsonValue ? ${q('jsonValue', {
                   isObject: true,
                   truncate: true,
@@ -402,8 +401,7 @@ export class TokensTemplateController {
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
           },
           data: [{ id: data.id }],
-        }
-        <% } else { %>
+        }<% } else { %>
           message: {
             header: {
               tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -482,8 +480,7 @@ export class TokensTemplateController {
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
           },
           data: [{ id: data.id }],
-        }
-        <% } else { %>
+        }<% } else { %>
           message: {
             header: {
               tag: <%= tag ? ${q('tag')} : 'undefined' %>,

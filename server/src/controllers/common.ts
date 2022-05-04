@@ -1,7 +1,7 @@
 import { Get, JsonController, Param, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { Organization, Transaction, Verifier } from '../interfaces';
+import { Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
 
 /**
  * Common Operations - API Server
@@ -58,6 +58,17 @@ export class CommonController {
       }
     }
     return result;
+  }
+
+  @Get('/plugins')
+  @ResponseSchema(Plugins)
+  @OpenAPI({ summary: 'List plugins on the FireFly node' })
+  async plugins(): Promise<Plugins> {
+    const status = await firefly.getStatus();
+    return {
+      blockchain: status.plugins.blockchain as Plugin[],
+      tokens: status.plugins.tokens as Plugin[],
+    };
   }
 
   @Get('/transactions/:id')

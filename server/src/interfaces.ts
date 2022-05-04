@@ -1,5 +1,6 @@
 import {
   ArrayNotEmpty,
+  IsArray,
   IsBoolean,
   IsDefined,
   IsEnum,
@@ -156,7 +157,7 @@ export class TokenPool extends TokenPoolInput {
   dataSupport: boolean;
 }
 
-export class TokenMintBurn extends BroadcastValue{
+export class TokenMintBurn extends BroadcastValue {
   @IsString()
   pool: string;
 
@@ -320,6 +321,30 @@ export class Transaction {
 
   @IsString()
   type: string;
+}
+
+export class Plugin {
+  @IsString()
+  @IsOptional()
+  name: string;
+
+  @IsString()
+  @IsDefined()
+  pluginType: string;
+}
+
+export class Plugins {
+  @IsInstance(Plugin, {
+    each: true,
+  })
+  @IsOptional()
+  blockchain?: Plugin[];
+
+  @IsInstance(Plugin, {
+    each: true,
+  })
+  @IsOptional()
+  tokens?: Plugin[];
 }
 
 export class DatatypeInterface {

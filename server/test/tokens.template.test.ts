@@ -1,4 +1,3 @@
-
 import * as request from 'supertest';
 import * as _ from 'underscore';
 import server from '../src/server';
@@ -157,8 +156,7 @@ describe('Templates: Tokens', () => {
                 data: [{ id: data.id }],
               }
             });
-            return { type: 'token_transfer', id: transfer.localId };`
-          ),
+            return { type: 'token_transfer', id: transfer.localId };`),
         );
       });
   });

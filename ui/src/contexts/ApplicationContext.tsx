@@ -30,6 +30,9 @@ export interface IApplicationContext {
   // API Status
   apiStatus: IApiStatus | undefined;
   setApiStatus: Dispatch<SetStateAction<IApiStatus | undefined>>;
+  // Plugins
+  tokensDisabled: boolean;
+  blockchainPlugin: string;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

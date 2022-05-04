@@ -160,6 +160,16 @@ export interface ISelfIdentity {
   ethereum_address?: string | undefined;
 }
 
+export interface IPlugins {
+  blockchain: IPlugin[];
+  tokens?: IPlugin[];
+}
+
+export interface IPlugin {
+  name?: string;
+  pluginType: string;
+}
+
 export interface INetworkIdentity {
   id: string;
   did: string;

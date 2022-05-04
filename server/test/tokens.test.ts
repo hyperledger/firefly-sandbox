@@ -64,7 +64,7 @@ describe('Tokens', () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '10',
-      recipients: null
+      recipients: null,
     };
     const transfer = {
       localId: 'transfer1',
@@ -93,7 +93,7 @@ describe('Tokens', () => {
       messagingMethod: 'broadcast',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -109,20 +109,20 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -132,9 +132,9 @@ describe('Tokens', () => {
       amount: '1',
       recipients: null,
       messagingMethod: 'broadcast',
-      jsonValue: { content: 'This is a message'},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -150,20 +150,20 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": { content: 'This is a message'},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -175,7 +175,7 @@ describe('Tokens', () => {
       messagingMethod: 'private',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -191,24 +191,24 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -218,9 +218,9 @@ describe('Tokens', () => {
       amount: '1',
       recipients: ['alpha', 'beta'],
       messagingMethod: 'private',
-      jsonValue: { content: 'This is a message'},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -236,24 +236,24 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.mintTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": { content: 'This is a message'},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],          
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -317,7 +317,7 @@ describe('Tokens', () => {
     const req: TokenMintBurn = {
       pool: 'my-pool',
       amount: '1',
-      recipients: null
+      recipients: null,
     };
     const transfer = {
       localId: 'transfer1',
@@ -346,7 +346,7 @@ describe('Tokens', () => {
       messagingMethod: 'broadcast',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -362,20 +362,20 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -385,9 +385,9 @@ describe('Tokens', () => {
       amount: '1',
       recipients: null,
       messagingMethod: 'broadcast',
-      jsonValue: {content: 'This is a message'},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -403,20 +403,20 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": {content: 'This is a message'},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -480,7 +480,7 @@ describe('Tokens', () => {
       messagingMethod: 'private',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -496,24 +496,24 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -523,9 +523,9 @@ describe('Tokens', () => {
       amount: '1',
       recipients: ['alpha', 'beta'],
       messagingMethod: 'private',
-      jsonValue: {content: 'This is a message'},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -541,24 +541,24 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.burnTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            value: {content: 'This is a message'},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-       "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      tokenIndex: undefined,
     });
   });
 
@@ -567,7 +567,7 @@ describe('Tokens', () => {
       pool: 'my-pool',
       amount: '1',
       to: '0x111',
-      recipients: null
+      recipients: null,
     };
     const transfer = {
       localId: 'transfer1',
@@ -598,7 +598,7 @@ describe('Tokens', () => {
       messagingMethod: 'broadcast',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -614,21 +614,21 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-        "to": '0x111',
-        "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      to: '0x111',
+      tokenIndex: undefined,
     });
   });
 
@@ -639,9 +639,9 @@ describe('Tokens', () => {
       to: '0x111',
       recipients: null,
       messagingMethod: 'broadcast',
-      jsonValue: {content: 'This is a message'},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -657,21 +657,21 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            value: {content: 'This is a message'},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
+        header: {
+          tag: 'test',
+          topics: ['one'],
         },
-       },
-        "pool": "my-pool",
-        "to": '0x111',
-        "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      to: '0x111',
+      tokenIndex: undefined,
     });
   });
 
@@ -684,7 +684,7 @@ describe('Tokens', () => {
       messagingMethod: 'private',
       value: 'hello',
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -700,25 +700,25 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": 'hello',
+            value: 'hello',
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-        "to": '0x111',
-        "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      to: '0x111',
+      tokenIndex: undefined,
     });
   });
 
@@ -729,9 +729,9 @@ describe('Tokens', () => {
       to: '0x111',
       recipients: ['alpha', 'beta'],
       messagingMethod: 'private',
-      jsonValue: {content: "This is a message"},
+      jsonValue: { content: 'This is a message' },
       tag: 'test',
-      topic: 'one'
+      topic: 'one',
     };
     const transfer = {
       localId: 'transfer1',
@@ -747,25 +747,25 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.transferTokens).toHaveBeenCalledWith({
-      "amount": "1",
-      "message": {
-        "data": [
+      amount: '1',
+      message: {
+        data: [
           {
-            "value": {content: "This is a message"},
+            value: { content: 'This is a message' },
           },
         ],
-        "header": {
-          "tag": 'test',
-          "topics": ['one'],
-          "type": "transfer_private",
+        header: {
+          tag: 'test',
+          topics: ['one'],
+          type: 'transfer_private',
         },
         group: {
           members: [{ identity: 'alpha' }, { identity: 'beta' }],
         },
-       },
-        "pool": "my-pool",
-        "to": '0x111',
-        "tokenIndex": undefined,
+      },
+      pool: 'my-pool',
+      to: '0x111',
+      tokenIndex: undefined,
     });
   });
 

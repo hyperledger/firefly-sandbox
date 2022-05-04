@@ -281,7 +281,7 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
-    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined}}, "pool": "test-pool"});
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined}}, "pool": "test-pool", "tokenIndex": ""});
   });
 
   test('Mint tokens with private blob', async () => {
@@ -310,7 +310,7 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
-    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "group": {"members": [{"identity": "alpha"}, {"identity": "beta"}]}, "header": {"tag": undefined, "topics": undefined, "type": "transfer_private"}}, "pool": "test-pool"});
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "group": {"members": [{"identity": "alpha"}, {"identity": "beta"}]}, "header": {"tag": undefined, "topics": undefined, "type": "transfer_private"}}, "pool": "test-pool", "tokenIndex": ""});
   });
 
   test('Burn tokens', async () => {

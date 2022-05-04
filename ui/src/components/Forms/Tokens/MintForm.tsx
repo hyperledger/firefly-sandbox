@@ -33,6 +33,7 @@ export const MintForm: React.FC = () => {
 
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
+  const [tokenIndex, setTokenIndex] = useState<string>('1');
   const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
     undefined
   );
@@ -59,11 +60,11 @@ export const MintForm: React.FC = () => {
     const body = {
       pool: pool?.name,
       amount: pool?.type === PoolType.F ? decimalAmount : amount,
-      tokenIndex: '',
+      tokenIndex: pool?.type === PoolType.NF ? tokenIndex : '',
       messagingMethod: messagingMethod ? messagingMethod : null,
     };
     setJsonPayload(messagingMethod ? { ...jsonPayload, ...body } : body);
-  }, [pool, decimalAmount, formID]);
+  }, [pool, decimalAmount, tokenIndex, formID]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
@@ -89,6 +90,11 @@ export const MintForm: React.FC = () => {
     setJsonPayload({ ...jsonPayload, recipients: null, messagingMethod: null });
   };
 
+  const isFungible = () => {
+    const selectedPool = tokenPools.find((p) => p.name === pool?.name);
+    return selectedPool?.type === 'fungible';
+  };
+
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (pool && pool.type === PoolType.NF) {
       setAmount(event.target.value);
@@ -102,6 +108,18 @@ export const MintForm: React.FC = () => {
 
     setDecimalAmount(formattedAmount);
     setAmount(event.target.value);
+  };
+
+  const handleTokenIndexChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (
+      !pool ||
+      pool.type !== PoolType.NF ||
+      isAmountInvalid(event.target.value)
+    )
+      return;
+    setTokenIndex(event.target.value);
   };
 
   return (
@@ -152,16 +170,31 @@ export const MintForm: React.FC = () => {
                 label={t('amount')}
                 placeholder={t('exampleAmount')}
                 value={amount}
+                disabled={pool?.type === PoolType.NF}
                 onChange={handleAmountChange}
               />
             </FormControl>
           </Grid>
+          {!isFungible() && (
+            <Grid item xs={10} mt={2}>
+              <FormControl fullWidth required>
+                <TextField
+                  fullWidth
+                  label={t('tokenIndex')}
+                  placeholder={t('exampleTokenIndex')}
+                  value={tokenIndex}
+                  onChange={handleTokenIndexChange}
+                />
+              </FormControl>
+            </Grid>
+          )}
         </Grid>
         <MessageForm
           tokenMissingFields={!amount || !pool}
           tokenOperationPayload={{
             pool: pool?.name,
             amount: amount.toString(),
+            tokenIndex: pool?.type === PoolType.NF ? tokenIndex : '',
           }}
           label={t('attachAMessage')}
         />

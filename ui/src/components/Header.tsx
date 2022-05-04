@@ -137,7 +137,12 @@ export const Header: React.FC = () => {
       onClose={handleMenuClose}
     >
       {menuItems.map((item) => (
-        <FFMenuItem icon={item.icon} title={item.title} url={item.url} />
+        <FFMenuItem
+          key={item.title}
+          icon={item.icon}
+          title={item.title}
+          url={item.url}
+        />
       ))}
     </Menu>
   );
@@ -198,6 +203,7 @@ export const Header: React.FC = () => {
                 color="inherit"
                 onClick={() => setIsModalOpen(true)}
                 size="small"
+                sx={{ ml: 1 }}
               >
                 <QuestionMarkOutlined />
               </IconButton>

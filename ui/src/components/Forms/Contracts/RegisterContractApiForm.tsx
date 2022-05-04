@@ -15,12 +15,13 @@ import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { BLOCKCHAIN_TYPE } from '../../../enums/enums';
 import { IContractInterface } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
 
 export const RegisterContractApiForm: React.FC = () => {
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { blockchainPlugin, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -31,6 +32,8 @@ export const RegisterContractApiForm: React.FC = () => {
   >([]);
   const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
+  const [chaincode, setChaincode] = useState<string>('');
+  const [channel, setChannel] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
 
   const [isMounted, setIsMounted] = useState(false);
@@ -46,13 +49,34 @@ export const RegisterContractApiForm: React.FC = () => {
       return;
     }
     setPayloadMissingFields(!name || !contractAddress);
-    setJsonPayload({
-      name,
-      interfaceName: contractInterfaces[contractInterfaceIdx]?.name || '',
-      interfaceVersion: contractInterfaces[contractInterfaceIdx]?.version || '',
-      address: contractAddress,
-    });
-  }, [name, contractInterfaceIdx, contractAddress, formID]);
+    if (blockchainPlugin !== BLOCKCHAIN_TYPE.FABRIC) {
+      setJsonPayload({
+        name,
+        interfaceName: contractInterfaces[contractInterfaceIdx]?.name || '',
+        interfaceVersion:
+          contractInterfaces[contractInterfaceIdx]?.version || '',
+        address: contractAddress,
+      });
+    } else {
+      setJsonPayload({
+        name,
+        interfaceName: contractInterfaces[contractInterfaceIdx]?.name || '',
+        interfaceVersion:
+          contractInterfaces[contractInterfaceIdx]?.version || '',
+        chaincode: chaincode,
+        channel: channel,
+        address: undefined,
+      });
+    }
+  }, [
+    name,
+    chaincode,
+    channel,
+    contractInterfaceIdx,
+    contractAddress,
+    formID,
+    blockchainPlugin,
+  ]);
 
   useEffect(() => {
     isMounted &&
@@ -108,19 +132,46 @@ export const RegisterContractApiForm: React.FC = () => {
             />
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth required>
-            <TextField
-              fullWidth
-              required
-              label={t('address')}
-              onChange={(e) => setContractAddress(e.target.value)}
-            />
-            <FormHelperText id="address-helper-text">
-              {t('contractAddressHelperText')}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
+        {blockchainPlugin !== BLOCKCHAIN_TYPE.FABRIC ? (
+          <Grid item xs={12}>
+            <FormControl fullWidth required>
+              <TextField
+                fullWidth
+                required
+                label={t('address')}
+                onChange={(e) => setContractAddress(e.target.value)}
+              />
+              <FormHelperText id="address-helper-text">
+                {t('contractAddressHelperText')}
+              </FormHelperText>
+            </FormControl>
+          </Grid>
+        ) : (
+          <>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <TextField
+                  fullWidth
+                  required
+                  label={t('chaincode')}
+                  onChange={(e) => setChaincode(e.target.value)}
+                />
+                <FormHelperText>{t('chaincodeHelperText')}</FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <TextField
+                  fullWidth
+                  required
+                  label={t('channel')}
+                  onChange={(e) => setChannel(e.target.value)}
+                />
+                <FormHelperText>{t('channelHelperText')}</FormHelperText>
+              </FormControl>
+            </Grid>
+          </>
+        )}
       </Grid>
     </Grid>
   );

@@ -39,6 +39,7 @@ function App() {
     id: '',
   });
   const [tokensDisabled, setTokensDisabled] = useState(false);
+  const [blockchainPlugin, setBlockchainPlugin] = useState('');
 
   useEffect(() => {
     fetchCatcher(`${SDK_PATHS.organizations}/self`)
@@ -66,6 +67,9 @@ function App() {
       .then((plugins: IPlugins) => {
         (!plugins.tokens || plugins.tokens.length === 0) &&
           setTokensDisabled(true);
+        setBlockchainPlugin(
+          plugins.blockchain.length > 0 ? plugins.blockchain[0].pluginType : ''
+        );
       })
       .catch((err) => {
         reportFetchError(err);
@@ -105,6 +109,7 @@ function App() {
             apiStatus,
             setApiStatus,
             tokensDisabled,
+            blockchainPlugin,
           }}
         >
           <StyledEngineProvider injectFirst>

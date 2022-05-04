@@ -1,8 +1,8 @@
-import { FormControl, Grid, TextField } from '@mui/material';
+import { FormControl, Grid, TextField, useTheme } from '@mui/material';
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
-import { DEFAULT_SPACING } from '../../../theme';
+import { altScrollbarStyle, DEFAULT_SPACING } from '../../../theme';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { isJsonString } from '../../../utils/strings';
 import { FormContext } from '../../../contexts/FormContext';
@@ -43,6 +43,7 @@ export const DatatypeForm: React.FC = () => {
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const [name, setName] = useState<string>('');
   const [version, setVersion] = useState<string>('');
@@ -105,6 +106,10 @@ export const DatatypeForm: React.FC = () => {
         <Grid item xs={12}>
           <TextField
             label={t('jsonSchema')}
+            sx={{
+              backgroundColor: theme.palette.background.paper,
+              ...altScrollbarStyle,
+            }}
             multiline
             required
             fullWidth

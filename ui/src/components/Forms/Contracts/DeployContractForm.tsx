@@ -1,5 +1,5 @@
 import { LaunchOutlined } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { IconButton, useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -10,8 +10,11 @@ import Stepper from '@mui/material/Stepper';
 import Typography from '@mui/material/Typography';
 import i18next from 'i18next';
 import * as React from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ResourceUrls } from '../../../constants/ResourceUrls';
+import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { BLOCKCHAIN_TYPE } from '../../../enums/enums';
 import {
   CompileSCInstructions,
   DeployContractInstructions,
@@ -20,6 +23,8 @@ import {
 
 export const DeployContractForm: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const { blockchainPlugin } = useContext(ApplicationContext);
   const steps = [
     {
       label: i18next.t('installSolc'),
@@ -52,7 +57,7 @@ export const DeployContractForm: React.FC = () => {
     setActiveStep(0);
   };
 
-  return (
+  return blockchainPlugin !== BLOCKCHAIN_TYPE.FABRIC ? (
     <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep} orientation="vertical">
         {steps.map((step, index) => (
@@ -110,5 +115,17 @@ export const DeployContractForm: React.FC = () => {
         </Paper>
       )}
     </Box>
+  ) : (
+    <Typography sx={{ fontSize: 14 }} component="div">
+      Follow the steps{' '}
+      <a
+        href={ResourceUrls.fireflyTutorialDeployContractFabric}
+        target="_blank"
+        style={{ color: theme.palette.warning.main }}
+      >
+        here
+      </a>{' '}
+      to deploy a chaincode to the Fabric blockchain.
+    </Typography>
   );
 };

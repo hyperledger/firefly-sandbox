@@ -7,10 +7,11 @@ import {
   MenuItem,
   Select,
 } from '@mui/material';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
+import { FormContext } from '../../../contexts/FormContext';
 import { BroadcastForm } from '../Messages/BroadcastForm';
 import { PrivateForm } from '../Messages/PrivateForm';
 
@@ -26,12 +27,18 @@ export const MessageForm: React.FC<Props> = ({
   label,
 }) => {
   const { jsonPayload, setJsonPayload } = useContext(ApplicationContext);
+  const { formID } = useContext(FormContext);
   const { t } = useTranslation();
 
   const [withMessage, setWithMessage] = useState<boolean>(false);
   const [messageMethod, setMessageMethod] = useState<string>(
     TUTORIAL_FORMS.BROADCAST
   );
+
+  useEffect(() => {
+    setWithMessage(false);
+    setJsonPayload({ ...jsonPayload, messagingMethod: null, recipients: null });
+  }, [formID]);
 
   return (
     <>

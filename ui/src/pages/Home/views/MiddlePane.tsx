@@ -83,7 +83,6 @@ export const MiddlePane = () => {
       if (Object.keys(jsonPayload).length < 1) return;
       const compiled = _.template(codeTemplate);
       const result = compiled(jsonPayload);
-
       return result;
     } catch {
       return undefined;

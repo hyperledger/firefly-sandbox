@@ -36,10 +36,6 @@ export const MintForm: React.FC = () => {
   const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
     undefined
   );
-  const [withMessage, setWithMessage] = useState<boolean>(false);
-  const [messageMethod, setMessageMethod] = useState<string>(
-    TUTORIAL_FORMS.BROADCAST
-  );
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -54,20 +50,20 @@ export const MintForm: React.FC = () => {
       resetValues();
       return;
     }
-    if (!withMessage) {
-      setPayloadMissingFields(!amount || !pool);
-    }
+
+    setPayloadMissingFields(!amount || !pool);
 
     if (decimalAmount === undefined)
       setDecimalAmount(amountToDecimal('1', pool?.decimals));
+    const { messagingMethod } = jsonPayload as any;
     const body = {
       pool: pool?.name,
       amount: pool?.type === PoolType.F ? decimalAmount : amount,
       tokenIndex: '',
-      messagingMethod: withMessage ? messageMethod : null,
+      messagingMethod: messagingMethod ? messagingMethod : null,
     };
-    setJsonPayload(withMessage ? { ...jsonPayload, ...body } : body);
-  }, [pool, decimalAmount, messageMethod, formID]);
+    setJsonPayload(messagingMethod ? { ...jsonPayload, ...body } : body);
+  }, [pool, decimalAmount, formID]);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.MINT) return;
@@ -90,8 +86,7 @@ export const MintForm: React.FC = () => {
 
   const resetValues = () => {
     setAmount('1');
-    setWithMessage(false);
-    setMessageMethod(TUTORIAL_FORMS.BROADCAST);
+    setJsonPayload({ ...jsonPayload, recipients: null, messagingMethod: null });
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {

@@ -157,7 +157,7 @@ export class TokenPool extends TokenPoolInput {
   dataSupport: boolean;
 }
 
-export class TokenMintBurn extends BroadcastValue{
+export class TokenMintBurn extends BroadcastValue {
   @IsString()
   pool: string;
 

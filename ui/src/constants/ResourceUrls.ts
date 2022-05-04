@@ -3,8 +3,7 @@ export const ResourceUrls = {
   fireflyFFI:
     'https://hyperledger.github.io/firefly/reference/firefly_interface_format',
   fireflySDK: 'https://github.com/hyperledger/firefly-sdk-nodejs',
-  fireflyTutorial:
-    'https://hyperledger.github.io/firefly/tutorials/tutorials.html',
+  fireflyTutorial: 'https://hyperledger.github.io/firefly/tutorials',
   fireflyTutorialExampleSC:
     'https://hyperledger.github.io/firefly/tutorials/custom_contracts.html#example-smart-contract',
   fireflyTutorialEvents:

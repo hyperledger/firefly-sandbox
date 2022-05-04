@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
       webSocket.current = new ReconnectingWebSocket(
         process.env.NODE_ENV === 'development'
           ? `ws://localhost:3001${WS_PATH}`
-          : `${window.location.protocol.startsWith('https' ? 'wss' : 'ws')}://${
+          : `${window.location.protocol.startsWith('https') ? 'wss' : 'ws'}://${
               window.location.host
             }${WS_PATH}`
       );

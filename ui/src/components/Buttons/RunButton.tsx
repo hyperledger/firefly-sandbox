@@ -40,11 +40,15 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       body: isBlob
         ? buildFormData(payload, postEndpoint)
         : JSON.stringify(payload),
+      credentials: 'include',
     };
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    fetch(postEndpoint, reqDetails)
+    const postUrlPrefix = window.location.protocol.startsWith('https')
+      ? `https://${window.location.hostname}`
+      : '';
+    fetch(`${postUrlPrefix}${postEndpoint}`, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,
@@ -64,6 +68,7 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
         }
       })
       .catch((err) => {
+        console.error(err);
         setApiResponse(err);
       });
   };

@@ -107,6 +107,7 @@ export class TokensController {
     const mintBody = {
       pool: body.pool,
       amount: body.amount,
+      tokenIndex: body.tokenIndex
     } as any;
     if (body.messagingMethod) {
       mintBody.message =
@@ -268,7 +269,8 @@ export class TokensTemplateController {
     return formatTemplate(`
       const transfer = await firefly.mintTokens({
         pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,<% if(messagingMethod && (value||jsonValue)) { %>
+        amount: <%= ${q('amount')} %>,<% if(tokenIndex) { %>
+        tokenIndex: <%= ${q('tokenIndex')} %>,<% } %><% if(messagingMethod && (value||jsonValue)) { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -311,32 +313,32 @@ export class TokensTemplateController {
       file.buffer,
       <%= ${q('filename')} %>,
     );
-      const transfer = await firefly.mintTokens({
-        pool: <%= ${q('pool')} %>,
-        amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
-          <% print('tokenIndex: ' + ${q(
-            'tokenIndex',
-          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
-        message: {
-          header: {
-            tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-            topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-          },
-          data: [{ id: data.id }],
-        }<% } else { %>
-          message: {
-            header: {
-              tag: <%= tag ? ${q('tag')} : 'undefined' %>,
-              topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
-            },
-            group: {
-              members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
-            },
-            data: [{ id: data.id }],
-          }
-      <%} %>
-      });
-      return { type: 'token_transfer', id: transfer.localId };
+    const transfer = await firefly.mintTokens({
+      pool: <%= ${q('pool')} %>,
+      amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
+      <% print('tokenIndex: ' + ${q(
+          'tokenIndex',
+        )} + ',') } %><% if(messagingMethod === 'broadcast') { %>
+      message: {
+        header: {
+          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+        },
+        data: [{ id: data.id }],
+      }<% } else { %>
+      message: {
+        header: {
+          tag: <%= tag ? ${q('tag')} : 'undefined' %>,
+          topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+        },
+        group: {
+          members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
+        },
+        data: [{ id: data.id }],
+      }
+    <%} %>
+    });
+    return { type: 'token_transfer', id: transfer.localId };
     `);
   }
 

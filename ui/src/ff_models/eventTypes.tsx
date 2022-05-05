@@ -638,15 +638,6 @@ export const FF_EVENTS_CATEGORY_MAP: {
             />
           ),
         },
-        {
-          label: t('tokenIndex') + ':',
-          value: (
-            <FFListText
-              color="secondary"
-              text={event.tokenTransfer?.tokenIndex ?? t('---')}
-            />
-          ),
-        },
       ];
 
       if (event.tokenTransfer?.tokenIndex) {

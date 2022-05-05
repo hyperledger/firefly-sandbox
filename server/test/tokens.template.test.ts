@@ -79,18 +79,18 @@ describe('Templates: Tokens', () => {
             file.buffer,
             'document.pdf',
           );
-            const transfer = await firefly.mintTokens({
-              pool: 'pool1',
-              amount: '10',,
-              message: {
-                header: {
-                  tag: 'test-tag',
-                  topics: ['test-topic'],
-                },
-                data: [{ id: data.id }],
-              }
-            });
-            return { type: 'token_transfer', id: transfer.localId };
+          const transfer = await firefly.mintTokens({
+            pool: 'pool1',
+            amount: '10',
+            message: {
+              header: {
+                tag: 'test-tag',
+                topics: ['test-topic'],
+              },
+              data: [{ id: data.id }],
+            }
+          });
+          return { type: 'token_transfer', id: transfer.localId };
         `),
         );
       });

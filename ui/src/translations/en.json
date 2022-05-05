@@ -94,6 +94,7 @@
   "identityConfirmed": "Identity Confirmed",
   "identityID": "Identity ID",
   "identityUpdated": "Identity Updated",
+  "in": "In",
   "installSolc": "Install the Solidity Compiler",
   "interfaceFormat": "Interface Format",
   "interfaceID": "Interface ID",

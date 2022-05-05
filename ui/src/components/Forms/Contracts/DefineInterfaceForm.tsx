@@ -1,6 +1,5 @@
 import {
   FormControl,
-  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -12,13 +11,13 @@ import {
 import { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MAX_FORM_ROWS } from '../../../App';
-import { ResourceUrls } from '../../../constants/ResourceUrls';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { BLOCKCHAIN_TYPE } from '../../../enums/enums';
 import { altScrollbarStyle, DEFAULT_SPACING } from '../../../theme';
 import { isJsonString } from '../../../utils/strings';
+import { DefineInterfaceHelperText } from './DefineInterfaceHelperText';
 
 export const DEFAULT_FFI_SCHEMA = {
   name: 'my-contract',
@@ -95,8 +94,7 @@ export const DefineInterfaceForm: React.FC = () => {
   }, [interfaceFormat, schema, name, version, formID]);
 
   useEffect(() => {
-    blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC;
-    setInterfaceFormats(['ffi']);
+    blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC && setInterfaceFormats(['ffi']);
   }, [blockchainPlugin]);
 
   useEffect(() => {
@@ -132,30 +130,7 @@ export const DefineInterfaceForm: React.FC = () => {
                   </MenuItem>
                 ))}
               </Select>
-              <FormHelperText>
-                {blockchainPlugin === BLOCKCHAIN_TYPE.ETHEREUM && t('either')}
-                &nbsp;
-                <a
-                  href={ResourceUrls.fireflyFFI}
-                  target="_blank"
-                  style={{ color: 'white', textDecoration: 'none' }}
-                >
-                  {t('ffiShort')}
-                </a>
-                &nbsp;
-                {blockchainPlugin === BLOCKCHAIN_TYPE.ETHEREUM && (
-                  <a
-                    href={ResourceUrls.solidityABI}
-                    target="_blank"
-                    style={{ color: 'white', textDecoration: 'none' }}
-                  >
-                    {t('or')}&nbsp;
-                    {t('solidityABI')}
-                    &nbsp;
-                  </a>
-                )}
-                {t('format')}
-              </FormHelperText>
+              <DefineInterfaceHelperText blockchainPlugin={blockchainPlugin} />
             </FormControl>
           </Grid>
         </Grid>

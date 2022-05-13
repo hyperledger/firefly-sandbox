@@ -48,7 +48,12 @@ export const RegisterContractApiForm: React.FC = () => {
     if (formID !== TUTORIAL_FORMS.REGISTER_CONTRACT_API) {
       return;
     }
-    setPayloadMissingFields(!name || !contractAddress);
+    if (blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC) {
+      setPayloadMissingFields(!name || !chaincode || !channel);
+    } else {
+      setPayloadMissingFields(!name || !contractAddress);
+    }
+
     if (blockchainPlugin !== BLOCKCHAIN_TYPE.FABRIC) {
       setJsonPayload({
         name,

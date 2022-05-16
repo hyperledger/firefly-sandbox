@@ -251,6 +251,12 @@ export class ContractAPI {
 
   @IsString()
   address: string;
+
+  @IsString()
+  channel: string;
+
+  @IsString()
+  chaincode: string;
 }
 
 export class ContractAPIURLs {

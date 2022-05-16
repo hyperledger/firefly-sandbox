@@ -2,6 +2,7 @@ import { ArrowForwardIos } from '@mui/icons-material';
 import { Button, CircularProgress, Grid, Typography } from '@mui/material';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SDK_PATHS } from '../../constants/SDK_PATHS';
 import {
   TUTORIAL_CATEGORIES,
   TUTORIAL_FORMS,
@@ -10,6 +11,7 @@ import { ApplicationContext } from '../../contexts/ApplicationContext';
 import { EventContext } from '../../contexts/EventContext';
 import { FormContext } from '../../contexts/FormContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
+import { BLOCKCHAIN_TYPE } from '../../enums/enums';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 import { isSuccessfulResponse } from '../../utils/strings';
 
@@ -22,8 +24,12 @@ interface Props {
 export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
   const { t } = useTranslation();
   // const [showSnackbar, setShowSnackbar] = useState(false);
-  const { setApiStatus, setApiResponse, payloadMissingFields } =
-    useContext(ApplicationContext);
+  const {
+    blockchainPlugin,
+    setApiStatus,
+    setApiResponse,
+    payloadMissingFields,
+  } = useContext(ApplicationContext);
   const { addAwaitedEventID, awaitedEventID } = useContext(EventContext);
   const { categoryID, isBlob, poolObject } = useContext(FormContext);
   const { setMessage, setMessageType } = useContext(SnackbarContext);
@@ -34,7 +40,13 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     setApiStatus(undefined);
     setApiResponse({});
     managePayload();
-    const postEndpoint = isBlob ? endpoint + 'blob' : endpoint;
+    let postEndpoint = isBlob ? endpoint + 'blob' : endpoint;
+    if (
+      blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC &&
+      endpoint === SDK_PATHS.contractsApi
+    ) {
+      postEndpoint = endpoint + BLOCKCHAIN_TYPE.FABRIC;
+    }
     const reqDetails: any = {
       method: 'POST',
       body: isBlob

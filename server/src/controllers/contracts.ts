@@ -69,6 +69,26 @@ export class ContractsController {
     return { type: 'message', id: api.message };
   }
 
+  @Post('/apifabric')
+  @HttpCode(202)
+  @ResponseSchema(AsyncResponse)
+  @OpenAPI({ summary: 'Define a new contract API with Fabric' })
+  async createAPIFabric(@Body() body: ContractAPI): Promise<AsyncResponse> {
+    // See ContractsTemplateController and keep template code up to date.
+    const api = await firefly.createContractAPI({
+      name: body.name,
+      interface: {
+        name: body.interfaceName,
+        version: body.interfaceVersion,
+      },
+      location: {
+        chaincode: body.chaincode,
+        channel: body.channel,
+      },
+    });
+    return { type: 'message', id: api.message };
+  }
+
   @Get('/interface')
   @ResponseSchema(ContractInterfaceLookup, { isArray: true })
   @OpenAPI({ summary: 'List contract interfaces' })

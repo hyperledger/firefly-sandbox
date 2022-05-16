@@ -70,7 +70,7 @@ export const RegisterContractApiForm: React.FC = () => {
           contractInterfaces[contractInterfaceIdx]?.version || '',
         chaincode: chaincode,
         channel: channel,
-        address: undefined,
+        address: '',
       });
     }
   }, [

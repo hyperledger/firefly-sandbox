@@ -101,6 +101,34 @@ describe('Smart Contracts', () => {
     });
   });
 
+  test('Create contract API with Fabric', async () => {
+    const req: ContractAPI = {
+      name: 'my-api-fabric',
+      channel: '0x123',
+      chaincode: 'chaincode',
+      interfaceName: 'my-contract',
+      interfaceVersion: '1.0',
+    };
+    const api = {
+      name: 'my-api-fabric',
+      message: 'msg1',
+    } as FireFlyContractAPIResponse;
+
+    mockFireFly.createContractAPI.mockResolvedValueOnce(api);
+
+    await request(server)
+      .post('/api/contracts/apifabric')
+      .send(req)
+      .expect(202)
+      .expect({ type: 'message', id: 'msg1' });
+
+    expect(mockFireFly.createContractAPI).toHaveBeenCalledWith({
+      interface: { name: 'my-contract', version: '1.0' },
+      location: { chaincode: 'chaincode', channel: '0x123' },
+      name: 'my-api-fabric',
+    });
+  });
+
   test('Get contract Interfaces', async () => {
     const int = [
       {

@@ -250,13 +250,16 @@ export class ContractAPI {
   interfaceVersion: string;
 
   @IsString()
-  address: string;
+  @IsOptional()
+  address?: string;
 
   @IsString()
-  channel: string;
+  @IsOptional()
+  channel?: string;
 
   @IsString()
-  chaincode: string;
+  @IsOptional()
+  chaincode?: string;
 }
 
 export class ContractAPIURLs {

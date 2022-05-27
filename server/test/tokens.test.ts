@@ -119,6 +119,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast"
         },
       },
       pool: 'my-pool',
@@ -160,6 +161,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast"
         },
       },
       pool: 'my-pool',
@@ -281,7 +283,7 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
-    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined}}, "pool": "test-pool", "tokenIndex": ""});
+    expect(mockFireFly.mintTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined, "type": "transfer_broadcast"}}, "pool": "test-pool", "tokenIndex": ""});
   });
 
   test('Mint tokens with private blob', async () => {
@@ -372,6 +374,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast"
         },
       },
       pool: 'my-pool',
@@ -413,6 +416,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast"
         },
       },
       pool: 'my-pool',
@@ -442,7 +446,7 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
-    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined}}, "pool": "test-pool"});
+    expect(mockFireFly.burnTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined, "type": "transfer_broadcast"}}, "pool": "test-pool"});
   });
 
   test('Burn tokens with private blob', async () => {
@@ -624,6 +628,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast",
         },
       },
       pool: 'my-pool',
@@ -667,6 +672,7 @@ describe('Tokens', () => {
         header: {
           tag: 'test',
           topics: ['one'],
+          type: "transfer_broadcast",
         },
       },
       pool: 'my-pool',
@@ -792,7 +798,7 @@ describe('Tokens', () => {
       .expect({ type: 'token_transfer', id: 'transfer1' });
 
     expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
-    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined}}, "pool": "test-pool", "to": "0x111", "tokenIndex": undefined});
+    expect(mockFireFly.transferTokens).toHaveBeenCalledWith({"amount": "10000", "message": {"data": [{"id": "data1"}], "header": {"tag": undefined, "topics": undefined, "type": "transfer_broadcast"}}, "pool": "test-pool", "to": "0x111", "tokenIndex": undefined});
   });
 
   test('Transfer tokens with private blob', async () => {

@@ -14,6 +14,7 @@ import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { plainToClassFromExist } from 'class-transformer';
 import { firefly } from '../clients/firefly';
 import {
+  FF_MESSAGES,
   formatTemplate,
   FormDataSchema,
   getBroadcastMessageBody,
@@ -85,8 +86,8 @@ export class TokensController {
     if (body.messagingMethod) {
       mintBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body)
-          : getPrivateMessageBody(body);
+          ? getBroadcastMessageBody(body, undefined, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, undefined, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.mintTokens(mintBody);
     return { type: 'token_transfer', id: transfer.localId };
@@ -112,8 +113,8 @@ export class TokensController {
     if (body.messagingMethod) {
       mintBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body, data.id)
-          : getPrivateMessageBody(body, data.id);
+          ? getBroadcastMessageBody(body, data.id, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, data.id, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.mintTokens(mintBody);
     return { type: 'token_transfer', id: transfer.localId };
@@ -133,8 +134,8 @@ export class TokensController {
     if (body.messagingMethod) {
       burnBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body)
-          : getPrivateMessageBody(body);
+          ? getBroadcastMessageBody(body, undefined, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, undefined, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.burnTokens(burnBody);
     return { type: 'token_transfer', id: transfer.localId };
@@ -160,8 +161,8 @@ export class TokensController {
     if (body.messagingMethod) {
       burnBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body, data.id)
-          : getPrivateMessageBody(body, data.id);
+          ? getBroadcastMessageBody(body, data.id, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, data.id, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.burnTokens(burnBody);
     return { type: 'token_transfer', id: transfer.localId };
@@ -182,8 +183,8 @@ export class TokensController {
     if (body.messagingMethod) {
       transferBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body)
-          : getPrivateMessageBody(body);
+          ? getBroadcastMessageBody(body, undefined, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, undefined, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.transferTokens(transferBody);
     return { type: 'token_transfer', id: transfer.localId };
@@ -210,8 +211,8 @@ export class TokensController {
     if (body.messagingMethod) {
       transferBody.message =
         body.messagingMethod === 'broadcast'
-          ? getBroadcastMessageBody(body, data.id)
-          : getPrivateMessageBody(body, data.id);
+          ? getBroadcastMessageBody(body, data.id, FF_MESSAGES.TRANSFER_BROADCAST)
+          : getPrivateMessageBody(body, data.id, FF_MESSAGES.TRANSFER_PRIVATE);
     }
     const transfer = await firefly.transferTokens(transferBody);
     return { type: 'token_transfer', id: transfer.localId };

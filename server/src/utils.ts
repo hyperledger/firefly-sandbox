@@ -111,24 +111,25 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return result;
 }
 
-export function getBroadcastMessageBody(body: BroadcastValue, blobId?: string) {
+export function getBroadcastMessageBody(body: BroadcastValue, blobId?: string, messageType?: FF_MESSAGES) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
+      type: messageType || undefined
     },
     data: [dataBody],
   };
 }
 
-export function getPrivateMessageBody(body: PrivateValue, blobId?: string) {
+export function getPrivateMessageBody(body: PrivateValue, blobId?: string, messageType?: FF_MESSAGES) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: FF_MESSAGES.TRANSFER_PRIVATE,
+      type: messageType || undefined
     },
     group: {
       members: body.recipients.map((r) => ({ identity: r })),

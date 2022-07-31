@@ -5,11 +5,11 @@ export const ResourceUrls = {
   fireflySDK: 'https://github.com/hyperledger/firefly-sdk-nodejs',
   fireflyTutorial: 'https://hyperledger.github.io/firefly/tutorials',
   fireflyTutorialExampleSC:
-    'https://hyperledger.github.io/firefly/tutorials/custom_contracts.html#example-smart-contract',
+    'https://hyperledger.github.io/firefly/tutorials/custom_contracts/ethereum.html#example-smart-contract',
   fireflyTutorialEvents:
     'https://hyperledger.github.io/firefly/tutorials/events.html',
   fireflyTutorialDeployContract:
-    'https://hyperledger.github.io/firefly/tutorials/custom_contracts.html#contract-deployment',
+    'https://hyperledger.github.io/firefly/tutorials/custom_contracts/ethereum.html#contract-deployment',
   fireflyTutorialDeployContractFabric:
     'https://hyperledger.github.io/firefly/tutorials/custom_contracts/fabric.html',
   sandBoxGH: 'https://github.com/hyperledger/firefly-sandbox',

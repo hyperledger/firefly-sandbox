@@ -69,6 +69,6 @@ describe('Common Operations', () => {
       .expect([{ did: 'did:org1', value: '0x123' }]);
 
     expect(mockFireFly.getOrganizations).toHaveBeenCalledWith();
-    expect(mockFireFly.getVerifiers).toHaveBeenCalledWith('ff_system');
+    expect(mockFireFly.getVerifiers).toHaveBeenCalledWith('default');
   });
 });

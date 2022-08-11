@@ -34,7 +34,7 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
   async verifiers(): Promise<Verifier[]> {
     const orgs = await firefly.getOrganizations();
-    const verifiers = await firefly.getVerifiers('ff_system');
+    const verifiers = await firefly.getVerifiers('default');
     const result: Verifier[] = [];
     for (const v of verifiers) {
       const o = orgs.find((o) => o.id === v.identity);
@@ -50,7 +50,7 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
   async verifierSelf(): Promise<Verifier[]> {
     const status = await firefly.getStatus();
-    const verifiers = await firefly.getVerifiers('ff_system');
+    const verifiers = await firefly.getVerifiers('default');
     const result: Verifier[] = [];
     for (const v of verifiers) {
       if (status.org.id === v.identity) {

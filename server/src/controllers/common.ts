@@ -1,7 +1,7 @@
 import { Get, JsonController, Param, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
-import { Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
+import { FFStatus, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
 
 /**
  * Common Operations - API Server
@@ -26,7 +26,7 @@ export class CommonController {
   @OpenAPI({ summary: 'Look up local organization' })
   async self(): Promise<Organization> {
     const status = await firefly.getStatus();
-    return { id: status.org.id, did: status.org.did, name: status.org.name };
+    return { id: status.org?.id, did: status.org?.did, name: status.org?.name};
   }
 
   @Get('/verifiers')
@@ -34,7 +34,7 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
   async verifiers(): Promise<Verifier[]> {
     const orgs = await firefly.getOrganizations();
-    const verifiers = await firefly.getVerifiers('ff_system');
+    const verifiers = await firefly.getVerifiers('default');
     const result: Verifier[] = [];
     for (const v of verifiers) {
       const o = orgs.find((o) => o.id === v.identity);
@@ -50,11 +50,11 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
   async verifierSelf(): Promise<Verifier[]> {
     const status = await firefly.getStatus();
-    const verifiers = await firefly.getVerifiers('ff_system');
+    const verifiers = await firefly.getVerifiers('default');
     const result: Verifier[] = [];
     for (const v of verifiers) {
-      if (status.org.id === v.identity) {
-        result.push({ did: status.org.did, type: v.type, value: v.value });
+      if (status.org?.id === v.identity) {
+        result.push({ did: status.org?.did, type: v.type, value: v.value });
       }
     }
     return result;
@@ -79,6 +79,16 @@ export class CommonController {
     return {
       id: tx.id,
       type: tx.type,
+    };
+  }
+
+  @Get('/firefly/status')
+  @ResponseSchema(FFStatus)
+  @OpenAPI({ summary: 'Look up FireFly status' })
+  async ffStatus(): Promise<FFStatus> {
+    const status = await firefly.getStatus();
+    return {
+      multiparty: status.multiparty.enabled,
     };
   }
 }

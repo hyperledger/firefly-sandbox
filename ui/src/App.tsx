@@ -15,7 +15,7 @@ import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
 import {
   IApiStatus,
-  IPlugins,
+  IFireflyStatus,
   ISelfIdentity,
   IVerifier,
 } from './interfaces/api';
@@ -34,6 +34,7 @@ function App() {
   const [payloadMissingFields, setPayloadMissingFields] =
     useState<boolean>(false);
   const [apiStatus, setApiStatus] = useState<IApiStatus>();
+  const [multiparty, setMultiparty] = useState(true);
   const [apiResponse, setApiResponse] = useState<object>({
     type: '',
     id: '',
@@ -42,37 +43,35 @@ function App() {
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
 
   useEffect(() => {
-    fetchCatcher(`${SDK_PATHS.organizations}/self`)
-      .then((org: ISelfIdentity) => {
-        fetchCatcher(SDK_PATHS.verifiers)
-          .then((verifierRes: IVerifier[]) => {
-            setSelfIdentity({
-              ...org,
-              ethereum_address: verifierRes.find(
-                (verifier: IVerifier) => verifier.did === org.did
-              )?.value,
-            });
-          })
-          .catch((err) => {
-            reportFetchError(err);
-          });
-      })
-      .catch((err) => {
-        reportFetchError(err);
-      })
-      .finally(() => {
-        setInitialized(true);
-      });
-    fetchCatcher(`${SDK_PATHS.plugins}`)
-      .then((plugins: IPlugins) => {
-        (!plugins.tokens || plugins.tokens.length === 0) &&
+    Promise.all([
+      fetchCatcher(`${SDK_PATHS.status}`),
+      fetchCatcher(`${SDK_PATHS.organizations}/self`),
+      fetchCatcher(`${SDK_PATHS.plugins}`),
+    ])
+      .then(async ([statusResponse, orgResponse, pluginsResponse]) => {
+        (!pluginsResponse.tokens || pluginsResponse.tokens.length === 0) &&
           setTokensDisabled(true);
         setBlockchainPlugin(
-          plugins.blockchain.length > 0 ? plugins.blockchain[0].pluginType : ''
+          pluginsResponse.blockchain.length > 0
+            ? pluginsResponse.blockchain[0].pluginType
+            : ''
         );
-      })
-      .catch((err) => {
-        reportFetchError(err);
+        const ffStatus = statusResponse as IFireflyStatus;
+        setMultiparty(ffStatus.multiparty);
+        if (ffStatus.multiparty === true) {
+          fetchCatcher(SDK_PATHS.verifiers)
+            .then((verifierRes: IVerifier[]) => {
+              setSelfIdentity({
+                ...orgResponse,
+                ethereum_address: verifierRes.find(
+                  (verifier: IVerifier) => verifier.did === orgResponse.did
+                )?.value,
+              });
+            })
+            .catch((err) => {
+              reportFetchError(err);
+            });
+        }
       })
       .finally(() => {
         setInitialized(true);
@@ -110,6 +109,7 @@ function App() {
             setApiStatus,
             tokensDisabled,
             blockchainPlugin,
+            multiparty,
           }}
         >
           <StyledEngineProvider injectFirst>

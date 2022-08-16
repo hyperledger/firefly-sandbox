@@ -8,6 +8,10 @@ export interface IApiStatus {
   statusText: string;
 }
 
+export interface IFireflyStatus {
+  multiparty: boolean;
+}
+
 export interface IBatch {
   id: string;
   type: string;

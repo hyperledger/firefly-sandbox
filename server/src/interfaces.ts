@@ -371,3 +371,8 @@ export class DatatypeInterface {
   @JSONSchema({ type: 'object' })
   schema: any;
 }
+
+export class FFStatus {
+  @IsBoolean()
+  multiparty: boolean;
+}

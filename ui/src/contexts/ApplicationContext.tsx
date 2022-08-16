@@ -33,6 +33,7 @@ export interface IApplicationContext {
   // Plugins
   tokensDisabled: boolean;
   blockchainPlugin: string;
+  multiparty: boolean;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

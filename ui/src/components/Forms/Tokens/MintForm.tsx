@@ -23,7 +23,7 @@ import { isAmountInvalid } from '../../../utils/strings';
 import { MessageForm } from './MessageForm';
 
 export const MintForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields, multiparty } =
     useContext(ApplicationContext);
   const { formID, setPoolObject } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -189,15 +189,17 @@ export const MintForm: React.FC = () => {
             </Grid>
           )}
         </Grid>
-        <MessageForm
-          tokenMissingFields={!amount || !pool}
-          tokenOperationPayload={{
-            pool: pool?.name,
-            amount: amount.toString(),
-            tokenIndex: pool?.type === PoolType.NF ? tokenIndex : '',
-          }}
-          label={t('attachAMessage')}
-        />
+        {multiparty && (
+          <MessageForm
+            tokenMissingFields={!amount || !pool}
+            tokenOperationPayload={{
+              pool: pool?.name,
+              amount: amount.toString(),
+              tokenIndex: pool?.type === PoolType.NF ? tokenIndex : '',
+            }}
+            label={t('attachAMessage')}
+          />
+        )}
       </Grid>
     </Grid>
   );

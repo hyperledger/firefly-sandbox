@@ -24,7 +24,7 @@ import { isAmountInvalid } from '../../../utils/strings';
 import { MessageForm } from './MessageForm';
 
 export const TransferForm: React.FC = () => {
-  const { jsonPayload, setJsonPayload, setPayloadMissingFields } =
+  const { jsonPayload, setJsonPayload, setPayloadMissingFields, multiparty } =
     useContext(ApplicationContext);
   const { formID, setPoolObject } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -229,18 +229,20 @@ export const TransferForm: React.FC = () => {
         ) : (
           <></>
         )}
-        <MessageForm
-          tokenMissingFields={
-            !amount || !pool || !recipient || (!isFungible() && !tokenIndex)
-          }
-          tokenOperationPayload={{
-            pool: pool?.name,
-            amount: amount.toString(),
-            tokenIndex: tokenIndex?.toString(),
-            to: recipient,
-          }}
-          label={t('attachAMessage')}
-        />
+        {multiparty && (
+          <MessageForm
+            tokenMissingFields={
+              !amount || !pool || !recipient || (!isFungible() && !tokenIndex)
+            }
+            tokenOperationPayload={{
+              pool: pool?.name,
+              amount: amount.toString(),
+              tokenIndex: tokenIndex?.toString(),
+              to: recipient,
+            }}
+            label={t('attachAMessage')}
+          />
+        )}
       </Grid>
     </Grid>
   );

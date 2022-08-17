@@ -34,7 +34,10 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
   async verifiers(): Promise<Verifier[]> {
     const orgs = await firefly.getOrganizations();
-    const verifiers = await firefly.getVerifiers('default');
+    const defaultVerifiers = await firefly.getVerifiers('default');
+    const legacyVerifiers = await firefly.getVerifiers('ff_system');
+    const verifiers = defaultVerifiers.concat(legacyVerifiers);
+
     const result: Verifier[] = [];
     for (const v of verifiers) {
       const o = orgs.find((o) => o.id === v.identity);
@@ -87,8 +90,15 @@ export class CommonController {
   @OpenAPI({ summary: 'Look up FireFly status' })
   async ffStatus(): Promise<FFStatus> {
     const status = await firefly.getStatus();
-    return {
-      multiparty: status.multiparty.enabled,
-    };
+    if ("multiparty" in status) {
+      return {
+        multiparty: status.multiparty.enabled,
+      };
+    } else {
+      // Assume multiparty mode if `multiparty` key is missing from status
+      return {
+        multiparty: true
+      }
+    }
   }
 }

@@ -62,7 +62,6 @@ describe('Common Operations', () => {
 
     mockFireFly.getOrganizations.mockResolvedValueOnce(orgs);
     mockFireFly.getVerifiers.mockResolvedValueOnce(verifiers);
-    mockFireFly.getVerifiers.mockResolvedValueOnce([]);
 
     await request(server)
       .get('/api/common/verifiers')
@@ -71,8 +70,5 @@ describe('Common Operations', () => {
 
     expect(mockFireFly.getOrganizations).toHaveBeenCalledWith();
     expect(mockFireFly.getVerifiers).toHaveBeenCalledWith('default');
-
-    expect(mockFireFly.getOrganizations).toHaveBeenCalledWith();
-    expect(mockFireFly.getVerifiers).toHaveBeenCalledWith('ff_system');
   });
 });

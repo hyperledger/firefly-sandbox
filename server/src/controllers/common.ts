@@ -35,7 +35,7 @@ export class CommonController {
   async verifiers(): Promise<Verifier[]> {
     try {
       const orgs = await firefly.getOrganizations();
-      let verifiers = await firefly.getVerifiers('ff_system');
+      let verifiers = await firefly.getVerifiers('default');
       if (verifiers.length === 0) {
         // attempt to query legacy ff_system verifiers
         verifiers = await firefly.getVerifiers('ff_system');

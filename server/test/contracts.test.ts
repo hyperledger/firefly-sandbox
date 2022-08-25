@@ -226,6 +226,7 @@ describe('Smart Contracts', () => {
       apiName: 'my-api',
       eventPath: 'Changed',
       topic: 'my-app',
+      firstEvent: 'newest'
     };
     const listener = {
       id: 'listener1',
@@ -245,6 +246,9 @@ describe('Smart Contracts', () => {
 
     expect(mockFireFly.createContractAPIListener).toHaveBeenCalledWith('my-api', 'Changed', {
       topic: 'my-app',
+      options: {
+        firstEvent: 'newest',
+      },
     });
   });
 });

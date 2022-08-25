@@ -22,6 +22,8 @@
   "blockchainEventReceived": "Blockchain Event Received",
   "blockchainInvokeFailed": "Blockchain Invoke Failed",
   "blockchainInvokeSucceeded": "Blockchain Invoke Succeeded",
+  "blockNumber": "Block Number",
+  "blockNumberDescription": "The block number to subscribe from.",
   "broadcast": "Broadcast",
   "broadcastShortInfo": "Sends a message visible to all parties in the network",
   "broadcastTitle": "Send a Broadcast Message",
@@ -86,6 +88,8 @@
   "filterEventSubscriptions": "Filter Event Subscriptions (Optional)",
   "finish": "Finish",
   "fireflyCurrentState": "FireFly's Current State",
+  "firstEvent": "First Event",
+  "firstEventDescription": "The first event for this listener to index. Valid options are 'newest', 'oldest', or a specific block number.",
   "followStepsInInstructions": "Follow steps outlined in the instructions",
   "format": "format",
   "fromAddress": "From Address",
@@ -106,6 +110,7 @@
   "messageID": "Message ID",
   "messageRejected": "Message Rejected",
   "messages": "Messages",
+  "messagesMultipartyWarning": "Messaging is currently disabled when multiparty mode is off",
   "messageType": "Message Type",
   "messagingMethod": "Messaging Method",
   "mint": "Mint",
@@ -193,10 +198,5 @@
   "unpinned": "Unpinned",
   "uploadFile": "Upload File",
   "version": "Version",
-  "waitingForTxEventsToFinish": "Waiting for events to finish",
-  "blockNumber": "Block Number",
-  "blockNumberDescription": "The block number to subscribe from.",
-  "firstEvent": "First Event",
-  "firstEventDescription": "The first event for this listener to index. Valid options are 'newest', 'oldest', or a specific block number.",
-  "messagesMultipartyWarning": "Messaging is currently disabled when multiparty mode is off"
+  "waitingForTxEventsToFinish": "Waiting for events to finish"
 }

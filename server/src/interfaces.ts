@@ -40,6 +40,11 @@ export class DatatypeDefinition {
   version: string;
 }
 
+export class FFContractListenerOptions {
+  @IsOptional()
+  firstEvent: string;
+}
+
 export class BroadcastValue extends BaseMessageFields {
   @IsString()
   @IsOptional()
@@ -305,6 +310,9 @@ export class ContractListener {
 
   @IsString()
   eventPath: string;
+
+  @IsInstance(FFContractListenerOptions)
+  options?: FFContractListenerOptions
 }
 
 export class ContractListenerLookup {

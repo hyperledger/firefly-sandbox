@@ -1,4 +1,4 @@
-import { Get, JsonController, Param, QueryParam } from 'routing-controllers';
+import { Get, InternalServerError, JsonController, Param, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
 import { FFStatus, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
@@ -33,19 +33,27 @@ export class CommonController {
   @ResponseSchema(Verifier, { isArray: true })
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
   async verifiers(): Promise<Verifier[]> {
-    const orgs = await firefly.getOrganizations();
-    const defaultVerifiers = await firefly.getVerifiers('default');
-    const legacyVerifiers = await firefly.getVerifiers('ff_system');
-    const verifiers = defaultVerifiers.concat(legacyVerifiers);
-
-    const result: Verifier[] = [];
-    for (const v of verifiers) {
-      const o = orgs.find((o) => o.id === v.identity);
-      if (o !== undefined) {
-        result.push({ did: o.did, type: v.type, value: v.value });
+    try {
+      const orgs = await firefly.getOrganizations();
+      let verifiers = await firefly.getVerifiers('ff_system');
+      if (verifiers.length === 0) {
+        // attempt to query legacy ff_system verifiers
+        verifiers = await firefly.getVerifiers('ff_system');
       }
+      const result: Verifier[] = [];
+      for (const v of verifiers) {
+        const o = orgs.find((o) => o.id === v.identity);
+        if (o !== undefined) {
+          result.push({ did: o.did, type: v.type, value: v.value });
+        }
+      }
+      return result;
+    } catch (err) {
+      if (err.message == "FF10187: Namespace does not exist") {
+        return [];
+      }
+      throw new InternalServerError(err.message);
     }
-    return result;
   }
 
   @Get('/verifiers/self')
@@ -92,7 +100,7 @@ export class CommonController {
     const status = await firefly.getStatus();
     if ("multiparty" in status) {
       return {
-        multiparty: status.multiparty.enabled,
+        multiparty: status.multiparty?.enabled,
       };
     } else {
       // Assume multiparty mode if `multiparty` key is missing from status

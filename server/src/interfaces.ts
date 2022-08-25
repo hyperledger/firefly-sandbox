@@ -40,6 +40,11 @@ export class DatatypeDefinition {
   version: string;
 }
 
+export class FFContractListenerOptions {
+  @IsOptional()
+  firstEvent: string;
+}
+
 export class BroadcastValue extends BaseMessageFields {
   @IsString()
   @IsOptional()
@@ -144,6 +149,10 @@ export class TokenPoolInput {
   @IsString()
   @IsOptional()
   address?: string;
+
+  @IsString()
+  @IsOptional()
+  blockNumber?: string;
 }
 
 export class TokenPool extends TokenPoolInput {
@@ -305,6 +314,10 @@ export class ContractListener {
 
   @IsString()
   eventPath: string;
+
+  @IsOptional()
+  @IsString()
+  firstEvent?: string;
 }
 
 export class ContractListenerLookup {

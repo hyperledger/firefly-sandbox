@@ -152,6 +152,9 @@ export class ContractsController {
     const listener = await firefly.createContractAPIListener(body.apiName, body.eventPath, {
       topic: body.topic,
       name: body.name,
+      options: {
+        firstEvent: body.firstEvent
+      }
     });
     return {
       id: listener.id,
@@ -214,6 +217,9 @@ export class ContractsTemplateController {
         {
           topic: <%= ${q('topic')} %>,<% if (name) { %>
           <% print('name: ' + ${q('name')} + ',') } %>
+          options: {<% if (firstEvent) { %>
+            <% print('firstEvent: ' + ${q('firstEvent')} + ',') } %>
+          }
         },
       );
       return {

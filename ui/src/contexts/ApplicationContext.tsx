@@ -16,6 +16,7 @@
 
 import { createContext, Dispatch, SetStateAction } from 'react';
 import { IApiStatus, ISelfIdentity } from '../interfaces/api';
+import { ITutorialSection } from '../interfaces/tutorialSection';
 
 export interface IApplicationContext {
   selfIdentity: ISelfIdentity | undefined;
@@ -34,6 +35,7 @@ export interface IApplicationContext {
   tokensDisabled: boolean;
   blockchainPlugin: string;
   multiparty: boolean;
+  tutorialSections: ITutorialSection[];
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

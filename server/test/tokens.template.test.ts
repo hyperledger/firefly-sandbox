@@ -16,6 +16,7 @@ describe('Templates: Tokens', () => {
             symbol: 'P1',
             type: 'fungible',
             address: undefined,
+            blockNumber: '0',
           }),
         ).toBe(
           formatTemplate(`
@@ -24,6 +25,7 @@ describe('Templates: Tokens', () => {
               symbol: 'P1',
               type: 'fungible',
               config: {
+                blockNumber: '0',
               }
             });
             return { type: 'token_pool', id: pool.id };

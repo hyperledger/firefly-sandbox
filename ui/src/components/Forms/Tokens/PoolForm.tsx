@@ -6,7 +6,7 @@ import {
   Select,
   TextField,
 } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
@@ -21,6 +21,7 @@ export const PoolForm: React.FC = () => {
   const [name, setName] = useState<string>('');
   const [symbol, setSymbol] = useState<string>('');
   const [address, setAddress] = useState<string | undefined>();
+  const [blockNumber, setBlockNumber] = useState('0');
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
   useEffect(() => {
@@ -36,8 +37,9 @@ export const PoolForm: React.FC = () => {
       symbol: symbol === '' ? null : symbol,
       type,
       address,
+      blockNumber,
     });
-  }, [name, symbol, type, address, formID]);
+  }, [name, symbol, type, address, formID, blockNumber]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.indexOf(' ') < 0) {
@@ -48,6 +50,14 @@ export const PoolForm: React.FC = () => {
   const handleSymbolChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.indexOf(' ') < 0) {
       setSymbol(event.target.value);
+    }
+  };
+
+  const handleBlockNumberChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    if (event.target.value.indexOf(' ') < 0) {
+      setBlockNumber(event.target.value);
     }
   };
 
@@ -104,6 +114,17 @@ export const PoolForm: React.FC = () => {
                 setAddress(event?.target.value);
               }}
               helperText={t('tokenPoolAddressHelperText')}
+            />
+          </Grid>
+        </Grid>
+        <Grid container item justifyContent="space-between" spacing={1}>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              label={t('blockNumber')}
+              value={blockNumber}
+              onChange={handleBlockNumberChange}
+              helperText={t('blockNumberDescription')}
             />
           </Grid>
         </Grid>

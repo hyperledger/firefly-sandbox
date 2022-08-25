@@ -127,6 +127,7 @@ describe('Templates: Smart Contracts', () => {
             topic: 'app1',
             apiName: 'api1',
             eventPath: 'set',
+            firstEvent: 'newest',
           }),
         ).toBe(
           formatTemplate(`
@@ -135,6 +136,9 @@ describe('Templates: Smart Contracts', () => {
               'set',
               {
                 topic: 'app1',
+                options: {
+                  firstEvent: 'newest',
+                }
               },
             );
             return {

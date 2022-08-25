@@ -29,6 +29,7 @@ export const RegisterContractApiListenerForm: React.FC = () => {
   const [contractApi, setContractApi] = useState<string>('');
   const [events, setEvents] = useState<string[]>([]);
   const [eventPath, setEventPath] = useState<string>('');
+  const [firstEvent, setFirstEvent] = useState('newest');
 
   const [name, setName] = useState<string>('');
   const [topic, setTopic] = useState<string>('');
@@ -52,8 +53,9 @@ export const RegisterContractApiListenerForm: React.FC = () => {
       topic,
       apiName: contractApi,
       eventPath,
+      firstEvent,
     });
-  }, [name, topic, contractApi, eventPath, formID]);
+  }, [name, topic, contractApi, eventPath, formID, firstEvent]);
 
   useEffect(() => {
     isMounted &&
@@ -154,6 +156,17 @@ export const RegisterContractApiListenerForm: React.FC = () => {
               label={t('name')}
               onChange={(e) => setName(e.target.value)}
               helperText={t('contractListenerNameHelperText')}
+            />
+          </FormControl>
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth required>
+            <TextField
+              fullWidth
+              label={t('firstEvent')}
+              onChange={(e) => setFirstEvent(e.target.value)}
+              helperText={t('firstEventDescription')}
+              value={firstEvent}
             />
           </FormControl>
         </Grid>

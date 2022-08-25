@@ -315,8 +315,9 @@ export class ContractListener {
   @IsString()
   eventPath: string;
 
-  @IsInstance(FFContractListenerOptions)
-  options?: FFContractListenerOptions
+  @IsOptional()
+  @IsString()
+  firstEvent?: string;
 }
 
 export class ContractListenerLookup {

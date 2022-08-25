@@ -193,5 +193,7 @@
   "unpinned": "Unpinned",
   "uploadFile": "Upload File",
   "version": "Version",
-  "waitingForTxEventsToFinish": "Waiting for events to finish"
+  "waitingForTxEventsToFinish": "Waiting for events to finish",
+  "blockNumber": "Block Number",
+  "blockNumberDescription": "The block number to subscribe from."
 }

@@ -67,6 +67,7 @@ export class TokensController {
       type: body.type,
       config: {
         address: body.address,
+        blockNumber: body.blockNumber,
       },
     });
     return { type: 'token_pool', id: pool.id };
@@ -259,6 +260,7 @@ export class TokensTemplateController {
         type: <%= ${q('type')} %>,
         config: {<% if (address) { %>
           <% print('address: ' + ${q('address')} + ',') } %>
+          blockNumber: <%= ${q('blockNumber')} %>,
         }
       });
       return { type: 'token_pool', id: pool.id };

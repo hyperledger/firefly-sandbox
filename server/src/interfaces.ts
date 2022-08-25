@@ -149,6 +149,10 @@ export class TokenPoolInput {
   @IsString()
   @IsOptional()
   address?: string;
+
+  @IsString()
+  @IsOptional()
+  blockNumber?: string;
 }
 
 export class TokenPool extends TokenPoolInput {

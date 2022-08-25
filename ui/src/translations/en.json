@@ -195,5 +195,8 @@
   "version": "Version",
   "waitingForTxEventsToFinish": "Waiting for events to finish",
   "blockNumber": "Block Number",
-  "blockNumberDescription": "The block number to subscribe from."
+  "blockNumberDescription": "The block number to subscribe from.",
+  "firstEvent": "First Event",
+  "firstEventDescription": "The first event for this listener to index. Valid options are 'newest', 'oldest', or a specific block number.",
+  "messagesMultipartyWarning": "Messaging is currently disabled when multiparty mode is off"
 }

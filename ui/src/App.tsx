@@ -11,6 +11,10 @@ import {
   SnackbarMessageType,
 } from './components/Snackbar/MessageSnackbar';
 import { SDK_PATHS } from './constants/SDK_PATHS';
+import {
+  GatewayTutorialSections,
+  TutorialSections,
+} from './constants/TutorialSections';
 import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
 import {
@@ -19,13 +23,14 @@ import {
   ISelfIdentity,
   IVerifier,
 } from './interfaces/api';
+import { ITutorialSection } from './interfaces/tutorialSection';
 import { themeOptions } from './theme';
 import { fetchCatcher, summarizeFetchError } from './utils/fetches';
 
 export const MAX_FORM_ROWS = 10;
 
 function App() {
-  const [initialized, setInitialized] = useState(true);
+  const [initialized, setInitialized] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<SnackbarMessageType>('error');
 
@@ -41,6 +46,9 @@ function App() {
   });
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
+  const [tutorialSections, setTutorialSections] = useState<ITutorialSection[]>(
+    []
+  );
 
   useEffect(() => {
     Promise.all([
@@ -59,6 +67,7 @@ function App() {
         const ffStatus = statusResponse as IFireflyStatus;
         setMultiparty(ffStatus.multiparty);
         if (ffStatus.multiparty === true) {
+          setTutorialSections(TutorialSections);
           fetchCatcher(SDK_PATHS.verifiers)
             .then((verifierRes: IVerifier[]) => {
               setSelfIdentity({
@@ -71,6 +80,8 @@ function App() {
             .catch((err) => {
               reportFetchError(err);
             });
+        } else {
+          setTutorialSections(GatewayTutorialSections);
         }
       })
       .finally(() => {
@@ -110,6 +121,7 @@ function App() {
             tokensDisabled,
             blockchainPlugin,
             multiparty,
+            tutorialSections,
           }}
         >
           <StyledEngineProvider injectFirst>

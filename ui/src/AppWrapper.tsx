@@ -40,11 +40,17 @@ export const DEFAULT_ACTION = [
   TUTORIAL_FORMS.BROADCAST,
 ];
 
+export const DEFAULT_GATEWAY_ACTION = [
+  TUTORIAL_CATEGORIES.TOKENS,
+  TUTORIAL_FORMS.POOL,
+];
+
 export const AppWrapper: React.FC = () => {
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
-  const { setPayloadMissingFields } = useContext(ApplicationContext);
+  const { setPayloadMissingFields, multiparty, tutorialSections } =
+    useContext(ApplicationContext);
   const [action, setAction] = useState<string | null>(null);
   const [categoryID, setCategoryID] = useState<string | undefined>(undefined);
   const [formID, setFormID] = useState<string | undefined>(undefined);
@@ -64,7 +70,7 @@ export const AppWrapper: React.FC = () => {
 
   useEffect(() => {
     initializeFocusedForm();
-  }, [pathname, search]);
+  }, [pathname, search, tutorialSections]);
 
   // Set form object based on action
   useEffect(() => {
@@ -84,11 +90,16 @@ export const AppWrapper: React.FC = () => {
 
   const initializeFocusedForm = () => {
     const existingAction = searchParams.get(ACTION_QUERY_KEY);
-
     if (existingAction === null) {
-      setCategoryID(DEFAULT_ACTION[0]);
-      setFormID(DEFAULT_ACTION[1]);
-      setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
+      if (multiparty) {
+        setCategoryID(DEFAULT_ACTION[0]);
+        setFormID(DEFAULT_ACTION[1]);
+        setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
+      } else {
+        setCategoryID(DEFAULT_GATEWAY_ACTION[0]);
+        setFormID(DEFAULT_GATEWAY_ACTION[1]);
+        setActionParam(DEFAULT_GATEWAY_ACTION[0], DEFAULT_GATEWAY_ACTION[1]);
+      }
     } else {
       const validAction: string[] = getValidAction(existingAction);
       setCategoryID(validAction[0]);
@@ -134,7 +145,11 @@ export const AppWrapper: React.FC = () => {
 
   const getValidAction = (action: string) => {
     if (!isValidAction(action)) {
-      return DEFAULT_ACTION;
+      if (multiparty) {
+        return DEFAULT_ACTION;
+      } else {
+        return DEFAULT_GATEWAY_ACTION;
+      }
     }
 
     return action.split(ACTION_DELIM);

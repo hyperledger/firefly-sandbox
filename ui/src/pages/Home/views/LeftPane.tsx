@@ -15,32 +15,47 @@ import { ContractStateBox } from '../../../components/Boxes/ContractStateBox';
 import { FFAccordionHeader } from '../../../components/Accordion/FFAccordionHeader';
 import { FFAccordionText } from '../../../components/Accordion/FFAccordionText';
 import { TokenStateBox } from '../../../components/Boxes/TokenStateBox';
-import {
-  TutorialSections,
-  TUTORIAL_CATEGORIES,
-} from '../../../constants/TutorialSections';
+import { TUTORIAL_CATEGORIES } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
 import { DEFAULT_PADDING } from '../../../theme';
 
-const currentStateMap: { [idx: number]: JSX.Element | undefined } = {
+const multipartyStateMap: { [idx: number]: JSX.Element | undefined } = {
   0: undefined,
   1: <TokenStateBox />,
   2: <ContractStateBox />,
 };
 
+const gatewayStateMap: { [idx: number]: JSX.Element | undefined } = {
+  0: <TokenStateBox />,
+  1: <ContractStateBox />,
+};
+
 export const LeftPane = () => {
   const { t } = useTranslation();
-  const { tokensDisabled, multiparty } = useContext(ApplicationContext);
+  const { tokensDisabled, multiparty, tutorialSections } =
+    useContext(ApplicationContext);
   const { formID, categoryID, setActionParam, setPoolObject } =
     useContext(FormContext);
   const [tabIdx, setTabIdx] = useState(0);
-  const [tutorials, setTutorials] = useState(TutorialSections);
+  const [currentStateMap, setCurrentStateMap] = useState<{
+    [idx: number]: JSX.Element | undefined;
+  }>({});
+
+  useEffect(() => {
+    if (multiparty) {
+      setCurrentStateMap(multipartyStateMap);
+    } else {
+      setCurrentStateMap(gatewayStateMap);
+    }
+  }, [multiparty]);
 
   // Set tab index when category ID changes
   useEffect(() => {
     if (formID && categoryID) {
-      const tabIdx = tutorials.findIndex((t) => t.category === categoryID);
+      const tabIdx = tutorialSections.findIndex(
+        (t) => t.category === categoryID
+      );
       if (tabIdx === -1) {
         // Category not found, set to default
         setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
@@ -51,20 +66,10 @@ export const LeftPane = () => {
     }
   }, [formID, categoryID]);
 
-  useEffect(() => {
-    if (!multiparty) {
-      setTutorials(
-        tutorials.filter(
-          (section) => section.category !== TUTORIAL_CATEGORIES.MESSAGES
-        )
-      );
-    }
-  }, [multiparty]);
-
   const handleTabChange = (_: React.SyntheticEvent, newTabIdx: number) => {
     setPoolObject(undefined);
-    const selectedTutorial = tutorials.find(
-      (t) => t.category === tutorials[newTabIdx].category
+    const selectedTutorial = tutorialSections.find(
+      (t) => t.category === tutorialSections[newTabIdx].category
     );
     if (selectedTutorial) {
       setActionParam(
@@ -84,7 +89,7 @@ export const LeftPane = () => {
         value={tabIdx ?? 0}
         onChange={handleTabChange}
       >
-        {tutorials.map((section) => {
+        {tutorialSections.map((section) => {
           return (
             <Tab
               iconPosition="start"
@@ -112,9 +117,10 @@ export const LeftPane = () => {
               <Grid pb={1}>{currentStateMap[tabIdx]}</Grid>
             )}
             {/* Tutorial section column */}
-            {tutorials
+            {tutorialSections
               .filter(
-                (section) => section.category === tutorials[tabIdx].category
+                (section) =>
+                  section.category === tutorialSections[tabIdx].category
               )
               .map((ts) => {
                 return (

@@ -119,6 +119,7 @@
   "name": "Name",
   "namespaceConfirmed": "Namespace Confirmed",
   "namespaceID": "Namespace ID",
+  "namespaceX": "Namespace: {{namespace}}",
   "noAPIsRegisteredWithFireFly": "No APIs Registered with FireFly",
   "noBalancesForWallet": "No Balances for Wallet",
   "noConnectors": "No Token Connectors",

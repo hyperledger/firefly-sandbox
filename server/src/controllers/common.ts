@@ -2,7 +2,7 @@ import { Get, InternalServerError, JsonController, Param, QueryParam } from 'rou
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { firefly } from '../clients/firefly';
 import { FFStatus, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
-
+const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
 /**
  * Common Operations - API Server
  */
@@ -35,7 +35,7 @@ export class CommonController {
   async verifiers(): Promise<Verifier[]> {
     try {
       const orgs = await firefly.getOrganizations();
-      let verifiers = await firefly.getVerifiers('default');
+      let verifiers = await firefly.getVerifiers(DEFAULT_NAMESPACE);
       if (verifiers.length === 0) {
         // attempt to query legacy ff_system verifiers
         verifiers = await firefly.getVerifiers('ff_system');
@@ -61,7 +61,7 @@ export class CommonController {
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
   async verifierSelf(): Promise<Verifier[]> {
     const status = await firefly.getStatus();
-    const verifiers = await firefly.getVerifiers('default');
+    const verifiers = await firefly.getVerifiers(DEFAULT_NAMESPACE);
     const result: Verifier[] = [];
     for (const v of verifiers) {
       if (status.org?.id === v.identity) {
@@ -101,11 +101,13 @@ export class CommonController {
     if ("multiparty" in status) {
       return {
         multiparty: status.multiparty?.enabled,
+        namespace: DEFAULT_NAMESPACE,
       };
     } else {
       // Assume multiparty mode if `multiparty` key is missing from status
       return {
-        multiparty: true
+        multiparty: true,
+        namespace: DEFAULT_NAMESPACE,
       }
     }
   }

@@ -44,6 +44,7 @@ function App() {
     type: '',
     id: '',
   });
+  const [namespace, setNamespace] = useState('');
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
   const [tutorialSections, setTutorialSections] = useState<ITutorialSection[]>(
@@ -66,6 +67,7 @@ function App() {
         );
         const ffStatus = statusResponse as IFireflyStatus;
         setMultiparty(ffStatus.multiparty);
+        setNamespace(ffStatus.namespace);
         if (ffStatus.multiparty === true) {
           setTutorialSections(TutorialSections);
           fetchCatcher(SDK_PATHS.verifiers)
@@ -122,6 +124,7 @@ function App() {
             blockchainPlugin,
             multiparty,
             tutorialSections,
+            namespace,
           }}
         >
           <StyledEngineProvider injectFirst>

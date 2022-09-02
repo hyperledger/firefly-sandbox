@@ -10,6 +10,7 @@ export interface IApiStatus {
 
 export interface IFireflyStatus {
   multiparty: boolean;
+  namespace: string;
 }
 
 export interface IBatch {

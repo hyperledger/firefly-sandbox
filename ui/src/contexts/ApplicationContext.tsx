@@ -36,6 +36,7 @@ export interface IApplicationContext {
   blockchainPlugin: string;
   multiparty: boolean;
   tutorialSections: ITutorialSection[];
+  namespace: string;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

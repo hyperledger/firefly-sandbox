@@ -39,6 +39,7 @@ import ReconnectingWebSocket from 'reconnecting-websocket';
 import { ReactComponent as DiscordLogo } from '../assets/Discord-Logo-White.svg';
 import { ResourceUrls } from '../constants/ResourceUrls';
 import { EventContext } from '../contexts/EventContext';
+import { ApplicationContext } from '../contexts/ApplicationContext';
 import { FF_EVENTS } from '../ff_models/eventTypes';
 import { DEFAULT_BORDER_RADIUS, DEFAULT_PADDING, FFColors } from '../theme';
 import { MenuLogo } from './Logos/MenuLogo';
@@ -52,6 +53,7 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { addLogToHistory } = useContext(EventContext);
+  const { namespace } = useContext(ApplicationContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -201,6 +203,11 @@ export const Header: React.FC = () => {
                   onClick={connectToWS}
                 />
               </Tooltip>
+              <Grid item paddingLeft={1}>
+                <Typography>
+                  {t('namespaceX', { namespace: namespace })}
+                </Typography>
+              </Grid>
               <IconButton
                 color="inherit"
                 onClick={() => setIsModalOpen(true)}

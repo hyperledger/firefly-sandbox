@@ -388,4 +388,7 @@ export class DatatypeInterface {
 export class FFStatus {
   @IsBoolean()
   multiparty: boolean;
+
+  @IsString()
+  namespace: string;
 }

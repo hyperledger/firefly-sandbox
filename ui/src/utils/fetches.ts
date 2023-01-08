@@ -2,10 +2,14 @@ export const fetchWithCredentials = (
   resource: string,
   options?: RequestInit
 ): Promise<Response> => {
-  return fetch(
-    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`,
-    { ...options, credentials: 'include' }
+  const url = new URL(
+    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`
   );
+  const currentNamespace = localStorage.getItem('selectedNamespace');
+  if (typeof currentNamespace === 'string' && currentNamespace) {
+    url.searchParams.set('ns', currentNamespace);
+  }
+  return fetch(url.href, { ...options, credentials: 'include' });
 };
 
 export const fetchCatcher = async (resource: string): Promise<any> => {

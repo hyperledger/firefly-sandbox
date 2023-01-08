@@ -1,7 +1,7 @@
 import { Get, InternalServerError, JsonController, Param, QueryParam } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { firefly } from '../clients/firefly';
-import { FFStatus, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
+import { getFireflyClient } from '../clients/fireflySDKWrapper';
+import { FFNamespace, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
 const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
 /**
  * Common Operations - API Server
@@ -12,7 +12,11 @@ export class CommonController {
   @Get('/organizations')
   @ResponseSchema(Organization, { isArray: true })
   @OpenAPI({ summary: 'List all organizations in network' })
-  async organizations(@QueryParam('exclude_self') exclude_self: boolean): Promise<Organization[]> {
+  async organizations(
+    @QueryParam('exclude_self') exclude_self: boolean,
+    @QueryParam('ns') namespace: string,
+  ): Promise<Organization[]> {
+    const firefly = getFireflyClient(namespace);
     let orgs = await firefly.getOrganizations();
     if (exclude_self) {
       const status = await firefly.getStatus();
@@ -24,18 +28,20 @@ export class CommonController {
   @Get('/organizations/self')
   @ResponseSchema(Organization)
   @OpenAPI({ summary: 'Look up local organization' })
-  async self(): Promise<Organization> {
+  async self(@QueryParam('ns') namespace: string): Promise<Organization> {
+    const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
-    return { id: status.org?.id, did: status.org?.did, name: status.org?.name};
+    return { id: status.org?.id, did: status.org?.did, name: status.org?.name };
   }
 
   @Get('/verifiers')
   @ResponseSchema(Verifier, { isArray: true })
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
-  async verifiers(): Promise<Verifier[]> {
+  async verifiers(@QueryParam('ns') namespace: string): Promise<Verifier[]> {
+    const firefly = getFireflyClient(namespace);
     try {
       const orgs = await firefly.getOrganizations();
-      let verifiers = await firefly.getVerifiers(DEFAULT_NAMESPACE);
+      let verifiers = await firefly.getVerifiers(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/58 gets picked up
       if (verifiers.length === 0) {
         // attempt to query legacy ff_system verifiers
         verifiers = await firefly.getVerifiers('ff_system');
@@ -49,7 +55,7 @@ export class CommonController {
       }
       return result;
     } catch (err) {
-      if (err.message == "FF10187: Namespace does not exist") {
+      if (err.message == 'FF10187: Namespace does not exist') {
         return [];
       }
       throw new InternalServerError(err.message);
@@ -59,9 +65,10 @@ export class CommonController {
   @Get('/verifiers/self')
   @ResponseSchema(Verifier, { isArray: true })
   @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
-  async verifierSelf(): Promise<Verifier[]> {
+  async verifierSelf(@QueryParam('ns') namespace: string): Promise<Verifier[]> {
+    const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
-    const verifiers = await firefly.getVerifiers(DEFAULT_NAMESPACE);
+    const verifiers = await firefly.getVerifiers(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/58 gets picked up
     const result: Verifier[] = [];
     for (const v of verifiers) {
       if (status.org?.id === v.identity) {
@@ -74,7 +81,8 @@ export class CommonController {
   @Get('/plugins')
   @ResponseSchema(Plugins)
   @OpenAPI({ summary: 'List plugins on the FireFly node' })
-  async plugins(): Promise<Plugins> {
+  async plugins(@QueryParam('ns') namespace: string): Promise<Plugins> {
+    const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
     return {
       blockchain: status.plugins.blockchain as Plugin[],
@@ -85,7 +93,11 @@ export class CommonController {
   @Get('/transactions/:id')
   @ResponseSchema(Transaction)
   @OpenAPI({ summary: 'Look up a FireFly transaction by ID' })
-  async transaction(@Param('id') id: string): Promise<Transaction> {
+  async transaction(
+    @Param('id') id: string,
+    @QueryParam('ns') namespace: string,
+  ): Promise<Transaction> {
+    const firefly = getFireflyClient(namespace);
     const tx = await firefly.getTransaction(id);
     return {
       id: tx.id,
@@ -93,22 +105,25 @@ export class CommonController {
     };
   }
 
-  @Get('/firefly/status')
-  @ResponseSchema(FFStatus)
+  @Get('/firefly/namespaces')
+  @ResponseSchema(FFNamespace, { isArray: true })
   @OpenAPI({ summary: 'Look up FireFly status' })
-  async ffStatus(): Promise<FFStatus> {
-    const status = await firefly.getStatus();
-    if ("multiparty" in status) {
-      return {
-        multiparty: status.multiparty?.enabled,
-        namespace: DEFAULT_NAMESPACE,
-      };
-    } else {
-      // Assume multiparty mode if `multiparty` key is missing from status
-      return {
-        multiparty: true,
-        namespace: DEFAULT_NAMESPACE,
-      }
+  async ffNamespaces(): Promise<FFNamespace[] | undefined> {
+    const firefly = getFireflyClient();
+    const namesapces = await firefly.getNamespaces();
+    const namespaceStatuses = [];
+    for (let i = 0; i < namesapces.length; i++) {
+      const ns = namesapces[i];
+      const nsFirefly = getFireflyClient(ns.name);
+      const status = await nsFirefly.getStatus(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/59 gets picked up
+      namespaceStatuses.push({
+        multiparty: status.multiparty ? status.multiparty.enabled : true,
+        name: ns.name,
+        default: ns.name === DEFAULT_NAMESPACE, // TODO: maybe we should just use the firefly default namespace?
+      });
     }
+    console.log(namespaceStatuses);
+
+    return namespaceStatuses;
   }
 }

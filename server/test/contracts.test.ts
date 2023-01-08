@@ -5,14 +5,14 @@ import FireFly, {
   FireFlyContractListenerResponse,
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
-import { firefly } from '../src/clients/firefly';
+import { getFireflyClient } from '../src/clients/fireflySDKWrapper';
 import {
   ContractAPI,
   ContractInterface,
   ContractInterfaceFormat,
   ContractListener,
 } from '../src/interfaces';
-
+const firefly = getFireflyClient();
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
@@ -226,7 +226,7 @@ describe('Smart Contracts', () => {
       apiName: 'my-api',
       eventPath: 'Changed',
       topic: 'my-app',
-      firstEvent: 'newest'
+      firstEvent: 'newest',
     };
     const listener = {
       id: 'listener1',

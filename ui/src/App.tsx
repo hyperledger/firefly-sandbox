@@ -19,7 +19,7 @@ import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
 import {
   IApiStatus,
-  IFireflyStatus,
+  IFireflyNamespace,
   ISelfIdentity,
   IVerifier,
 } from './interfaces/api';
@@ -45,6 +45,7 @@ function App() {
     id: '',
   });
   const [namespace, setNamespace] = useState('');
+  const [namespaces, setNamespaces] = useState<string[]>([]);
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
   const [tutorialSections, setTutorialSections] = useState<ITutorialSection[]>(
@@ -52,44 +53,72 @@ function App() {
   );
 
   useEffect(() => {
-    Promise.all([
-      fetchCatcher(`${SDK_PATHS.status}`),
-      fetchCatcher(`${SDK_PATHS.organizations}/self`),
-      fetchCatcher(`${SDK_PATHS.plugins}`),
-    ])
-      .then(async ([statusResponse, orgResponse, pluginsResponse]) => {
-        (!pluginsResponse.tokens || pluginsResponse.tokens.length === 0) &&
-          setTokensDisabled(true);
-        setBlockchainPlugin(
-          pluginsResponse.blockchain.length > 0
-            ? pluginsResponse.blockchain[0].pluginType
-            : ''
-        );
-        const ffStatus = statusResponse as IFireflyStatus;
-        setMultiparty(ffStatus.multiparty);
-        setNamespace(ffStatus.namespace);
-        if (ffStatus.multiparty === true) {
+    fetchCatcher(`${SDK_PATHS.namespaces}`)
+      .then(async (namespacesResponse) => {
+        const ffNamespaces = namespacesResponse as IFireflyNamespace[];
+        let namespace: string;
+        // load previous selected namespace from browser cache
+        const savedSelectedNamespace =
+          localStorage.getItem('selectedNamespace');
+        if (
+          savedSelectedNamespace &&
+          ffNamespaces.some((ns) => ns.name === savedSelectedNamespace)
+        ) {
+          namespace = savedSelectedNamespace;
+        } else {
+          // if previous selected namespace cannot be used, use the default / first one
+          namespace =
+            ffNamespaces.find((ns) => ns.default)?.name || ffNamespaces[0].name;
+        }
+        const isMultiParty = ffNamespaces.find(
+          (ns) => ns.name === namespace
+        )!.multiparty;
+        setMultiparty(isMultiParty);
+        setNamespaces(ffNamespaces.map((ns) => ns.name).concat('test2'));
+        setNamespace(namespace);
+
+        if (isMultiParty) {
           setTutorialSections(TutorialSections);
-          fetchCatcher(SDK_PATHS.verifiers)
-            .then((verifierRes: IVerifier[]) => {
-              setSelfIdentity({
-                ...orgResponse,
-                ethereum_address: verifierRes.find(
-                  (verifier: IVerifier) => verifier.did === orgResponse.did
-                )?.value,
-              });
-            })
-            .catch((err) => {
-              reportFetchError(err);
-            });
+          await fetchCatcher(`${SDK_PATHS.organizations}/self`).then(
+            async (orgResponse) => {
+              await fetchCatcher(SDK_PATHS.verifiers)
+                .then((verifierRes: IVerifier[]) => {
+                  setSelfIdentity({
+                    ...orgResponse,
+                    ethereum_address: verifierRes.find(
+                      (verifier: IVerifier) => verifier.did === orgResponse.did
+                    )?.value,
+                  });
+                })
+                .catch((err) => {
+                  reportFetchError(err);
+                });
+            }
+          );
         } else {
           setTutorialSections(GatewayTutorialSections);
         }
+        await fetchCatcher(`${SDK_PATHS.plugins}`).then(
+          async (pluginsResponse) => {
+            (!pluginsResponse.tokens || pluginsResponse.tokens.length === 0) &&
+              setTokensDisabled(true);
+            setBlockchainPlugin(
+              pluginsResponse.blockchain.length > 0
+                ? pluginsResponse.blockchain[0].pluginType
+                : ''
+            );
+          }
+        );
       })
       .finally(() => {
         setInitialized(true);
       });
   }, []);
+
+  useEffect(() => {
+    console.log('setting local storage');
+    localStorage.setItem('selectedNamespace', namespace);
+  }, [namespace]);
 
   // Error snackbar
   const reportFetchError = (err: any) => {
@@ -125,6 +154,8 @@ function App() {
             multiparty,
             tutorialSections,
             namespace,
+            namespaces,
+            setNamespace,
           }}
         >
           <StyledEngineProvider injectFirst>

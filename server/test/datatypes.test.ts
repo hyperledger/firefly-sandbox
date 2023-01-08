@@ -1,9 +1,9 @@
 import * as request from 'supertest';
 import FireFly, { FireFlyDatatypeResponse } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
-import { firefly } from '../src/clients/firefly';
+import { getFireflyClient } from '../src/clients/fireflySDKWrapper';
 import { DatatypeInterface } from '../src/interfaces';
-
+const firefly = getFireflyClient();
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 

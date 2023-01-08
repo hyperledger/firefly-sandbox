@@ -7,7 +7,7 @@ export const SDK_PATHS = {
   transactionsByID: (txID: string) =>
     `${API_PREFIX}/common/transactions/${txID}`,
   verifiers: `${API_PREFIX}/common/verifiers`,
-  status: `${API_PREFIX}/common/firefly/status`,
+  namespaces: `${API_PREFIX}/common/firefly/namespaces`,
   // Contracts
   contractsApi: `${API_PREFIX}/contracts/api`,
   contractsApiByName: (apiName: string) =>

@@ -12,7 +12,7 @@ import {
 import { Request } from 'express';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { plainToClassFromExist } from 'class-transformer';
-import { firefly } from '../clients/firefly';
+import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import {
   FF_MESSAGES,
   formatTemplate,
@@ -42,7 +42,8 @@ export class TokensController {
   @Get('/pools')
   @ResponseSchema(TokenPool, { isArray: true })
   @OpenAPI({ summary: 'List all token pools' })
-  async tokenpools(): Promise<TokenPool[]> {
+  async tokenpools(@QueryParam('ns') namespace: string): Promise<TokenPool[]> {
+    const firefly = getFireflyClient(namespace);
     const pools = await firefly.getTokenPools();
     return pools.map((p) => mapPool(p));
   }
@@ -50,7 +51,11 @@ export class TokensController {
   @Get('/pools/:id')
   @ResponseSchema(TokenPool)
   @OpenAPI({ summary: 'Look up a token pool by ID' })
-  async tokenpool(@Param('id') id: string): Promise<TokenPool> {
+  async tokenpool(
+    @Param('id') id: string,
+    @QueryParam('ns') namespace: string,
+  ): Promise<TokenPool> {
+    const firefly = getFireflyClient(namespace);
     const pool = await firefly.getTokenPool(id);
     return mapPool(pool);
   }
@@ -59,7 +64,11 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Create a token pool' })
-  async createtokenpool(@Body() body: TokenPoolInput): Promise<AsyncResponse> {
+  async createtokenpool(
+    @Body() body: TokenPoolInput,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
     const pool = await firefly.createTokenPool({
       name: body.name,
@@ -77,7 +86,11 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Mint tokens within a token pool' })
-  async mint(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
+  async mint(
+    @Body() body: TokenMintBurn,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
     const mintBody = {
       pool: body.pool,
@@ -102,14 +115,16 @@ export class TokensController {
   async mintblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
+    @QueryParam('ns') namespace: string,
   ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new MintBurnBlob(), req.body);
-    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const data = await firefly.uploadDataBlob(file.buffer, { filename: file.originalname });
     const mintBody = {
       pool: body.pool,
       amount: body.amount,
-      tokenIndex: body.tokenIndex
+      tokenIndex: body.tokenIndex,
     } as any;
     if (body.messagingMethod) {
       mintBody.message =
@@ -125,7 +140,11 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Burn tokens within a token pool' })
-  async burn(@Body() body: TokenMintBurn): Promise<AsyncResponse> {
+  async burn(
+    @Body() body: TokenMintBurn,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
     const burnBody = {
       pool: body.pool,
@@ -150,10 +169,12 @@ export class TokensController {
   async burnblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
+    @QueryParam('ns') namespace: string,
   ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new MintBurnBlob(), req.body);
-    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const data = await firefly.uploadDataBlob(file.buffer, { filename: file.originalname });
     const burnBody = {
       pool: body.pool,
       amount: body.amount,
@@ -173,7 +194,11 @@ export class TokensController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Transfer tokens within a token pool' })
-  async transfer(@Body() body: TokenTransfer): Promise<AsyncResponse> {
+  async transfer(
+    @Body() body: TokenTransfer,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
     const transferBody = {
       pool: body.pool,
@@ -199,10 +224,12 @@ export class TokensController {
   async transferblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
+    @QueryParam('ns') namespace: string,
   ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new TransferBlob(), req.body);
-    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const data = await firefly.uploadDataBlob(file.buffer, { filename: file.originalname });
     const transferBody = {
       pool: body.pool,
       to: body.to,
@@ -225,7 +252,9 @@ export class TokensController {
   async balances(
     @QueryParam('pool') pool: string,
     @QueryParam('key') key: string,
+    @QueryParam('ns') namespace: string,
   ): Promise<TokenBalance[]> {
+    const firefly = getFireflyClient(namespace);
     const poolMap = new Map<string, TokenPool>();
     const balances = await firefly.getTokenBalances({ pool, key, balance: '>0' });
     for (const b of balances) {
@@ -273,7 +302,9 @@ export class TokensTemplateController {
       const transfer = await firefly.mintTokens({
         pool: <%= ${q('pool')} %>,
         amount: <%= ${q('amount')} %>,<% if(tokenIndex) { %>
-        tokenIndex: <%= ${q('tokenIndex')} %>,<% } %><% if(messagingMethod && (value||jsonValue)) { %>
+        tokenIndex: <%= ${q(
+          'tokenIndex',
+        )} %>,<% } %><% if(messagingMethod && (value||jsonValue)) { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
@@ -320,8 +351,8 @@ export class TokensTemplateController {
       pool: <%= ${q('pool')} %>,
       amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
       <% print('tokenIndex: ' + ${q(
-          'tokenIndex',
-        )} + ',') } %><% if(messagingMethod === 'broadcast') { %>
+        'tokenIndex',
+      )} + ',') } %><% if(messagingMethod === 'broadcast') { %>
       message: {
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,

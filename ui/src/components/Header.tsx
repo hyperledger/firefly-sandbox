@@ -27,6 +27,10 @@ import {
   Grid,
   IconButton,
   Menu,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
   styled,
   Toolbar,
   Tooltip,
@@ -53,7 +57,8 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { addLogToHistory } = useContext(EventContext);
-  const { namespace } = useContext(ApplicationContext);
+  const { namespace, namespaces, setNamespace } =
+    useContext(ApplicationContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -97,6 +102,7 @@ export const Header: React.FC = () => {
       setWsConnected(false);
     }
   };
+  console.log(namespaces);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -203,10 +209,44 @@ export const Header: React.FC = () => {
                   onClick={connectToWS}
                 />
               </Tooltip>
-              <Grid item paddingLeft={1}>
-                <Typography>
-                  {t('namespaceX', { namespace: namespace })}
-                </Typography>
+              <Grid
+                item
+                paddingLeft={1}
+                sx={{
+                  fontSize: '12px',
+                  minWidth: 120,
+                  textAlign: 'center',
+                }}
+              >
+                {namespaces.length === 1 ? (
+                  <Typography>
+                    {t('namespaceX', { namespace: namespace })}
+                  </Typography>
+                ) : (
+                  <Stack display="flex" direction="row" alignItems="center">
+                    <Typography paddingRight={1}>
+                      {t('namespaceX', { namespace: '' })}
+                    </Typography>
+                    <Select
+                      size="small"
+                      labelId="ns-select"
+                      id="ns-select"
+                      value={namespace}
+                      fullWidth
+                      onChange={(event: SelectChangeEvent) => {
+                        setNamespace(event.target.value as string);
+                      }}
+                    >
+                      {namespaces.map((ns) => {
+                        return (
+                          <MenuItem value={ns}>
+                            <Typography>{ns}</Typography>
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </Stack>
+                )}
               </Grid>
               <IconButton
                 color="inherit"

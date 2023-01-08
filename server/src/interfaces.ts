@@ -384,11 +384,13 @@ export class DatatypeInterface {
   @JSONSchema({ type: 'object' })
   schema: any;
 }
-
-export class FFStatus {
+export class FFNamespace {
   @IsBoolean()
   multiparty: boolean;
 
+  @IsBoolean()
+  default: boolean;
+
   @IsString()
-  namespace: string;
+  name: string;
 }

@@ -77,13 +77,15 @@ export const Header: React.FC = () => {
   const connectToWS = () => {
     if (!wsConnected) {
       // Open websocket
-      webSocket.current = new ReconnectingWebSocket(
+      const wsURL = new URL(
         process.env.NODE_ENV === 'development'
           ? `ws://localhost:3001${WS_PATH}`
           : `${window.location.protocol.startsWith('https') ? 'wss' : 'ws'}://${
               window.location.host
             }${WS_PATH}`
       );
+      wsURL.searchParams.set('ns', namespace);
+      webSocket.current = new ReconnectingWebSocket(wsURL.href);
       // On Open
       webSocket.current.onopen = function () {
         setWsConnected(true);

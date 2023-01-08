@@ -74,7 +74,7 @@ function App() {
           (ns) => ns.name === namespace
         )!.multiparty;
         setMultiparty(isMultiParty);
-        setNamespaces(ffNamespaces.map((ns) => ns.name).concat('test2'));
+        setNamespaces(ffNamespaces.map((ns) => ns.name));
         setNamespace(namespace);
 
         if (isMultiParty) {

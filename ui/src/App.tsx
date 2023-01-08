@@ -52,6 +52,14 @@ function App() {
     []
   );
 
+  const changeNamespace = (ns: string) => {
+    if (ns !== namespace) {
+      // trigger refresh
+      localStorage.setItem('selectedNamespace', ns);
+      window.location.reload();
+    }
+  };
+
   useEffect(() => {
     fetchCatcher(`${SDK_PATHS.namespaces}`)
       .then(async (namespacesResponse) => {
@@ -115,11 +123,6 @@ function App() {
       });
   }, []);
 
-  useEffect(() => {
-    console.log('setting local storage');
-    localStorage.setItem('selectedNamespace', namespace);
-  }, [namespace]);
-
   // Error snackbar
   const reportFetchError = (err: any) => {
     summarizeFetchError(err).then((message: string) => {
@@ -155,7 +158,7 @@ function App() {
             tutorialSections,
             namespace,
             namespaces,
-            setNamespace,
+            changeNamespace,
           }}
         >
           <StyledEngineProvider injectFirst>

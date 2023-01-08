@@ -38,7 +38,7 @@ export interface IApplicationContext {
   tutorialSections: ITutorialSection[];
   namespace: string;
   namespaces: string[];
-  setNamespace: Dispatch<SetStateAction<string>>;
+  changeNamespace: (ns: string) => void;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

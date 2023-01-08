@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { addLogToHistory } = useContext(EventContext);
-  const { namespace, namespaces, setNamespace } =
+  const { namespace, namespaces, changeNamespace } =
     useContext(ApplicationContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
@@ -102,7 +102,6 @@ export const Header: React.FC = () => {
       setWsConnected(false);
     }
   };
-  console.log(namespaces);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -234,12 +233,12 @@ export const Header: React.FC = () => {
                       value={namespace}
                       fullWidth
                       onChange={(event: SelectChangeEvent) => {
-                        setNamespace(event.target.value as string);
+                        changeNamespace(event.target.value as string);
                       }}
                     >
                       {namespaces.map((ns) => {
                         return (
-                          <MenuItem value={ns}>
+                          <MenuItem key={ns} value={ns}>
                             <Typography>{ns}</Typography>
                           </MenuItem>
                         );

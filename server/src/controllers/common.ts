@@ -2,7 +2,6 @@ import { Get, InternalServerError, JsonController, Param, QueryParam } from 'rou
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { FFNamespace, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
-const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
 /**
  * Common Operations - API Server
  */
@@ -110,6 +109,7 @@ export class CommonController {
   @OpenAPI({ summary: 'Look up FireFly status' })
   async ffNamespaces(): Promise<FFNamespace[] | undefined> {
     const firefly = getFireflyClient();
+    const defaultNamespaceStatus = await firefly.getDefaultNamespaceStatus();
     const namesapces = await firefly.getNamespaces();
     const namespaceStatuses = [];
     for (let i = 0; i < namesapces.length; i++) {
@@ -119,11 +119,9 @@ export class CommonController {
       namespaceStatuses.push({
         multiparty: status.multiparty ? status.multiparty.enabled : true,
         name: ns.name,
-        default: ns.name === DEFAULT_NAMESPACE, // TODO: maybe we should just use the firefly default namespace?
+        default: ns.name === defaultNamespaceStatus.name, // TODO: maybe we should just use the firefly default namespace?
       });
     }
-    console.log(namespaceStatuses);
-
     return namespaceStatuses;
   }
 }

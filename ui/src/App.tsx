@@ -64,27 +64,24 @@ function App() {
     fetchCatcher(`${SDK_PATHS.namespaces}`)
       .then(async (namespacesResponse) => {
         const ffNamespaces = namespacesResponse as IFireflyNamespace[];
-        let namespace: string;
+        let selectedNamespace: IFireflyNamespace | undefined;
         // load previous selected namespace from browser cache
-        const savedSelectedNamespace = localStorage.getItem('sandboxNamespace');
-        if (
-          savedSelectedNamespace &&
-          ffNamespaces.some((ns) => ns.name === savedSelectedNamespace)
-        ) {
-          namespace = savedSelectedNamespace;
-        } else {
+        const savedSelectedNamespaceName =
+          localStorage.getItem('sandboxNamespace');
+        selectedNamespace = ffNamespaces.find(
+          (ns) => ns.name === savedSelectedNamespaceName
+        );
+        if (!selectedNamespace) {
           // if previous selected namespace cannot be used, use the default / first one
-          namespace =
-            ffNamespaces.find((ns) => ns.default)?.name || ffNamespaces[0].name;
+          selectedNamespace =
+            ffNamespaces.find((ns) => ns.default) || ffNamespaces[0];
 
-          localStorage.setItem('sandboxNamespace', namespace);
+          localStorage.setItem('sandboxNamespace', selectedNamespace.name);
         }
-        const isMultiParty = ffNamespaces.find(
-          (ns) => ns.name === namespace
-        )!.multiparty;
+        const isMultiParty = selectedNamespace.multiparty;
         setMultiparty(isMultiParty);
         setNamespaces(ffNamespaces.map((ns) => ns.name));
-        setNamespace(namespace);
+        setNamespace(selectedNamespace.name);
 
         if (isMultiParty) {
           setTutorialSections(TutorialSections);

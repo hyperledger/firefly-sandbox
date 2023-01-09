@@ -6,9 +6,10 @@ import {
   Get,
   Param,
   NotFoundError,
+  QueryParam,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
-import { firefly } from '../clients/firefly';
+import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { formatTemplate, quoteAndEscape as q } from '../utils';
 import {
   AsyncResponse,
@@ -36,7 +37,11 @@ export class ContractsController {
       'Schema may be in <a href="https://hyperledger.github.io/firefly/reference/firefly_interface_format">FFI</a> ' +
       'or <a href="https://docs.ethers.io/v5/api/utils/abi/formats/#abi-formats--solidity">Solidity JSON ABI</a> format. ',
   })
-  async createInterface(@Body() body: ContractInterface): Promise<AsyncResponse> {
+  async createInterface(
+    @Body() body: ContractInterface,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
     const ffi =
       body.format === ContractInterfaceFormat.ABI
@@ -54,7 +59,11 @@ export class ContractsController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Define a new contract API' })
-  async createAPI(@Body() body: ContractAPI): Promise<AsyncResponse> {
+  async createAPI(
+    @Body() body: ContractAPI,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
     const api = await firefly.createContractAPI({
       name: body.name,
@@ -73,7 +82,11 @@ export class ContractsController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Define a new contract API with Fabric' })
-  async createAPIFabric(@Body() body: ContractAPI): Promise<AsyncResponse> {
+  async createAPIFabric(
+    @Body() body: ContractAPI,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
     const api = await firefly.createContractAPI({
       name: body.name,
@@ -92,7 +105,10 @@ export class ContractsController {
   @Get('/interface')
   @ResponseSchema(ContractInterfaceLookup, { isArray: true })
   @OpenAPI({ summary: 'List contract interfaces' })
-  async getContractInterfaces(): Promise<ContractInterfaceLookup[]> {
+  async getContractInterfaces(
+    @QueryParam('ns') namespace: string,
+  ): Promise<ContractInterfaceLookup[]> {
+    const firefly = getFireflyClient(namespace);
     const interfaces = await firefly.getContractInterfaces();
     return interfaces;
   }
@@ -100,7 +116,8 @@ export class ContractsController {
   @Get('/api')
   @ResponseSchema(ContractAPILookup, { isArray: true })
   @OpenAPI({ summary: 'List contract APIs' })
-  async getAPIs(): Promise<ContractAPILookup[]> {
+  async getAPIs(@QueryParam('ns') namespace: string): Promise<ContractAPILookup[]> {
+    const firefly = getFireflyClient(namespace);
     const apis = await firefly.getContractAPIs();
     return apis.map((api) => ({
       name: api.name,
@@ -112,7 +129,11 @@ export class ContractsController {
   @Get('/api/:name')
   @ResponseSchema(ContractAPILookup)
   @OpenAPI({ summary: 'Get contract API details' })
-  async getAPI(@Param('name') name: string): Promise<ContractAPILookup> {
+  async getAPI(
+    @Param('name') name: string,
+    @QueryParam('ns') namespace: string,
+  ): Promise<ContractAPILookup> {
+    const firefly = getFireflyClient(namespace);
     const api = await firefly.getContractAPI(name);
     if (api === undefined) {
       throw new NotFoundError();
@@ -129,7 +150,11 @@ export class ContractsController {
   @Get('/api/:name/listener')
   @ResponseSchema(ContractListenerLookup, { isArray: true })
   @OpenAPI({ summary: 'List contract API listeners' })
-  async getAPIListeners(@Param('name') name: string): Promise<ContractListenerLookup[]> {
+  async getAPIListeners(
+    @Param('name') name: string,
+    @QueryParam('ns') namespace: string,
+  ): Promise<ContractListenerLookup[]> {
+    const firefly = getFireflyClient(namespace);
     const api = await firefly.getContractAPI(name);
     const listeners = await firefly.getContractListeners({
       interface: api.interface.id,
@@ -147,14 +172,18 @@ export class ContractsController {
   @Post('/listener')
   @ResponseSchema(ContractListenerLookup)
   @OpenAPI({ summary: 'Create a new contract listener' })
-  async createListener(@Body() body: ContractListener): Promise<ContractListenerLookup> {
+  async createListener(
+    @Body() body: ContractListener,
+    @QueryParam('ns') namespace: string,
+  ): Promise<ContractListenerLookup> {
+    const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
     const listener = await firefly.createContractAPIListener(body.apiName, body.eventPath, {
       topic: body.topic,
       name: body.name,
       options: {
-        firstEvent: body.firstEvent
-      }
+        firstEvent: body.firstEvent,
+      },
     });
     return {
       id: listener.id,

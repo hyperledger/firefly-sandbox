@@ -2,10 +2,25 @@ export const fetchWithCredentials = (
   resource: string,
   options?: RequestInit
 ): Promise<Response> => {
-  return fetch(
-    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`,
-    { ...options, credentials: 'include' }
+  const url = new URL(
+    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`
   );
+  const currentNamespace = localStorage.getItem(
+    SANDBOX_LOCAL_STORAGE_ITEM_NAME
+  );
+
+  if (typeof currentNamespace === 'string' && currentNamespace) {
+    let namespaceValue = currentNamespace;
+    // When use jotai to store values in localStorage, it marshall them into JSON
+    // parse them back here
+    try {
+      namespaceValue = JSON.parse(currentNamespace);
+    } catch (e) {
+      // ignore if parse failed
+    }
+    url.searchParams.set('ns', namespaceValue);
+  }
+  return fetch(url.href, { ...options, credentials: 'include' });
 };
 
 export const fetchCatcher = async (resource: string): Promise<any> => {
@@ -48,3 +63,5 @@ export const summarizeFetchError = async (
   }
   return message;
 };
+
+export const SANDBOX_LOCAL_STORAGE_ITEM_NAME = 'sandboxNamespace';

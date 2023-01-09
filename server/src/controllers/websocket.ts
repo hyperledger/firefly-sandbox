@@ -1,6 +1,6 @@
 import { FireFlySubscriptionBase } from '@hyperledger/firefly-sdk';
 import { nanoid } from 'nanoid';
-import { firefly } from '../clients/firefly';
+import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { FF_EVENTS, FF_TX } from '../enums';
 import Logger from '../logger';
 import { mapPool, WebsocketHandler } from '../utils';
@@ -23,7 +23,15 @@ export class SimpleWebSocket {
           events: url.searchParams.get('filter.events') ?? undefined,
         },
       };
-
+      const namespace = url.searchParams.get('ns');
+      if (!namespace) {
+        this.logger.error(`No namespace provided for client ${id}, aborting websocket setup.`);
+        return;
+      }
+      this.logger.log(
+        `Setting up websocket client ${id} to listen to events from '${namespace}' namespace.`,
+      );
+      const firefly = getFireflyClient(namespace);
       const ffSocket = firefly.listen(sub, async (socket, event) => {
         if (event.type === FF_EVENTS.TX_SUBMITTED) {
           if (event.transaction?.type === FF_TX.BATCH_PIN) {

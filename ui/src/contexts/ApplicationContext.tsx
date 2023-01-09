@@ -37,6 +37,8 @@ export interface IApplicationContext {
   multiparty: boolean;
   tutorialSections: ITutorialSection[];
   namespace: string;
+  namespaces: string[];
+  changeNamespace: (ns: string) => void;
 }
 
 export const ApplicationContext = createContext({} as IApplicationContext);

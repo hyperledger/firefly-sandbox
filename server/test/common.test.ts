@@ -5,8 +5,8 @@ import FireFly, {
   FireFlyVerifierResponse,
 } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
-import { firefly } from '../src/clients/firefly';
-
+import { getFireflyClient } from '../src/clients/fireflySDKWrapper';
+const firefly = getFireflyClient();
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
@@ -69,6 +69,6 @@ describe('Common Operations', () => {
       .expect([{ did: 'did:org1', value: '0x123' }]);
 
     expect(mockFireFly.getOrganizations).toHaveBeenCalledWith();
-    expect(mockFireFly.getVerifiers).toHaveBeenCalledWith('default');
+    expect(mockFireFly.getVerifiers).toHaveBeenCalledWith();
   });
 });

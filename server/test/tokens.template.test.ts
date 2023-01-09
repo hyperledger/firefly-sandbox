@@ -79,7 +79,9 @@ describe('Templates: Tokens', () => {
           formatTemplate(`
           const data = await firefly.uploadDataBlob(
             file.buffer,
-            'document.pdf',
+            {
+              filename: 'document.pdf',
+            },
           );
           const transfer = await firefly.mintTokens({
             pool: 'pool1',
@@ -144,7 +146,9 @@ describe('Templates: Tokens', () => {
           formatTemplate(`
           const data = await firefly.uploadDataBlob(
             file.buffer,
-            'document.pdf',
+            {
+              filename: 'document.pdf',
+            },
           );
             const transfer = await firefly.burnTokens({
               pool: 'pool1',
@@ -212,7 +216,9 @@ describe('Templates: Tokens', () => {
           formatTemplate(`
           const data = await firefly.uploadDataBlob(
             file.buffer,
-            'document.pdf',
+            {
+              filename: 'document.pdf',
+            },
           );
             const transfer = await firefly.transferTokens({
               pool: 'pool1',

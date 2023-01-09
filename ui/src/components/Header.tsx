@@ -27,6 +27,10 @@ import {
   Grid,
   IconButton,
   Menu,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
   styled,
   Toolbar,
   Tooltip,
@@ -53,7 +57,8 @@ export const Header: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { addLogToHistory } = useContext(EventContext);
-  const { namespace } = useContext(ApplicationContext);
+  const { namespace, namespaces, changeNamespace } =
+    useContext(ApplicationContext);
   const [wsConnected, setWsConnected] = useState<boolean>(false);
   const webSocket = useRef<ReconnectingWebSocket | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,13 +77,15 @@ export const Header: React.FC = () => {
   const connectToWS = () => {
     if (!wsConnected) {
       // Open websocket
-      webSocket.current = new ReconnectingWebSocket(
+      const wsURL = new URL(
         process.env.NODE_ENV === 'development'
           ? `ws://localhost:3001${WS_PATH}`
           : `${window.location.protocol.startsWith('https') ? 'wss' : 'ws'}://${
               window.location.host
             }${WS_PATH}`
       );
+      wsURL.searchParams.set('ns', namespace);
+      webSocket.current = new ReconnectingWebSocket(wsURL.href);
       // On Open
       webSocket.current.onopen = function () {
         setWsConnected(true);
@@ -203,10 +210,44 @@ export const Header: React.FC = () => {
                   onClick={connectToWS}
                 />
               </Tooltip>
-              <Grid item paddingLeft={1}>
-                <Typography>
-                  {t('namespaceX', { namespace: namespace })}
-                </Typography>
+              <Grid
+                item
+                paddingLeft={1}
+                sx={{
+                  fontSize: '12px',
+                  minWidth: 120,
+                  textAlign: 'center',
+                }}
+              >
+                {namespaces.length === 1 ? (
+                  <Typography>
+                    {t('namespaceX', { namespace: namespace })}
+                  </Typography>
+                ) : (
+                  <Stack display="flex" direction="row" alignItems="center">
+                    <Typography paddingRight={1}>
+                      {t('namespaceX', { namespace: '' })}
+                    </Typography>
+                    <Select
+                      size="small"
+                      labelId="ns-select"
+                      id="ns-select"
+                      value={namespace}
+                      fullWidth
+                      onChange={(event: SelectChangeEvent) => {
+                        changeNamespace(event.target.value as string);
+                      }}
+                    >
+                      {namespaces.map((ns) => {
+                        return (
+                          <MenuItem key={ns} value={ns}>
+                            <Typography>{ns}</Typography>
+                          </MenuItem>
+                        );
+                      })}
+                    </Select>
+                  </Stack>
+                )}
               </Grid>
               <IconButton
                 color="inherit"

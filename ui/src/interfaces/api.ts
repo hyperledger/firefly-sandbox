@@ -8,9 +8,10 @@ export interface IApiStatus {
   statusText: string;
 }
 
-export interface IFireflyStatus {
+export interface IFireflyNamespace {
   multiparty: boolean;
-  namespace: string;
+  name: string;
+  default: boolean;
 }
 
 export interface IBatch {

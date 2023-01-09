@@ -131,7 +131,9 @@ describe('Templates: Messages', () => {
           formatTemplate(`
             const data = await firefly.uploadDataBlob(
               file.buffer,
-              'document.pdf',
+              {
+                filename: 'document.pdf',
+              },
             );
             const message = await firefly.sendBroadcast({
               header: {
@@ -302,7 +304,9 @@ describe('Templates: Messages', () => {
           formatTemplate(`
             const data = await firefly.uploadDataBlob(
               file.buffer,
-              'document.pdf',
+              {
+                filename: 'document.pdf',
+              },
             );
             const message = await firefly.sendPrivateMessage({
               header: {

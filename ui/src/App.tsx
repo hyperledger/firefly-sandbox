@@ -4,6 +4,8 @@ import {
   StyledEngineProvider,
   ThemeProvider,
 } from '@mui/material';
+import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { FF_Router } from './components/Router';
 import {
@@ -19,14 +21,22 @@ import { ApplicationContext } from './contexts/ApplicationContext';
 import { SnackbarContext } from './contexts/SnackbarContext';
 import {
   IApiStatus,
-  IFireflyStatus,
+  IFireflyNamespace,
   ISelfIdentity,
   IVerifier,
 } from './interfaces/api';
 import { ITutorialSection } from './interfaces/tutorialSection';
 import { themeOptions } from './theme';
-import { fetchCatcher, summarizeFetchError } from './utils/fetches';
+import {
+  SANDBOX_LOCAL_STORAGE_ITEM_NAME,
+  fetchCatcher,
+  summarizeFetchError,
+} from './utils/fetches';
 
+const sandboxNamespaceAtom = atomWithStorage(
+  SANDBOX_LOCAL_STORAGE_ITEM_NAME,
+  ''
+);
 export const MAX_FORM_ROWS = 10;
 
 function App() {
@@ -44,47 +54,72 @@ function App() {
     type: '',
     id: '',
   });
-  const [namespace, setNamespace] = useState('');
+  const [namespace, setNamespace] = useAtom(sandboxNamespaceAtom);
+  const [namespaces, setNamespaces] = useState<string[]>([]);
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
   const [tutorialSections, setTutorialSections] = useState<ITutorialSection[]>(
     []
   );
 
+  const changeNamespace = (ns: string) => {
+    if (ns !== namespace) {
+      // trigger refresh
+      setNamespace(ns);
+      window.location.reload();
+    }
+  };
+
   useEffect(() => {
-    Promise.all([
-      fetchCatcher(`${SDK_PATHS.status}`),
-      fetchCatcher(`${SDK_PATHS.organizations}/self`),
-      fetchCatcher(`${SDK_PATHS.plugins}`),
-    ])
-      .then(async ([statusResponse, orgResponse, pluginsResponse]) => {
-        (!pluginsResponse.tokens || pluginsResponse.tokens.length === 0) &&
-          setTokensDisabled(true);
-        setBlockchainPlugin(
-          pluginsResponse.blockchain.length > 0
-            ? pluginsResponse.blockchain[0].pluginType
-            : ''
-        );
-        const ffStatus = statusResponse as IFireflyStatus;
-        setMultiparty(ffStatus.multiparty);
-        setNamespace(ffStatus.namespace);
-        if (ffStatus.multiparty === true) {
+    fetchCatcher(`${SDK_PATHS.namespaces}`)
+      .then(async (namespacesResponse) => {
+        const ffNamespaces = namespacesResponse as IFireflyNamespace[];
+        let selectedNamespace: IFireflyNamespace | undefined;
+        // load previous selected namespace from browser cache
+        selectedNamespace = ffNamespaces.find((ns) => ns.name === namespace);
+        if (!selectedNamespace) {
+          // if previous selected namespace cannot be used, use the default / first one
+          selectedNamespace =
+            ffNamespaces.find((ns) => ns.default) || ffNamespaces[0];
+
+          setNamespace(selectedNamespace.name);
+        }
+        const isMultiParty = selectedNamespace.multiparty;
+        setMultiparty(isMultiParty);
+        setNamespaces(ffNamespaces.map((ns) => ns.name));
+
+        if (isMultiParty) {
           setTutorialSections(TutorialSections);
-          fetchCatcher(SDK_PATHS.verifiers)
-            .then((verifierRes: IVerifier[]) => {
-              setSelfIdentity({
-                ...orgResponse,
-                ethereum_address: verifierRes.find(
-                  (verifier: IVerifier) => verifier.did === orgResponse.did
-                )?.value,
-              });
-            })
-            .catch((err) => {
-              reportFetchError(err);
-            });
+          await fetchCatcher(`${SDK_PATHS.organizations}/self`).then(
+            async (orgResponse) => {
+              await fetchCatcher(SDK_PATHS.verifiers)
+                .then((verifierRes: IVerifier[]) => {
+                  setSelfIdentity({
+                    ...orgResponse,
+                    ethereum_address: verifierRes.find(
+                      (verifier: IVerifier) => verifier.did === orgResponse.did
+                    )?.value,
+                  });
+                })
+                .catch((err) => {
+                  reportFetchError(err);
+                });
+            }
+          );
         } else {
           setTutorialSections(GatewayTutorialSections);
         }
+        await fetchCatcher(`${SDK_PATHS.plugins}`).then(
+          async (pluginsResponse) => {
+            (!pluginsResponse.tokens || pluginsResponse.tokens.length === 0) &&
+              setTokensDisabled(true);
+            setBlockchainPlugin(
+              pluginsResponse.blockchain.length > 0
+                ? pluginsResponse.blockchain[0].pluginType
+                : ''
+            );
+          }
+        );
       })
       .finally(() => {
         setInitialized(true);
@@ -125,6 +160,8 @@ function App() {
             multiparty,
             tutorialSections,
             namespace,
+            namespaces,
+            changeNamespace,
           }}
         >
           <StyledEngineProvider injectFirst>

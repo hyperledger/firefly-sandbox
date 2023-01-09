@@ -7,11 +7,12 @@ import {
   Body,
   JsonController,
   Redirect,
+  QueryParam,
 } from 'routing-controllers';
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
-import { firefly } from '../clients/firefly';
+import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import {
   formatTemplate,
   quoteAndEscape as q,
@@ -38,7 +39,11 @@ export class MessagesController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
-  async broadcast(@Body() body: BroadcastValue): Promise<AsyncResponse> {
+  async broadcast(
+    @Body() body: BroadcastValue,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const message = await firefly.sendBroadcast(getBroadcastMessageBody(body));
     return { type: 'message', id: message.header.id };
@@ -52,10 +57,12 @@ export class MessagesController {
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
+    @QueryParam('ns') namespace: string,
   ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new BroadcastBlob(), req.body);
-    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const data = await firefly.uploadDataBlob(file.buffer, { filename: file.originalname });
     const message = await firefly.sendBroadcast(getBroadcastMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
@@ -64,7 +71,11 @@ export class MessagesController {
   @HttpCode(202)
   @ResponseSchema(AsyncResponse)
   @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
-  async send(@Body() body: PrivateValue): Promise<AsyncResponse> {
+  async send(
+    @Body() body: PrivateValue,
+    @QueryParam('ns') namespace: string,
+  ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body));
     return { type: 'message', id: message.header.id };
@@ -78,10 +89,12 @@ export class MessagesController {
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
+    @QueryParam('ns') namespace: string,
   ): Promise<AsyncResponse> {
+    const firefly = getFireflyClient(namespace);
     // See MessagesTemplateController and keep template code up to date.
     const body = plainToClassFromExist(new PrivateBlob(), req.body);
-    const data = await firefly.uploadDataBlob(file.buffer, file.originalname);
+    const data = await firefly.uploadDataBlob(file.buffer, { filename: file.originalname });
     const message = await firefly.sendPrivateMessage(getPrivateMessageBody(body, data.id));
     return { type: 'message', id: message.header.id };
   }
@@ -125,7 +138,9 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(
         file.buffer,
-        <%= ${q('filename')} %>,
+        {
+          filename: <%= ${q('filename')} %>,
+        },
       );
       const message = await firefly.sendBroadcast({
         header: {<% if (tag) { %>
@@ -176,7 +191,9 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(
         file.buffer,
-        <%= ${q('filename')} %>,
+        {
+          filename: <%= ${q('filename')} %>,
+        },
       );
       const message = await firefly.sendPrivateMessage({
         header: {<% if (tag) { %>

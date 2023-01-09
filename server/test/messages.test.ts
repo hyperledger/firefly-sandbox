@@ -1,9 +1,9 @@
 import * as request from 'supertest';
 import FireFly, { FireFlyDataResponse, FireFlyMessageResponse } from '@hyperledger/firefly-sdk';
 import server from '../src/server';
-import { firefly } from '../src/clients/firefly';
+import { getFireflyClient } from '../src/clients/fireflySDKWrapper';
 import { BroadcastValue, PrivateValue } from '../src/interfaces';
-
+const firefly = getFireflyClient();
 jest.mock('@hyperledger/firefly-sdk');
 const mockFireFly = firefly as jest.MockedObject<FireFly>;
 
@@ -51,7 +51,9 @@ describe('Messages', () => {
       .expect(202)
       .expect({ type: 'message', id: 'msg1' });
 
-    expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
+    expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), {
+      filename: 'simple-file.txt',
+    });
     expect(mockFireFly.sendBroadcast).toHaveBeenCalledWith({
       header: { tag: 'test-tag' },
       data: [data],
@@ -79,7 +81,7 @@ describe('Messages', () => {
 
     expect(mockFireFly.uploadDataBlob).not.toHaveBeenCalled();
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
-      header: { tag: 'test-tag', topics: ['test-topic']},
+      header: { tag: 'test-tag', topics: ['test-topic'] },
       group: {
         members: [{ identity: 'alpha' }, { identity: 'beta' }],
       },
@@ -107,7 +109,9 @@ describe('Messages', () => {
       .expect(202)
       .expect({ type: 'message', id: 'msg1' });
 
-    expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), 'simple-file.txt');
+    expect(mockFireFly.uploadDataBlob).toHaveBeenCalledWith(expect.any(Buffer), {
+      filename: 'simple-file.txt',
+    });
     expect(mockFireFly.sendPrivateMessage).toHaveBeenCalledWith({
       header: { tag: 'test-tag', topics: undefined },
       group: {

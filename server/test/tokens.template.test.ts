@@ -80,7 +80,7 @@ describe('Templates: Tokens', () => {
           const data = await firefly.uploadDataBlob(
             file.buffer,
             {
-              filename: 'document.pdf', 
+              filename: 'document.pdf',
             },
           );
           const transfer = await firefly.mintTokens({
@@ -147,7 +147,7 @@ describe('Templates: Tokens', () => {
           const data = await firefly.uploadDataBlob(
             file.buffer,
             {
-              filename: 'document.pdf', 
+              filename: 'document.pdf',
             },
           );
             const transfer = await firefly.burnTokens({
@@ -217,7 +217,7 @@ describe('Templates: Tokens', () => {
           const data = await firefly.uploadDataBlob(
             file.buffer,
             {
-              filename: 'document.pdf', 
+              filename: 'document.pdf',
             },
           );
             const transfer = await firefly.transferTokens({

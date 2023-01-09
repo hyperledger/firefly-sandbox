@@ -345,7 +345,9 @@ export class TokensTemplateController {
     return formatTemplate(`
     const data = await firefly.uploadDataBlob(
       file.buffer,
-      <%= ${q('filename')} %>,
+      {
+        filename: <%= ${q('filename')} %>,
+      },
     );
     const transfer = await firefly.mintTokens({
       pool: <%= ${q('pool')} %>,
@@ -423,7 +425,9 @@ export class TokensTemplateController {
     return formatTemplate(`
     const data = await firefly.uploadDataBlob(
       file.buffer,
-      <%= ${q('filename')} %>,
+      {
+        filename: <%= ${q('filename')} %>,
+      },
     );
       const transfer = await firefly.burnTokens({
         pool: <%= ${q('pool')} %>,
@@ -502,7 +506,9 @@ export class TokensTemplateController {
     return formatTemplate(`
     const data = await firefly.uploadDataBlob(
       file.buffer,
-      <%= ${q('filename')} %>,
+      {
+        filename: <%= ${q('filename')} %>,
+      },
     );
       const transfer = await firefly.transferTokens({
         pool: <%= ${q('pool')} %>,

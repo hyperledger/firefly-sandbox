@@ -2,6 +2,8 @@ import { Get, InternalServerError, JsonController, Param, QueryParam } from 'rou
 import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { FFNamespace, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
+const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
+
 /**
  * Common Operations - API Server
  */
@@ -40,7 +42,7 @@ export class CommonController {
     const firefly = getFireflyClient(namespace);
     try {
       const orgs = await firefly.getOrganizations();
-      let verifiers = await firefly.getVerifiers(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/58 gets picked up
+      let verifiers = await firefly.getVerifiers();
       if (verifiers.length === 0) {
         // attempt to query legacy ff_system verifiers
         verifiers = await firefly.getVerifiers('ff_system');
@@ -67,7 +69,7 @@ export class CommonController {
   async verifierSelf(@QueryParam('ns') namespace: string): Promise<Verifier[]> {
     const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
-    const verifiers = await firefly.getVerifiers(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/58 gets picked up
+    const verifiers = await firefly.getVerifiers();
     const result: Verifier[] = [];
     for (const v of verifiers) {
       if (status.org?.id === v.identity) {
@@ -109,17 +111,16 @@ export class CommonController {
   @OpenAPI({ summary: 'Look up FireFly status' })
   async ffNamespaces(): Promise<FFNamespace[] | undefined> {
     const firefly = getFireflyClient();
-    const defaultNamespaceStatus = await firefly.getDefaultNamespaceStatus();
     const namesapces = await firefly.getNamespaces();
     const namespaceStatuses = [];
     for (let i = 0; i < namesapces.length; i++) {
       const ns = namesapces[i];
       const nsFirefly = getFireflyClient(ns.name);
-      const status = await nsFirefly.getStatus(); // TODO: make sure https://github.com/hyperledger/firefly-sdk-nodejs/pull/59 gets picked up
+      const status = await nsFirefly.getStatus();
       namespaceStatuses.push({
         multiparty: status.multiparty ? status.multiparty.enabled : true,
         name: ns.name,
-        default: ns.name === defaultNamespaceStatus.name, // TODO: maybe we should just use the firefly default namespace?
+        default: ns.name === DEFAULT_NAMESPACE,
       });
     }
     return namespaceStatuses;

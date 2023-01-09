@@ -138,7 +138,9 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(
         file.buffer,
-        <%= ${q('filename')} %>,
+        {
+          filename: <%= ${q('filename')} %>,
+        },
       );
       const message = await firefly.sendBroadcast({
         header: {<% if (tag) { %>
@@ -189,7 +191,9 @@ export class MessagesTemplateController {
     return formatTemplate(`
       const data = await firefly.uploadDataBlob(
         file.buffer,
-        <%= ${q('filename')} %>,
+        {
+          filename: <%= ${q('filename')} %>,
+        },
       );
       const message = await firefly.sendPrivateMessage({
         header: {<% if (tag) { %>

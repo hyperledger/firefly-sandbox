@@ -111,10 +111,10 @@ export class CommonController {
   @OpenAPI({ summary: 'Look up FireFly status' })
   async ffNamespaces(): Promise<FFNamespace[] | undefined> {
     const firefly = getFireflyClient();
-    const namesapces = await firefly.getNamespaces();
+    const namespaces = await firefly.getNamespaces();
     const namespaceStatuses = [];
-    for (let i = 0; i < namesapces.length; i++) {
-      const ns = namesapces[i];
+    for (let i = 0; i < namespaces.length; i++) {
+      const ns = namespaces[i];
       const nsFirefly = getFireflyClient(ns.name);
       const status = await nsFirefly.getStatus();
       namespaceStatuses.push({
@@ -123,6 +123,6 @@ export class CommonController {
         default: ns.name === DEFAULT_NAMESPACE,
       });
     }
-    return namespaceStatuses;
+    return namespaceStatuses.sort((a, b) => (a.name > b.name ? 1 : a.name < b.name ? -1 : 0));
   }
 }

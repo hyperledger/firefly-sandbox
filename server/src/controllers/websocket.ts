@@ -17,7 +17,6 @@ export class SimpleWebSocket {
       // Each time a client connects to this server, open a corresponding connection to FireFly
       const id = nanoid();
       this.logger.log(`Connecting websocket client ${id}`);
-      console.log(request.url);
       const url = new URL(request.url ?? '', `http://${request.headers.host}`);
       const sub: FireFlySubscriptionBase = {
         filter: {

@@ -4,6 +4,8 @@ import {
   StyledEngineProvider,
   ThemeProvider,
 } from '@mui/material';
+import { useAtom } from 'jotai';
+import { atomWithStorage } from 'jotai/utils';
 import { useEffect, useMemo, useState } from 'react';
 import { FF_Router } from './components/Router';
 import {
@@ -25,8 +27,16 @@ import {
 } from './interfaces/api';
 import { ITutorialSection } from './interfaces/tutorialSection';
 import { themeOptions } from './theme';
-import { fetchCatcher, summarizeFetchError } from './utils/fetches';
+import {
+  SANDBOX_LOCAL_STORAGE_ITEM_NAME,
+  fetchCatcher,
+  summarizeFetchError,
+} from './utils/fetches';
 
+const sandboxNamespaceAtom = atomWithStorage(
+  SANDBOX_LOCAL_STORAGE_ITEM_NAME,
+  ''
+);
 export const MAX_FORM_ROWS = 10;
 
 function App() {
@@ -44,7 +54,7 @@ function App() {
     type: '',
     id: '',
   });
-  const [namespace, setNamespace] = useState('');
+  const [namespace, setNamespace] = useAtom(sandboxNamespaceAtom);
   const [namespaces, setNamespaces] = useState<string[]>([]);
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
@@ -55,7 +65,7 @@ function App() {
   const changeNamespace = (ns: string) => {
     if (ns !== namespace) {
       // trigger refresh
-      localStorage.setItem('sandboxNamespace', ns);
+      setNamespace(ns);
       window.location.reload();
     }
   };
@@ -66,22 +76,17 @@ function App() {
         const ffNamespaces = namespacesResponse as IFireflyNamespace[];
         let selectedNamespace: IFireflyNamespace | undefined;
         // load previous selected namespace from browser cache
-        const savedSelectedNamespaceName =
-          localStorage.getItem('sandboxNamespace');
-        selectedNamespace = ffNamespaces.find(
-          (ns) => ns.name === savedSelectedNamespaceName
-        );
+        selectedNamespace = ffNamespaces.find((ns) => ns.name === namespace);
         if (!selectedNamespace) {
           // if previous selected namespace cannot be used, use the default / first one
           selectedNamespace =
             ffNamespaces.find((ns) => ns.default) || ffNamespaces[0];
 
-          localStorage.setItem('sandboxNamespace', selectedNamespace.name);
+          setNamespace(selectedNamespace.name);
         }
         const isMultiParty = selectedNamespace.multiparty;
         setMultiparty(isMultiParty);
         setNamespaces(ffNamespaces.map((ns) => ns.name));
-        setNamespace(selectedNamespace.name);
 
         if (isMultiParty) {
           setTutorialSections(TutorialSections);

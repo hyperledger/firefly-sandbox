@@ -55,7 +55,7 @@ function App() {
   const changeNamespace = (ns: string) => {
     if (ns !== namespace) {
       // trigger refresh
-      localStorage.setItem('selectedNamespace', ns);
+      localStorage.setItem('sandboxNamespace', ns);
       window.location.reload();
     }
   };
@@ -66,8 +66,7 @@ function App() {
         const ffNamespaces = namespacesResponse as IFireflyNamespace[];
         let namespace: string;
         // load previous selected namespace from browser cache
-        const savedSelectedNamespace =
-          localStorage.getItem('selectedNamespace');
+        const savedSelectedNamespace = localStorage.getItem('sandboxNamespace');
         if (
           savedSelectedNamespace &&
           ffNamespaces.some((ns) => ns.name === savedSelectedNamespace)
@@ -77,6 +76,8 @@ function App() {
           // if previous selected namespace cannot be used, use the default / first one
           namespace =
             ffNamespaces.find((ns) => ns.default)?.name || ffNamespaces[0].name;
+
+          localStorage.setItem('sandboxNamespace', namespace);
         }
         const isMultiParty = ffNamespaces.find(
           (ns) => ns.name === namespace

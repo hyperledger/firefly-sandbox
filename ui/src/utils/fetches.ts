@@ -5,7 +5,7 @@ export const fetchWithCredentials = (
   const url = new URL(
     `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`
   );
-  const currentNamespace = localStorage.getItem('selectedNamespace');
+  const currentNamespace = localStorage.getItem('sandboxNamespace');
   if (typeof currentNamespace === 'string' && currentNamespace) {
     url.searchParams.set('ns', currentNamespace);
   }

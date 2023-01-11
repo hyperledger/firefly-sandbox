@@ -13,6 +13,7 @@ import { FormContext } from '../../contexts/FormContext';
 import { SnackbarContext } from '../../contexts/SnackbarContext';
 import { BLOCKCHAIN_TYPE } from '../../enums/enums';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
+import { SANDBOX_LOCAL_STORAGE_ITEM_NAME } from '../../utils/fetches';
 import { isSuccessfulResponse } from '../../utils/strings';
 
 interface Props {
@@ -57,10 +58,26 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    const postUrlPrefix = window.location.protocol.startsWith('https')
-      ? `https://${window.location.hostname}`
-      : '';
-    fetch(`${postUrlPrefix}${postEndpoint}`, reqDetails)
+    const postUrlPrefix = new URL(
+      `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+    );
+    const url = new URL(`${postUrlPrefix}${postEndpoint}`);
+    const currentNamespace = localStorage.getItem(
+      SANDBOX_LOCAL_STORAGE_ITEM_NAME
+    );
+
+    if (typeof currentNamespace === 'string' && currentNamespace) {
+      let namespaceValue = currentNamespace;
+      // When use jotai to store values in localStorage, it marshall them into JSON
+      // parse them back here
+      try {
+        namespaceValue = JSON.parse(currentNamespace);
+      } catch (e) {
+        // ignore if parse failed
+      }
+      url.searchParams.set('ns', namespaceValue);
+    }
+    fetch(url.href, reqDetails)
       .then((response) => {
         setApiStatus({
           status: response.status,

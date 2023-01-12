@@ -58,10 +58,10 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
     if (!isBlob) {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
-    const postUrlPrefix = new URL(
+    const url = new URL(
       `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
     );
-    const url = new URL(`${postUrlPrefix}${postEndpoint}`);
+    url.pathname = postEndpoint;
     const currentNamespace = localStorage.getItem(
       SANDBOX_LOCAL_STORAGE_ITEM_NAME
     );

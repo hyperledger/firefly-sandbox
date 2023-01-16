@@ -158,7 +158,7 @@ export const PoolForm: React.FC = () => {
                 <MenuItem value={'automatic'}>{t('Automatic')}</MenuItem>
                 {contractInterfaces.map((contractInterface, i) => {
                   return (
-                    <MenuItem value={contractInterface.id}>
+                    <MenuItem value={contractInterface.id} key={i}>
                       {contractInterface.name} - {contractInterface.version}
                     </MenuItem>
                   );

@@ -15,6 +15,7 @@ describe('Templates: Tokens', () => {
             name: 'pool1',
             symbol: 'P1',
             type: 'fungible',
+            contractInterface: 'abcd',
             address: undefined,
             blockNumber: '0',
           }),
@@ -23,6 +24,9 @@ describe('Templates: Tokens', () => {
             const pool = await firefly.createTokenPool({
               name: 'pool1',
               symbol: 'P1',
+              interface: {
+                id: 'abcd'
+              },
               type: 'fungible',
               config: {
                 blockNumber: '0',

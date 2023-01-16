@@ -1,5 +1,6 @@
 import {
   FormControl,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -8,10 +9,14 @@ import {
 } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { SDK_PATHS } from '../../../constants/SDK_PATHS';
 import { TUTORIAL_FORMS } from '../../../constants/TutorialSections';
 import { ApplicationContext } from '../../../contexts/ApplicationContext';
 import { FormContext } from '../../../contexts/FormContext';
+import { SnackbarContext } from '../../../contexts/SnackbarContext';
+import { IContractInterface } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
+import { fetchCatcher } from '../../../utils/fetches';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
@@ -23,6 +28,19 @@ export const PoolForm: React.FC = () => {
   const [address, setAddress] = useState<string | undefined>();
   const [blockNumber, setBlockNumber] = useState('0');
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
+  const { reportFetchError } = useContext(SnackbarContext);
+  const [contractInterfaces, setContractInterfaces] = useState<
+    IContractInterface[]
+  >([]);
+  const [selectedContractInterface, setSelectedContractInterface] =
+    useState('automatic');
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+    return () => {
+      setIsMounted(false);
+    };
+  }, []);
 
   useEffect(() => {
     if (formID !== TUTORIAL_FORMS.POOL) {
@@ -36,10 +54,35 @@ export const PoolForm: React.FC = () => {
       name,
       symbol: symbol === '' ? null : symbol,
       type,
+      contractInterface:
+        selectedContractInterface === 'automatic'
+          ? null
+          : selectedContractInterface,
       address,
       blockNumber,
     });
-  }, [name, symbol, type, address, formID, blockNumber]);
+  }, [
+    name,
+    symbol,
+    type,
+    address,
+    formID,
+    blockNumber,
+    selectedContractInterface,
+  ]);
+
+  useEffect(() => {
+    isMounted &&
+      fetchCatcher(`${SDK_PATHS.contractsInterface}`)
+        .then((apiRes: IContractInterface[]) => {
+          if (isMounted) {
+            setContractInterfaces(apiRes);
+          }
+        })
+        .catch((err) => {
+          reportFetchError(err);
+        });
+  }, [formID, isMounted]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.indexOf(' ') < 0) {
@@ -100,6 +143,30 @@ export const PoolForm: React.FC = () => {
                 <MenuItem value={'fungible'}>{t('fungible')}</MenuItem>
                 <MenuItem value={'nonfungible'}>{t('nonfungible')}</MenuItem>
               </Select>
+            </FormControl>
+          </Grid>
+        </Grid>
+        <Grid container item justifyContent="space-between" spacing={1}>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <InputLabel>{t('contractInterface')}</InputLabel>
+              <Select
+                value={selectedContractInterface}
+                label={t('contractInterface')}
+                onChange={(e) => setSelectedContractInterface(e.target.value)}
+              >
+                <MenuItem value={'automatic'}>{t('Automatic')}</MenuItem>
+                {contractInterfaces.map((contractInterface, i) => {
+                  return (
+                    <MenuItem value={contractInterface.id}>
+                      {contractInterface.name} - {contractInterface.version}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+              <FormHelperText>
+                {t('tokenPoolContractInterfaceHelperText')}
+              </FormHelperText>
             </FormControl>
           </Grid>
         </Grid>

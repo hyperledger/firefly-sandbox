@@ -7,7 +7,7 @@
   "apiID": "API ID",
   "apiResponse": "API Response",
   "apis": "APIs",
-  "apisKnownToFirefly": "APIs Known to FireFly",
+  "apisKnownToFirefly": "APIs known to current FireFly namespace",
   "appCodeInstructions": "Build an action using the panels on the left. Click \"Run\" to execute the action via the backend server. FireFly events related to the transaction will appear on the right.",
   "applicationCode": "Application Code",
   "approvalID": "Approval ID",

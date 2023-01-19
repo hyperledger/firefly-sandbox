@@ -18,8 +18,6 @@ export const FFStateBox: React.FC<Props> = ({ header, children }) => {
       sx={{
         border: `3px solid ${theme.palette.background.paper}`,
         borderRadius: DEFAULT_BORDER_RADIUS,
-        maxHeight: '250px',
-        overflow: 'auto',
       }}
     >
       {/* Header */}
@@ -28,7 +26,19 @@ export const FFStateBox: React.FC<Props> = ({ header, children }) => {
           {header}
         </Typography>
       </Grid>
-      {children}
+      <Grid
+        container
+        direction="column"
+        width="100%"
+        p={1}
+        sx={{
+          maxHeight: '222px',
+          overflow: 'auto',
+          flexWrap: 'nowrap',
+        }}
+      >
+        {children}
+      </Grid>
     </Grid>
   );
 };

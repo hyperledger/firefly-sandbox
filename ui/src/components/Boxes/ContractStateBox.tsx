@@ -76,18 +76,14 @@ export const ContractStateBox: React.FC = () => {
               key={api.name}
             >
               {/* API Row */}
-              <Grid item xs={8} container pt={1}>
-                <HashPopover
-                  address={`${SDK_PATHS.contractsApiByName(api.name)}`}
-                  fullLength
-                  paper
-                />
+              <Grid item xs={10} container pt={1}>
+                <HashPopover address={`${api.name}`} fullLength paper />
               </Grid>
               <Grid
                 container
                 justifyContent="flex-end"
                 item
-                xs={4}
+                xs={2}
                 alignItems="center"
               >
                 <DownloadButton filename={api.name} url={api.urls.openapi} />

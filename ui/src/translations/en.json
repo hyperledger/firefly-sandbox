@@ -92,6 +92,15 @@
   "firstEventDescription": "The first event for this listener to index. Valid options are 'newest', 'oldest', or a specific block number.",
   "followStepsInInstructions": "Follow steps outlined in the instructions",
   "format": "format",
+  "form": {
+    "validation": {
+      "invalidFFField": "{{field}} must consist of alphanumeric characters, '-', '_', or '.', must start and end with an alphanumeric character, and be no more than 64 characters.",
+      "invalidAddress": "Not a valid ethereum address"
+    },
+    "contracts": {
+      "apiEndpointName": "API endpoint name"
+    }
+  },
   "fromAddress": "From Address",
   "fungible": "Fungible",
   "github": "Github",

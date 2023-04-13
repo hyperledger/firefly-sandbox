@@ -35,6 +35,8 @@ npm install
 npm start
 ```
 
+Note: If your Firefly instance is not exposed on port 5000 locally or running remotely, set the env FF_ENDPOINT to the location of your instance.
+
 ## Git repositories
 
 There are multiple Git repos making up the Hyperledger FireFly project. Some others

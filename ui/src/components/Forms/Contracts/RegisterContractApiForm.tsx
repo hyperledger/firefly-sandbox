@@ -19,6 +19,7 @@ import { BLOCKCHAIN_TYPE } from '../../../enums/enums';
 import { IContractInterface } from '../../../interfaces/api';
 import { DEFAULT_SPACING } from '../../../theme';
 import { fetchCatcher } from '../../../utils/fetches';
+import { isValidFFName, isValidAddress } from '../../../utils/regex';
 
 export const RegisterContractApiForm: React.FC = () => {
   const { blockchainPlugin, setJsonPayload, setPayloadMissingFields } =
@@ -32,9 +33,11 @@ export const RegisterContractApiForm: React.FC = () => {
   >([]);
   const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
+  const [nameError, setNameError] = useState<string>('');
   const [chaincode, setChaincode] = useState<string>('');
   const [channel, setChannel] = useState<string>('');
   const [contractAddress, setContractAddress] = useState<string>('');
+  const [contractAddressError, setContractAddressError] = useState<string>('');
 
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => {
@@ -133,7 +136,23 @@ export const RegisterContractApiForm: React.FC = () => {
               fullWidth
               required
               label={t('name')}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                const newValue = event.target.value;
+                if (newValue === '') {
+                  setNameError(t(''));
+                } else if (!isValidFFName(newValue)) {
+                  setNameError(
+                    t('form.validation.invalidFFField', {
+                      field: t('form.contracts.apiEndpointName'),
+                    })
+                  );
+                } else {
+                  setNameError('');
+                }
+                setName(newValue);
+              }}
+              error={!!nameError}
+              helperText={nameError}
             />
           </FormControl>
         </Grid>
@@ -144,7 +163,21 @@ export const RegisterContractApiForm: React.FC = () => {
                 fullWidth
                 required
                 label={t('address')}
-                onChange={(e) => setContractAddress(e.target.value)}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                  const newValue = event.target.value;
+                  if (newValue === '') {
+                    setContractAddressError(t(''));
+                  } else if (!isValidAddress(newValue)) {
+                    setContractAddressError(
+                      t('form.validation.invalidAddress')
+                    );
+                  } else {
+                    setContractAddressError('');
+                  }
+                  setContractAddress(newValue);
+                }}
+                error={!!contractAddressError}
+                helperText={contractAddressError}
               />
               <FormHelperText id="address-helper-text">
                 {t('contractAddressHelperText')}

@@ -17,6 +17,7 @@ describe('Templates: Tokens', () => {
             type: 'fungible',
             address: undefined,
             blockNumber: '0',
+            publish: undefined,
           }),
         ).toBe(
           formatTemplate(`
@@ -28,6 +29,29 @@ describe('Templates: Tokens', () => {
                 blockNumber: '0',
               }
             });
+            return { type: 'token_pool', id: pool.id };
+        `),
+        );
+
+        expect(
+          compiled({
+            name: 'pool1',
+            symbol: 'P1',
+            type: 'fungible',
+            address: undefined,
+            blockNumber: '0',
+            publish: true,
+          }),
+        ).toBe(
+          formatTemplate(`
+            const pool = await firefly.createTokenPool({
+              name: 'pool1',
+              symbol: 'P1',
+              type: 'fungible',
+              config: {
+                blockNumber: '0',
+              }
+            }, { publish: true });
             return { type: 'token_pool', id: pool.id };
         `),
         );

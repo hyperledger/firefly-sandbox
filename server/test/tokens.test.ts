@@ -58,6 +58,7 @@ describe('Tokens', () => {
       symbol: 'P1',
       type: 'fungible',
       config: {},
+      interface: {},
     });
   });
 

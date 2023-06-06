@@ -74,6 +74,9 @@ export class TokensController {
       name: body.name,
       symbol: body.symbol,
       type: body.type,
+      interface: {
+        id: body.contractInterface,
+      },
       config: {
         address: body.address,
         blockNumber: body.blockNumber,
@@ -285,7 +288,10 @@ export class TokensTemplateController {
     return formatTemplate(`
       const pool = await firefly.createTokenPool({
         name: <%= ${q('name')} %>,<% if (symbol) { %>
-        <% print('symbol: ' + ${q('symbol')} + ',') } %>
+        <% print('symbol: ' + ${q('symbol')} + ',') } %><% if (contractInterface) { %>
+        interface: {
+          id: <%= ${q('contractInterface')} %>
+        },<% } %>
         type: <%= ${q('type')} %>,
         config: {<% if (address) { %>
           <% print('address: ' + ${q('address')} + ',') } %>

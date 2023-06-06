@@ -148,6 +148,10 @@ export class TokenPoolInput {
 
   @IsString()
   @IsOptional()
+  contractInterface?: string;
+
+  @IsString()
+  @IsOptional()
   address?: string;
 
   @IsString()

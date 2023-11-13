@@ -70,15 +70,20 @@ export class TokensController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
-    const pool = await firefly.createTokenPool({
-      name: body.name,
-      symbol: body.symbol,
-      type: body.type,
-      config: {
-        address: body.address,
-        blockNumber: body.blockNumber,
+    const pool = await firefly.createTokenPool(
+      {
+        name: body.name,
+        symbol: body.symbol,
+        type: body.type,
+        config: {
+          address: body.address,
+          blockNumber: body.blockNumber,
+        },
       },
-    });
+      {
+        publish: true,
+      },
+    );
     return { type: 'token_pool', id: pool.id };
   }
 

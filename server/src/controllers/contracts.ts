@@ -51,7 +51,7 @@ export class ContractsController {
             input: { abi: body.schema },
           })
         : body.schema;
-    const result = await firefly.createContractInterface(ffi);
+    const result = await firefly.createContractInterface(ffi, { publish: true });
     return { type: 'message', id: result.message };
   }
 
@@ -65,16 +65,21 @@ export class ContractsController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
-    const api = await firefly.createContractAPI({
-      name: body.name,
-      interface: {
-        name: body.interfaceName,
-        version: body.interfaceVersion,
+    const api = await firefly.createContractAPI(
+      {
+        name: body.name,
+        interface: {
+          name: body.interfaceName,
+          version: body.interfaceVersion,
+        },
+        location: {
+          address: body.address,
+        },
       },
-      location: {
-        address: body.address,
+      {
+        publish: true,
       },
-    });
+    );
     return { type: 'message', id: api.message };
   }
 
@@ -88,17 +93,22 @@ export class ContractsController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
-    const api = await firefly.createContractAPI({
-      name: body.name,
-      interface: {
-        name: body.interfaceName,
-        version: body.interfaceVersion,
+    const api = await firefly.createContractAPI(
+      {
+        name: body.name,
+        interface: {
+          name: body.interfaceName,
+          version: body.interfaceVersion,
+        },
+        location: {
+          chaincode: body.chaincode,
+          channel: body.channel,
+        },
       },
-      location: {
-        chaincode: body.chaincode,
-        channel: body.channel,
+      {
+        publish: true,
       },
-    });
+    );
     return { type: 'message', id: api.message };
   }
 

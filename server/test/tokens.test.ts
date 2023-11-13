@@ -53,12 +53,17 @@ describe('Tokens', () => {
       .expect(202)
       .expect({ type: 'token_pool', id: 'pool1' });
 
-    expect(mockFireFly.createTokenPool).toHaveBeenCalledWith({
-      name: 'my-pool',
-      symbol: 'P1',
-      type: 'fungible',
-      config: {},
-    });
+    expect(mockFireFly.createTokenPool).toHaveBeenCalledWith(
+      {
+        name: 'my-pool',
+        symbol: 'P1',
+        type: 'fungible',
+        config: {},
+      },
+      {
+        publish: true,
+      },
+    );
   });
 
   test('Mint tokens', async () => {

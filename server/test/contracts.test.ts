@@ -41,7 +41,7 @@ describe('Smart Contracts', () => {
       .expect(202)
       .expect({ type: 'message', id: 'msg1' });
 
-    expect(mockFireFly.createContractInterface).toHaveBeenCalledWith(req.schema);
+    expect(mockFireFly.createContractInterface).toHaveBeenCalledWith(req.schema, { publish: true });
   });
 
   test('Create contract interface from ABI', async () => {
@@ -71,7 +71,7 @@ describe('Smart Contracts', () => {
       version: '1.0',
       input: { abi: req.schema },
     });
-    expect(mockFireFly.createContractInterface).toHaveBeenCalledWith(int);
+    expect(mockFireFly.createContractInterface).toHaveBeenCalledWith(int, { publish: true });
   });
 
   test('Create contract API', async () => {
@@ -94,11 +94,16 @@ describe('Smart Contracts', () => {
       .expect(202)
       .expect({ type: 'message', id: 'msg1' });
 
-    expect(mockFireFly.createContractAPI).toHaveBeenCalledWith({
-      interface: { name: 'my-contract', version: '1.0' },
-      location: { address: '0x123' },
-      name: 'my-api',
-    });
+    expect(mockFireFly.createContractAPI).toHaveBeenCalledWith(
+      {
+        interface: { name: 'my-contract', version: '1.0' },
+        location: { address: '0x123' },
+        name: 'my-api',
+      },
+      {
+        publish: true,
+      },
+    );
   });
 
   test('Create contract API with Fabric', async () => {
@@ -122,11 +127,16 @@ describe('Smart Contracts', () => {
       .expect(202)
       .expect({ type: 'message', id: 'msg1' });
 
-    expect(mockFireFly.createContractAPI).toHaveBeenCalledWith({
-      interface: { name: 'my-contract', version: '1.0' },
-      location: { chaincode: 'chaincode', channel: '0x123' },
-      name: 'my-api-fabric',
-    });
+    expect(mockFireFly.createContractAPI).toHaveBeenCalledWith(
+      {
+        interface: { name: 'my-contract', version: '1.0' },
+        location: { chaincode: 'chaincode', channel: '0x123' },
+        name: 'my-api-fabric',
+      },
+      {
+        publish: true,
+      },
+    );
   });
 
   test('Get contract Interfaces', async () => {

@@ -91,7 +91,7 @@ export const TransferForm: React.FC = () => {
           if (isMounted) {
             const verifiers = verifiersRes;
             setTokenVerifiers(verifiers);
-            if (verifiers.length > 0) {
+            if (verifiers?.length > 0) {
               setRecipient(verifiers[0].value);
             }
           }
@@ -189,7 +189,7 @@ export const TransferForm: React.FC = () => {
           <FormControl fullWidth required>
             <Autocomplete
               freeSolo
-              options={tokenVerifiers.map((identity) => identity.did)}
+              options={tokenVerifiers?.map((identity) => identity.did) || []}
               renderInput={(params) => (
                 <TextField {...params} label={t('tokenRecipient')} />
               )}

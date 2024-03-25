@@ -9,14 +9,12 @@ import {
   Redirect,
   QueryParam,
 } from 'routing-controllers';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { Request } from 'express';
 import { plainToClassFromExist } from 'class-transformer';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import {
   formatTemplate,
   quoteAndEscape as q,
-  FormDataSchema,
   getBroadcastMessageBody,
   getPrivateMessageBody,
   EmptyVal,
@@ -33,12 +31,9 @@ import {
  * Messages - API Server
  */
 @JsonController('/messages')
-@OpenAPI({ tags: ['Messages'] })
 export class MessagesController {
   @Post('/broadcast')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Send a FireFly broadcast with an inline value' })
   async broadcast(
     @Body() body: BroadcastValue,
     @QueryParam('ns') namespace: string,
@@ -51,9 +46,6 @@ export class MessagesController {
 
   @Post('/broadcastblob')
   @HttpCode(202)
-  @FormDataSchema(BroadcastBlob)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Send a FireFly broadcast with a binary blob' })
   async broadcastblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -69,8 +61,6 @@ export class MessagesController {
 
   @Post('/private')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Send a FireFly private message with an inline value' })
   async send(
     @Body() body: PrivateValue,
     @QueryParam('ns') namespace: string,
@@ -83,9 +73,6 @@ export class MessagesController {
 
   @Post('/privateblob')
   @HttpCode(202)
-  @FormDataSchema(PrivateBlob)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Send a FireFly private message with a binary blob' })
   async sendblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -106,7 +93,6 @@ export class MessagesController {
  * For demonstration purposes only.
  */
 @JsonController('/messages/template')
-@OpenAPI({ tags: ['Messages'] })
 export class MessagesTemplateController {
   @Get('/broadcast')
   broadcastTemplate() {

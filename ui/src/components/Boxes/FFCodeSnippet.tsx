@@ -1,6 +1,9 @@
 import { useTheme } from '@mui/material';
-import SyntaxHighlighter from 'react-syntax-highlighter';
+import {Light as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomOneDark } from 'react-syntax-highlighter/dist/esm/styles/hljs';
+import ts from 'react-syntax-highlighter/dist/esm/languages/hljs/typescript';
+
+SyntaxHighlighter.registerLanguage('javascript', ts);
 
 interface Props {
   codeBlock: string;

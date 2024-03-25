@@ -40,7 +40,7 @@ import {
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { ReactComponent as DiscordLogo } from '../assets/Discord-Logo-White.svg';
+import DiscordLogo from '../assets/Discord-Logo-White.svg';
 import { ResourceUrls } from '../constants/ResourceUrls';
 import { EventContext } from '../contexts/EventContext';
 import { ApplicationContext } from '../contexts/ApplicationContext';
@@ -69,7 +69,7 @@ export const Header: React.FC = () => {
     connectToWS();
   }, []);
 
-  const StyledDiscordLogo = styled(DiscordLogo)({
+  const StyledDiscordLogo = styled('img')({
     width: 20,
     height: 20,
   });
@@ -127,6 +127,7 @@ export const Header: React.FC = () => {
     {
       icon: <StyledDiscordLogo />,
       title: t('discord'),
+      src: DiscordLogo,
       url: ResourceUrls.fireflyDiscordInvite,
     },
   ];

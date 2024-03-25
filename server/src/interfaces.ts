@@ -12,7 +12,6 @@ import {
   IsString,
   IsUUID,
 } from 'class-validator';
-import { JSONSchema } from 'class-validator-jsonschema';
 
 export class AsyncResponse {
   @IsString()
@@ -69,7 +68,6 @@ export class BroadcastValue extends BaseMessageFields {
 
 export class BroadcastBlob extends BaseMessageFields {
   @IsString()
-  @JSONSchema({ format: 'binary' })
   file: string;
 }
 
@@ -101,7 +99,6 @@ export class PrivateBlob extends BaseMessageFields {
   recipients: string[];
 
   @IsString()
-  @JSONSchema({ format: 'binary' })
   file: string;
 }
 
@@ -192,7 +189,6 @@ export class TokenMintBurn extends BroadcastValue {
 
 export class MintBurnBlob extends TokenMintBurn {
   @IsString()
-  @JSONSchema({ format: 'binary' })
   file: string;
 }
 
@@ -203,7 +199,6 @@ export class TokenTransfer extends TokenMintBurn {
 
 export class TransferBlob extends TokenTransfer {
   @IsString()
-  @JSONSchema({ format: 'binary' })
   file: string;
 }
 
@@ -239,7 +234,6 @@ export class ContractInterface {
   version?: string;
 
   @IsDefined()
-  @JSONSchema({ type: 'object' })
   schema: any;
 }
 
@@ -381,7 +375,6 @@ export class DatatypeInterface {
   version: string;
 
   @IsDefined()
-  @JSONSchema({ type: 'object' })
   schema: any;
 }
 export class FFNamespace {

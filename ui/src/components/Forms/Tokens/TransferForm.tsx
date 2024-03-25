@@ -193,7 +193,7 @@ export const TransferForm: React.FC = () => {
               renderInput={(params) => (
                 <TextField {...params} label={t('tokenRecipient')} />
               )}
-              onInputChange={(event, value) => {
+              onInputChange={(_, value) => {
                 const addressFound = tokenVerifiers.find(
                   (tv) => tv.did === value
                 );

@@ -1,5 +1,4 @@
 import { Get, InternalServerError, JsonController, Param, QueryParam } from 'routing-controllers';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { FFNamespace, Organization, Plugin, Plugins, Transaction, Verifier } from '../interfaces';
 const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
@@ -8,11 +7,8 @@ const DEFAULT_NAMESPACE = process.env.FF_DEFAULT_NAMESPACE || 'default';
  * Common Operations - API Server
  */
 @JsonController('/common')
-@OpenAPI({ tags: ['Common'] })
 export class CommonController {
   @Get('/organizations')
-  @ResponseSchema(Organization, { isArray: true })
-  @OpenAPI({ summary: 'List all organizations in network' })
   async organizations(
     @QueryParam('exclude_self') exclude_self: boolean,
     @QueryParam('ns') namespace: string,
@@ -27,8 +23,6 @@ export class CommonController {
   }
 
   @Get('/organizations/self')
-  @ResponseSchema(Organization)
-  @OpenAPI({ summary: 'Look up local organization' })
   async self(@QueryParam('ns') namespace: string): Promise<Organization> {
     const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
@@ -36,8 +30,6 @@ export class CommonController {
   }
 
   @Get('/verifiers')
-  @ResponseSchema(Verifier, { isArray: true })
-  @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for all organizations in network' })
   async verifiers(@QueryParam('ns') namespace: string): Promise<Verifier[]> {
     const firefly = getFireflyClient(namespace);
     try {
@@ -64,8 +56,6 @@ export class CommonController {
   }
 
   @Get('/verifiers/self')
-  @ResponseSchema(Verifier, { isArray: true })
-  @OpenAPI({ summary: 'List verifiers (such as Ethereum keys) for local organization' })
   async verifierSelf(@QueryParam('ns') namespace: string): Promise<Verifier[]> {
     const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
@@ -80,8 +70,6 @@ export class CommonController {
   }
 
   @Get('/plugins')
-  @ResponseSchema(Plugins)
-  @OpenAPI({ summary: 'List plugins on the FireFly node' })
   async plugins(@QueryParam('ns') namespace: string): Promise<Plugins> {
     const firefly = getFireflyClient(namespace);
     const status = await firefly.getStatus();
@@ -92,8 +80,6 @@ export class CommonController {
   }
 
   @Get('/transactions/:id')
-  @ResponseSchema(Transaction)
-  @OpenAPI({ summary: 'Look up a FireFly transaction by ID' })
   async transaction(
     @Param('id') id: string,
     @QueryParam('ns') namespace: string,
@@ -107,8 +93,6 @@ export class CommonController {
   }
 
   @Get('/firefly/namespaces')
-  @ResponseSchema(FFNamespace, { isArray: true })
-  @OpenAPI({ summary: 'Look up FireFly status' })
   async ffNamespaces(): Promise<FFNamespace[] | undefined> {
     const firefly = getFireflyClient();
     const namespaces = await firefly.getNamespaces();

@@ -1,9 +1,6 @@
 import * as http from 'http';
 import { Duplex } from 'stream';
-import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-controllers';
-import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import { FireFlyDataRequest, FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 import { BroadcastValue, PrivateValue } from './interfaces';
@@ -18,18 +15,6 @@ export enum FF_MESSAGES {
   PRIVATE = 'private',
   TRANSFER_PRIVATE = 'transfer_private',
   GROUP_INIT = 'groupinit',
-}
-
-export function genOpenAPI(options: RoutingControllersOptions) {
-  return routingControllersToSpec(getMetadataArgsStorage(), options, {
-    info: {
-      title: 'FireFly Sandbox - Backend Server',
-      version: '1.0.0',
-    },
-    components: {
-      schemas: validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' }),
-    },
-  });
 }
 
 export class WebsocketHandler {
@@ -52,21 +37,6 @@ export class WebsocketHandler {
     });
     return true;
   }
-}
-
-// Decorator for annotating a request that takes in a body of type multipart/form-data
-export function FormDataSchema(schemaClass: any) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    OpenAPI({
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: { $ref: '#/components/schemas/' + schemaClass.name },
-          },
-        },
-      },
-    })(target, propertyKey, descriptor);
-  };
 }
 
 export function formatTemplate(template: string) {
@@ -111,25 +81,33 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return result;
 }
 
-export function getBroadcastMessageBody(body: BroadcastValue, blobId?: string, messageType?: FF_MESSAGES) {
+export function getBroadcastMessageBody(
+  body: BroadcastValue,
+  blobId?: string,
+  messageType?: FF_MESSAGES,
+) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: messageType || undefined
+      type: messageType || undefined,
     },
     data: [dataBody],
   };
 }
 
-export function getPrivateMessageBody(body: PrivateValue, blobId?: string, messageType?: FF_MESSAGES) {
+export function getPrivateMessageBody(
+  body: PrivateValue,
+  blobId?: string,
+  messageType?: FF_MESSAGES,
+) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: messageType || undefined
+      type: messageType || undefined,
     },
     group: {
       members: body.recipients.map((r) => ({ identity: r })),

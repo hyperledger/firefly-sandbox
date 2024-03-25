@@ -2,10 +2,10 @@ import { styled } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Navigate,
   Outlet,
   useLocation,
-  useSearchParams,
+  useNavigate,
+  useSearchParams
 } from 'react-router-dom';
 import { Header } from './components/Header';
 import {
@@ -46,6 +46,7 @@ export const DEFAULT_GATEWAY_ACTION = [
 ];
 
 export const AppWrapper: React.FC = () => {
+  const navigate = useNavigate();
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
@@ -247,9 +248,12 @@ export const AppWrapper: React.FC = () => {
     }
   };
 
-  if (pathname === '/') {
-    return <Navigate to="/home" replace={true} />;
-  }
+  useEffect(() => {
+    if (pathname === '/') {
+      navigate("/home", {replace: true})
+    }
+  }, [pathname])
+
 
   return (
     <RootDiv>

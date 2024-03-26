@@ -81,7 +81,7 @@ export const DefineInterfaceForm: React.FC = () => {
   const [schema, setSchema] = useState<object>(DEFAULT_FFI_SCHEMA);
   const { formID } = useContext(FormContext);
   const [schemaString, setSchemaString] = useState<string>(
-    JSON.stringify(DEFAULT_FFI_SCHEMA, null, 2)
+    JSON.stringify(DEFAULT_FFI_SCHEMA, null, 2),
   );
   const [version, setVersion] = useState<string>('');
   const [interfaceFormats, setInterfaceFormats] = useState(['ffi', 'abi']);
@@ -91,7 +91,7 @@ export const DefineInterfaceForm: React.FC = () => {
       return;
     }
     setPayloadMissingFields(
-      !schema || (interfaceFormat === 'abi' && (!name || !version))
+      !schema || (interfaceFormat === 'abi' && (!name || !version)),
     );
     setJsonPayload({
       format: interfaceFormat,

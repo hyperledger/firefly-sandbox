@@ -71,7 +71,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const [messageType, setMessageType] = useState<POST_BODY_TYPE>(
-    POST_BODY_TYPE.STRING
+    POST_BODY_TYPE.STRING,
   );
   const { formID, categoryID, isBlob, setIsBlob } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
@@ -135,7 +135,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
             !fileName) ||
           tokenMissingFields
           ? true
-          : false
+          : false,
       );
     } else {
       if (
@@ -194,12 +194,12 @@ export const MessageTypeGroup: React.FC<Props> = ({
           type === 'string'
             ? 'string'
             : type === 'integer'
-            ? 1
-            : type === 'boolean'
-            ? true
-            : type === 'number'
-            ? 50.5
-            : null;
+              ? 1
+              : type === 'boolean'
+                ? true
+                : type === 'number'
+                  ? 50.5
+                  : null;
       }
       onSetJsonValue(JSON.stringify(newJsonValue));
     }
@@ -207,7 +207,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
 
   const handleMessageTypeChange = (
     _: React.MouseEvent<HTMLElement>,
-    messageType: POST_BODY_TYPE
+    messageType: POST_BODY_TYPE,
   ) => {
     if (!messageType) {
       return;
@@ -310,7 +310,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
                           }
                           onChange={(e) =>
                             onSetDatatype(
-                              datatypes.find((t) => t.id === e.target.value)
+                              datatypes.find((t) => t.id === e.target.value),
                             )
                           }
                         >
@@ -339,8 +339,8 @@ export const MessageTypeGroup: React.FC<Props> = ({
                   messageType === POST_BODY_TYPE.STRING
                     ? message
                     : jsonValue
-                    ? jsonValue
-                    : ''
+                      ? jsonValue
+                      : ''
                 }
                 onChange={(e) =>
                   messageType === POST_BODY_TYPE.STRING
@@ -368,7 +368,7 @@ export const MessageTypeGroup: React.FC<Props> = ({
                   const file = event?.target?.files[0]?.name;
                   onSetFileName(file);
                   setPayloadMissingFields(
-                    (tokenMissingFields || !file) ?? false
+                    (tokenMissingFields || !file) ?? false,
                   );
                 }}
               />

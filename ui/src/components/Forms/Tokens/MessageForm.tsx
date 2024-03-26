@@ -32,7 +32,7 @@ export const MessageForm: React.FC<Props> = ({
 
   const [withMessage, setWithMessage] = useState<boolean>(false);
   const [messageMethod, setMessageMethod] = useState<string>(
-    TUTORIAL_FORMS.BROADCAST
+    TUTORIAL_FORMS.BROADCAST,
   );
 
   useEffect(() => {

@@ -82,7 +82,7 @@ export const Header: React.FC = () => {
           ? `ws://localhost:3001${WS_PATH}`
           : `${window.location.protocol.startsWith('https') ? 'wss' : 'ws'}://${
               window.location.host
-            }${WS_PATH}`
+            }${WS_PATH}`,
       );
       wsURL.searchParams.set('ns', namespace);
       webSocket.current = new ReconnectingWebSocket(wsURL.href);

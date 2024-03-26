@@ -63,7 +63,7 @@ export const TokenStateBox: React.FC = () => {
     return `${t('total')}: ${balances.length} (${balances
       .sort(
         (a, b) =>
-          parseInt(a.tokenIndex ?? '-1') - parseInt(b.tokenIndex ?? '-1')
+          parseInt(a.tokenIndex ?? '-1') - parseInt(b.tokenIndex ?? '-1'),
       )
       .map((b) => `#${b.tokenIndex ?? ''}`)
       .join(', ')
@@ -73,7 +73,7 @@ export const TokenStateBox: React.FC = () => {
   return (
     <FFStateBox
       header={`${t('balancesFor')} ${getShortHash(
-        selfIdentity?.ethereum_address ?? ''
+        selfIdentity?.ethereum_address ?? '',
       )}`}
     >
       {/* Pool list */}
@@ -105,7 +105,7 @@ export const TokenStateBox: React.FC = () => {
                   &nbsp;
                   {`(${
                     tokenBalanceMap[poolIDKey].balances.every(
-                      (b) => b.tokenIndex === undefined
+                      (b) => b.tokenIndex === undefined,
                     )
                       ? t('fungible')
                       : t('nonfungible')
@@ -114,12 +114,12 @@ export const TokenStateBox: React.FC = () => {
                 &nbsp;
                 <Typography noWrap>
                   {tokenBalanceMap[poolIDKey].balances.every(
-                    (b) => b.tokenIndex !== undefined
+                    (b) => b.tokenIndex !== undefined,
                   )
                     ? makeNonFungibleString(tokenBalanceMap[poolIDKey].balances)
                     : `${t('---')} ${t('total')}: ${decimalToAmount(
                         tokenBalanceMap[poolIDKey].balances[0].balance,
-                        tokenBalanceMap[poolIDKey].balances[0].pool.decimals
+                        tokenBalanceMap[poolIDKey].balances[0].pool.decimals,
                       )}`}
                 </Typography>
               </Grid>

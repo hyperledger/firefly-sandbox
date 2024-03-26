@@ -59,11 +59,11 @@ export const RunButton: React.FC<Props> = ({ endpoint, payload, disabled }) => {
       reqDetails.headers = { 'Content-Type': 'application/json' };
     }
     const url = new URL(
-      `${window.location.protocol}//${window.location.hostname}:${window.location.port}`
+      `${window.location.protocol}//${window.location.hostname}:${window.location.port}`,
     );
     url.pathname = postEndpoint;
     const currentNamespace = localStorage.getItem(
-      SANDBOX_LOCAL_STORAGE_ITEM_NAME
+      SANDBOX_LOCAL_STORAGE_ITEM_NAME,
     );
 
     if (typeof currentNamespace === 'string' && currentNamespace) {

@@ -33,7 +33,7 @@ export const BurnForm: React.FC = () => {
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
   const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [tokenIndex, setTokenIndex] = useState<string | null>('');
   const [isMounted, setIsMounted] = useState(false);
@@ -93,7 +93,7 @@ export const BurnForm: React.FC = () => {
   };
 
   const handleTokenIndexChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setTokenIndex(event.target.value);
   };
@@ -140,7 +140,7 @@ export const BurnForm: React.FC = () => {
                 onChange={(e) => {
                   setPool(tokenPools.find((t) => t.id === e.target.value));
                   setPoolObject(
-                    tokenPools.find((t) => t.id === e.target.value)
+                    tokenPools.find((t) => t.id === e.target.value),
                   );
                 }}
               >

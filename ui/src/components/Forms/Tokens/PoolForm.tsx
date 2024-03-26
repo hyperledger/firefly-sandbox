@@ -59,7 +59,7 @@ export const PoolForm: React.FC = () => {
   };
 
   const handleBlockNumberChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (event.target.value.indexOf(' ') < 0) {
       setBlockNumber(event.target.value);

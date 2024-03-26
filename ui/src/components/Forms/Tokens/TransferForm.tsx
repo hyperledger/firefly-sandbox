@@ -34,7 +34,7 @@ export const TransferForm: React.FC = () => {
   const [pool, setPool] = useState<ITokenPool>();
   const [amount, setAmount] = useState<string>('1');
   const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [tokenVerifiers, setTokenVerifiers] = useState<IVerifier[]>([]);
   const [recipient, setRecipient] = useState<string>('');
@@ -53,7 +53,7 @@ export const TransferForm: React.FC = () => {
       return;
     }
     setPayloadMissingFields(
-      !recipient || !amount || !pool || (!isFungible() && !tokenIndex)
+      !recipient || !amount || !pool || (!isFungible() && !tokenIndex),
     );
     if (decimalAmount === undefined)
       setDecimalAmount(amountToDecimal('1', pool?.decimals));
@@ -129,7 +129,7 @@ export const TransferForm: React.FC = () => {
   };
 
   const handleTokenIndexChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     setTokenIndex(event.target.value);
   };
@@ -161,7 +161,7 @@ export const TransferForm: React.FC = () => {
                 onChange={(e) => {
                   setPool(tokenPools.find((t) => t.id === e.target.value));
                   setPoolObject(
-                    tokenPools.find((t) => t.id === e.target.value)
+                    tokenPools.find((t) => t.id === e.target.value),
                   );
                 }}
               >
@@ -193,9 +193,9 @@ export const TransferForm: React.FC = () => {
               renderInput={(params) => (
                 <TextField {...params} label={t('tokenRecipient')} />
               )}
-              onInputChange={(event, value) => {
+              onInputChange={(_, value) => {
                 const addressFound = tokenVerifiers.find(
-                  (tv) => tv.did === value
+                  (tv) => tv.did === value,
                 );
                 setRecipient(addressFound ? addressFound.value : value);
               }}

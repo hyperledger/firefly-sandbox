@@ -18,7 +18,7 @@ test('amountToDecimal() should be padded by correct number of decimals', () => {
   expect(amountToDecimal(oneDecimal, 10)).toEqual('1234567891000000000');
   expect(amountToDecimal(oneDecimal, 15)).toEqual('123456789100000000000000');
   expect(amountToDecimal(oneDecimal, 18)).toEqual(
-    '123456789100000000000000000'
+    '123456789100000000000000000',
   );
 
   const multipleDecimals = '123456789.10505';
@@ -28,10 +28,10 @@ test('amountToDecimal() should be padded by correct number of decimals', () => {
   expect(amountToDecimal(multipleDecimals, 5)).toEqual('12345678910505');
   expect(amountToDecimal(multipleDecimals, 10)).toEqual('1234567891050500000');
   expect(amountToDecimal(multipleDecimals, 15)).toEqual(
-    '123456789105050000000000'
+    '123456789105050000000000',
   );
   expect(amountToDecimal(multipleDecimals, 18)).toEqual(
-    '123456789105050000000000000'
+    '123456789105050000000000000',
   );
 
   const invalidAmount = '1.1.1';
@@ -58,21 +58,21 @@ test('decimalToAmount() should remove correct number of decimals', () => {
   expect(decimalToAmount('1234567891000000000', 10)).toEqual(oneDecimal);
   expect(decimalToAmount('123456789100000000000000', 15)).toEqual(oneDecimal);
   expect(decimalToAmount('123456789100000000000000000', 18)).toEqual(
-    oneDecimal
+    oneDecimal,
   );
 
   const multipleDecimals = '123456789.10505';
   expect(decimalToAmount(multipleDecimals, undefined)).toEqual(
-    multipleDecimals
+    multipleDecimals,
   );
   expect(decimalToAmount(multipleDecimals, -1)).toEqual(multipleDecimals);
   expect(decimalToAmount(multipleDecimals, 0)).toEqual(multipleDecimals);
   expect(decimalToAmount('12345678910505', 5)).toEqual(multipleDecimals);
   expect(decimalToAmount('1234567891050500000', 10)).toEqual(multipleDecimals);
   expect(decimalToAmount('123456789105050000000000', 15)).toEqual(
-    multipleDecimals
+    multipleDecimals,
   );
   expect(decimalToAmount('123456789105050000000000000', 18)).toEqual(
-    multipleDecimals
+    multipleDecimals,
   );
 });

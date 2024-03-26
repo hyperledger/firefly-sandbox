@@ -35,7 +35,7 @@ import {
 
 const sandboxNamespaceAtom = atomWithStorage(
   SANDBOX_LOCAL_STORAGE_ITEM_NAME,
-  ''
+  '',
 );
 export const MAX_FORM_ROWS = 10;
 
@@ -59,7 +59,7 @@ function App() {
   const [tokensDisabled, setTokensDisabled] = useState(false);
   const [blockchainPlugin, setBlockchainPlugin] = useState('');
   const [tutorialSections, setTutorialSections] = useState<ITutorialSection[]>(
-    []
+    [],
   );
 
   const changeNamespace = (ns: string) => {
@@ -97,14 +97,14 @@ function App() {
                   setSelfIdentity({
                     ...orgResponse,
                     ethereum_address: verifierRes.find(
-                      (verifier: IVerifier) => verifier.did === orgResponse.did
+                      (verifier: IVerifier) => verifier.did === orgResponse.did,
                     )?.value,
                   });
                 })
                 .catch((err) => {
                   reportFetchError(err);
                 });
-            }
+            },
           );
         } else {
           setTutorialSections(GatewayTutorialSections);
@@ -116,9 +116,9 @@ function App() {
             setBlockchainPlugin(
               pluginsResponse.blockchain.length > 0
                 ? pluginsResponse.blockchain[0].pluginType
-                : ''
+                : '',
             );
-          }
+          },
         );
       })
       .finally(() => {

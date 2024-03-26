@@ -427,7 +427,7 @@ export const FF_EVENTS_CATEGORY_MAP: {
             {event.batch.manifest.messages.map(
               (m: { hash: string; id: string }, idx: number) => (
                 <HashPopover key={idx} shortHash address={m.id} />
-              )
+              ),
             )}
           </>
         ) : (

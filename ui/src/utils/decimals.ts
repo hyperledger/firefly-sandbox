@@ -1,6 +1,6 @@
 export const amountToDecimal = (
   amount: string,
-  decimals: number | undefined
+  decimals: number | undefined,
 ): string | undefined => {
   // If decimals is undefined
   if (decimals === undefined) return undefined;
@@ -26,7 +26,7 @@ export const amountToDecimal = (
 
 export const decimalToAmount = (
   amount: string,
-  decimals: number | undefined
+  decimals: number | undefined,
 ) => {
   // If pool doesn't support decimals, return normal amount
   if (decimals === -1 || decimals === undefined) return amount;

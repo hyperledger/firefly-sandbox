@@ -1,12 +1,12 @@
 export const fetchWithCredentials = (
   resource: string,
-  options?: RequestInit
+  options?: RequestInit,
 ): Promise<Response> => {
   const url = new URL(
-    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`
+    `${window.location.protocol}//${window.location.hostname}:${window.location.port}${resource}`,
   );
   const currentNamespace = localStorage.getItem(
-    SANDBOX_LOCAL_STORAGE_ITEM_NAME
+    SANDBOX_LOCAL_STORAGE_ITEM_NAME,
   );
 
   if (typeof currentNamespace === 'string' && currentNamespace) {
@@ -33,8 +33,7 @@ export const fetchCatcher = async (resource: string): Promise<any> => {
 };
 
 export const summarizeFetchError = async (
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  errOrResponse: any
+  errOrResponse: any,
 ): Promise<string> => {
   console.log('Fetch error', errOrResponse);
   let message = 'Fetch failed';

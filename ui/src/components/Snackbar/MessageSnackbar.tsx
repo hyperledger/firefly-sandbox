@@ -43,7 +43,7 @@ export const MessageSnackbar: React.FC<MessageSnackbarProps> = ({
     setOpen(false);
     timeoutRef.current = window.setTimeout(
       () => setMessage(''),
-      TRANSITION_TIMEOUT
+      TRANSITION_TIMEOUT,
     );
   };
 

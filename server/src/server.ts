@@ -11,7 +11,7 @@ import { ContractsController, ContractsTemplateController } from './controllers/
 import { MessagesController, MessagesTemplateController } from './controllers/messages';
 import { TokensController, TokensTemplateController } from './controllers/tokens';
 import { SimpleWebSocket } from './controllers/websocket';
-import { genOpenAPI, WebsocketHandler } from './utils';
+import { WebsocketHandler } from './utils';
 import { DatatypesController, DatatypesTemplateController } from './controllers/datatypes';
 
 const app = express();
@@ -40,14 +40,6 @@ const wsConfig = {
 
 useExpressServer(app, serverOptions);
 wsConfig.websockets.forEach((w) => new w().init(wsConfig.prefix, wsConfig.handler));
-
-const api = genOpenAPI(serverOptions);
-
-app.use('/api', swaggerUi.serve);
-app.get('/api', swaggerUi.setup(api));
-app.get('/api-json', (req, res) => {
-  res.type('text').send(JSON.stringify(api, null, 2));
-});
 
 const UI_PATH = process.env.UI_PATH;
 if (UI_PATH) {

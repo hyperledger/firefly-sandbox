@@ -115,7 +115,7 @@ export const TransactionAccordion: React.FC<Props> = ({
                 <Grid item xs={6}>
                   <FFAccordionText
                     text={t(
-                      FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS].nicename
+                      FF_EVENTS_CATEGORY_MAP[e.type as FF_EVENTS].nicename,
                     )}
                     color={'primary'}
                     isBold
@@ -136,7 +136,7 @@ export const TransactionAccordion: React.FC<Props> = ({
                     (d) =>
                       d.label !== '' && (
                         <FFListItem key={d.label.toString()} item={d} />
-                      )
+                      ),
                   )}
               </Grid>
               {idx !== value.events.length - 1 && <Divider />}

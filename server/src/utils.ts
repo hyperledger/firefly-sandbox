@@ -1,9 +1,6 @@
 import * as http from 'http';
 import { Duplex } from 'stream';
-import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-controllers';
-import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
-import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
 import {
   FireFlyCreateOptions,
   FireFlyDataRequest,
@@ -31,18 +28,6 @@ export function getFireflyOptions(publish?: boolean): FireFlyCreateOptions {
   return { publish: publish };
 }
 
-export function genOpenAPI(options: RoutingControllersOptions) {
-  return routingControllersToSpec(getMetadataArgsStorage(), options, {
-    info: {
-      title: 'FireFly Sandbox - Backend Server',
-      version: '1.0.0',
-    },
-    components: {
-      schemas: validationMetadatasToSchemas({ refPointerPrefix: '#/components/schemas/' }),
-    },
-  });
-}
-
 export class WebsocketHandler {
   websockets = new Map<string, WebSocketServer>();
 
@@ -63,21 +48,6 @@ export class WebsocketHandler {
     });
     return true;
   }
-}
-
-// Decorator for annotating a request that takes in a body of type multipart/form-data
-export function FormDataSchema(schemaClass: any) {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-    OpenAPI({
-      requestBody: {
-        content: {
-          'multipart/form-data': {
-            schema: { $ref: '#/components/schemas/' + schemaClass.name },
-          },
-        },
-      },
-    })(target, propertyKey, descriptor);
-  };
 }
 
 export function formatTemplate(template: string) {

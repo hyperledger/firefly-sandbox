@@ -1,8 +1,8 @@
 import { Grid, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import React, { PropsWithChildren } from 'react';
 import { DEFAULT_BORDER_RADIUS } from '../../theme';
 
-interface Props {
+interface Props extends PropsWithChildren {
   header: string;
 }
 

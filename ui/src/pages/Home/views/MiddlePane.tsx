@@ -127,7 +127,7 @@ export const MiddlePane = () => {
                 fontSize: '16px',
               }}
             >
-              {t('applicationCode')}
+              {t('applicationCode') as string}
             </Typography>
             {/* Header */}
             <Grid container item alignItems="center">
@@ -136,7 +136,7 @@ export const MiddlePane = () => {
                 color="text.secondary"
                 sx={{ fontSize: '12px' }}
               >
-                {t('appCodeInstructions')}
+                {t('appCodeInstructions') as string}
               </Typography>
             </Grid>
           </Grid>
@@ -205,7 +205,7 @@ export const MiddlePane = () => {
                 fontSize: '16px',
               }}
             >
-              {t('serverResponse')}
+              {t('serverResponse') as string}
             </Typography>
 
             {apiStatus?.status && (

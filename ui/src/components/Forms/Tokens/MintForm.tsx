@@ -35,7 +35,7 @@ export const MintForm: React.FC = () => {
   const [amount, setAmount] = useState<string>('1');
   const [tokenIndex, setTokenIndex] = useState<string>('1');
   const [decimalAmount, setDecimalAmount] = useState<string | undefined>(
-    undefined
+    undefined,
   );
 
   const [isMounted, setIsMounted] = useState(false);
@@ -111,7 +111,7 @@ export const MintForm: React.FC = () => {
   };
 
   const handleTokenIndexChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     if (
       !pool ||
@@ -142,7 +142,7 @@ export const MintForm: React.FC = () => {
                 onChange={(e) => {
                   setPool(tokenPools.find((t) => t.id === e.target.value));
                   setPoolObject(
-                    tokenPools.find((t) => t.id === e.target.value)
+                    tokenPools.find((t) => t.id === e.target.value),
                   );
                 }}
               >

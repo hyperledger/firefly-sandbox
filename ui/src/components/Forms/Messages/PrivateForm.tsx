@@ -114,7 +114,7 @@ export const PrivateForm: React.FC<Props> = ({
   };
 
   const handleRecipientChange = (
-    event: SelectChangeEvent<typeof recipients>
+    event: SelectChangeEvent<typeof recipients>,
   ) => {
     const {
       target: { value },

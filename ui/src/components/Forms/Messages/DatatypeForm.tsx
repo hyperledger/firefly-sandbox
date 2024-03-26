@@ -49,7 +49,7 @@ export const DatatypeForm: React.FC = () => {
   const [version, setVersion] = useState<string>('');
   const [schema, setSchema] = useState<object>(DEFAULT_DATATYPE_SCHEMA);
   const [schemaString, setSchemaString] = useState<string>(
-    JSON.stringify(DEFAULT_DATATYPE_SCHEMA, null, 2)
+    JSON.stringify(DEFAULT_DATATYPE_SCHEMA, null, 2),
   );
 
   useEffect(() => {

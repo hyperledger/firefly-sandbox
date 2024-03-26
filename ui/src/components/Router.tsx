@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter, useRoutes } from 'react-router-dom';
 import { AppWrapper } from '../AppWrapper';
 import { HomeRoutes } from '../pages/Home/Routes';

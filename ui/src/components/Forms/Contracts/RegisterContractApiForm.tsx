@@ -155,7 +155,7 @@ export const RegisterContractApiForm: React.FC = () => {
                   setNameError(
                     t('form.validation.invalidFFField', {
                       field: t('form.contracts.apiEndpointName'),
-                    })
+                    }),
                   );
                 } else {
                   setNameError('');
@@ -180,7 +180,7 @@ export const RegisterContractApiForm: React.FC = () => {
                     setContractAddressError(t(''));
                   } else if (!isValidAddress(newValue)) {
                     setContractAddressError(
-                      t('form.validation.invalidAddress')
+                      t('form.validation.invalidAddress'),
                     );
                   } else {
                     setContractAddressError('');

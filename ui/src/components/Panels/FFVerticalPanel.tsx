@@ -1,6 +1,7 @@
 import { Grid, useTheme } from '@mui/material';
+import { PropsWithChildren } from 'react';
 
-export const FFVerticalPanel: React.FC = ({ children }) => {
+export const FFVerticalPanel: React.FC<PropsWithChildren> = ({ children }) => {
   const theme = useTheme();
 
   return (

@@ -2,9 +2,9 @@ import { styled } from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Navigate,
   Outlet,
   useLocation,
+  useNavigate,
   useSearchParams,
 } from 'react-router-dom';
 import { Header } from './components/Header';
@@ -46,6 +46,7 @@ export const DEFAULT_GATEWAY_ACTION = [
 ];
 
 export const AppWrapper: React.FC = () => {
+  const navigate = useNavigate();
   const { pathname, search } = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t } = useTranslation();
@@ -57,13 +58,13 @@ export const AppWrapper: React.FC = () => {
   const [isBlob, setIsBlob] = useState<boolean>(false);
   const [formObject, setFormObject] = useState<ITutorial>();
   const [logHistory, setLogHistory] = useState<Map<string, IEventHistoryItem>>(
-    new Map()
+    new Map(),
   );
   const [awaitedEventID, setAwaitedEventID] = useState<string | undefined>(
-    undefined
+    undefined,
   );
   const [poolObject, setPoolObject] = useState<ITokenPool | undefined>(
-    undefined
+    undefined,
   );
   const [refreshBalances, setRefreshBalances] = useState(new Date().toString());
   const [refreshAPIs, setRefreshAPIs] = useState(new Date().toString());
@@ -76,11 +77,11 @@ export const AppWrapper: React.FC = () => {
   useEffect(() => {
     if (action && isValidAction(action)) {
       const section = TutorialSections.find(
-        (ts) => ts.category === getValidAction(action)[0]
+        (ts) => ts.category === getValidAction(action)[0],
       );
       if (section) {
         const tutorial = section.tutorials.find(
-          (t) => t.formID === getValidAction(action)[1]
+          (t) => t.formID === getValidAction(action)[1],
         );
         setFormObject(tutorial);
         setPayloadMissingFields(false);
@@ -129,7 +130,7 @@ export const AppWrapper: React.FC = () => {
     const categoryID = validAction[0];
     if (
       !Object.values(TUTORIAL_CATEGORIES).includes(
-        categoryID as TUTORIAL_CATEGORIES
+        categoryID as TUTORIAL_CATEGORIES,
       )
     ) {
       return false;
@@ -186,7 +187,7 @@ export const AppWrapper: React.FC = () => {
     setLogHistory((logHistory) => {
       // Must deep copy map since it has nested json data
       const deepCopyMap: Map<string, IEventHistoryItem> = new Map(
-        JSON.parse(JSON.stringify(Array.from(logHistory)))
+        JSON.parse(JSON.stringify(Array.from(logHistory))),
       );
       const txMap = deepCopyMap.get(event.tx);
 
@@ -204,7 +205,7 @@ export const AppWrapper: React.FC = () => {
             showIcons: txMap.showIcons,
             showTxHash: txMap.showTxHash,
             txName: txMap.txName,
-          })
+          }),
         );
       }
 
@@ -228,7 +229,7 @@ export const AppWrapper: React.FC = () => {
             showIcons: false,
             showTxHash: false,
             txName: t('none'),
-          })
+          }),
         );
       }
 
@@ -236,7 +237,7 @@ export const AppWrapper: React.FC = () => {
         deepCopyMap.set(event.tx, {
           ...newEvent,
           showIcons: event.pool ? event.pool.dataSupport : true,
-        })
+        }),
       );
     });
   };
@@ -247,9 +248,11 @@ export const AppWrapper: React.FC = () => {
     }
   };
 
-  if (pathname === '/') {
-    return <Navigate to="/home" replace={true} />;
-  }
+  useEffect(() => {
+    if (pathname === '/') {
+      navigate('/home', { replace: true });
+    }
+  }, [pathname]);
 
   return (
     <RootDiv>

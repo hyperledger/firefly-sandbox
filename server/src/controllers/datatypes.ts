@@ -8,7 +8,6 @@ import {
   NotFoundError,
   QueryParam,
 } from 'routing-controllers';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import { AsyncResponse, DatatypeInterface } from '../interfaces';
 import { formatTemplate, quoteAndEscape as q } from '../utils';
@@ -17,11 +16,8 @@ import { formatTemplate, quoteAndEscape as q } from '../utils';
  * Datatypes - API Server
  */
 @JsonController('/datatypes')
-@OpenAPI({ tags: ['Datatypes'] })
 export class DatatypesController {
   @Get()
-  @ResponseSchema(DatatypeInterface, { isArray: true })
-  @OpenAPI({ summary: 'List all datatypes' })
   async getAllDatatypes(@QueryParam('ns') namespace: string): Promise<DatatypeInterface[]> {
     const firefly = getFireflyClient(namespace);
     const datatypes = await firefly.getDatatypes();
@@ -29,8 +25,6 @@ export class DatatypesController {
   }
 
   @Get('/:name/:version')
-  @ResponseSchema(DatatypeInterface)
-  @OpenAPI({ summary: 'List datatype by name and version' })
   async getAPI(
     @Param('name') name: string,
     @Param('version') version: string,
@@ -51,8 +45,6 @@ export class DatatypesController {
 
   @Post()
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Creates and broadcasts a new datatype' })
   async createDatatype(
     @Body() body: DatatypeInterface,
     @QueryParam('ns') namespace: string,
@@ -69,7 +61,6 @@ export class DatatypesController {
 }
 
 @JsonController('/datatypes/template')
-@OpenAPI({ tags: ['Datatypes'] })
 export class DatatypesTemplateController {
   @Get()
   createDatatypeTemplate() {

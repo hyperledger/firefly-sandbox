@@ -54,7 +54,7 @@ export const LeftPane = () => {
   useEffect(() => {
     if (formID && categoryID) {
       const tabIdx = tutorialSections.findIndex(
-        (t) => t.category === categoryID
+        (t) => t.category === categoryID,
       );
       if (tabIdx === -1) {
         // Category not found, set to default
@@ -69,12 +69,12 @@ export const LeftPane = () => {
   const handleTabChange = (_: React.SyntheticEvent, newTabIdx: number) => {
     setPoolObject(undefined);
     const selectedTutorial = tutorialSections.find(
-      (t) => t.category === tutorialSections[newTabIdx].category
+      (t) => t.category === tutorialSections[newTabIdx].category,
     );
     if (selectedTutorial) {
       setActionParam(
         selectedTutorial.category,
-        selectedTutorial.tutorials[0].formID
+        selectedTutorial.tutorials[0].formID,
       );
     } else {
       setActionParam(DEFAULT_ACTION[0], DEFAULT_ACTION[1]);
@@ -120,7 +120,7 @@ export const LeftPane = () => {
             {tutorialSections
               .filter(
                 (section) =>
-                  section.category === tutorialSections[tabIdx].category
+                  section.category === tutorialSections[tabIdx].category,
               )
               .map((ts) => {
                 return (

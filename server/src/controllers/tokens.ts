@@ -10,13 +10,11 @@ import {
   Param,
 } from 'routing-controllers';
 import { Request } from 'express';
-import { OpenAPI, ResponseSchema } from 'routing-controllers-openapi';
 import { plainToClassFromExist } from 'class-transformer';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
 import {
   FF_MESSAGES,
   formatTemplate,
-  FormDataSchema,
   getBroadcastMessageBody,
   getFireflyOptions,
   getPrivateMessageBody,
@@ -38,11 +36,8 @@ import {
  * Tokens - API Server
  */
 @JsonController('/tokens')
-@OpenAPI({ tags: ['Tokens'] })
 export class TokensController {
   @Get('/pools')
-  @ResponseSchema(TokenPool, { isArray: true })
-  @OpenAPI({ summary: 'List all token pools' })
   async tokenpools(@QueryParam('ns') namespace: string): Promise<TokenPool[]> {
     const firefly = getFireflyClient(namespace);
     const pools = await firefly.getTokenPools();
@@ -50,8 +45,6 @@ export class TokensController {
   }
 
   @Get('/pools/:id')
-  @ResponseSchema(TokenPool)
-  @OpenAPI({ summary: 'Look up a token pool by ID' })
   async tokenpool(
     @Param('id') id: string,
     @QueryParam('ns') namespace: string,
@@ -63,8 +56,6 @@ export class TokensController {
 
   @Post('/pools')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Create a token pool' })
   async createtokenpool(
     @Body() body: TokenPoolInput,
     @QueryParam('ns') namespace: string,
@@ -88,8 +79,6 @@ export class TokensController {
 
   @Post('/mint')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Mint tokens within a token pool' })
   async mint(
     @Body() body: TokenMintBurn,
     @QueryParam('ns') namespace: string,
@@ -113,9 +102,6 @@ export class TokensController {
 
   @Post('/mintblob')
   @HttpCode(202)
-  @FormDataSchema(MintBurnBlob)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Mint a token with a binary blob' })
   async mintblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -142,8 +128,6 @@ export class TokensController {
 
   @Post('/burn')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Burn tokens within a token pool' })
   async burn(
     @Body() body: TokenMintBurn,
     @QueryParam('ns') namespace: string,
@@ -167,9 +151,6 @@ export class TokensController {
 
   @Post('/burnblob')
   @HttpCode(202)
-  @FormDataSchema(MintBurnBlob)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Burn a token with a binary blob' })
   async burnblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -196,8 +177,6 @@ export class TokensController {
 
   @Post('/transfer')
   @HttpCode(202)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Transfer tokens within a token pool' })
   async transfer(
     @Body() body: TokenTransfer,
     @QueryParam('ns') namespace: string,
@@ -222,9 +201,6 @@ export class TokensController {
 
   @Post('/transferblob')
   @HttpCode(202)
-  @FormDataSchema(TransferBlob)
-  @ResponseSchema(AsyncResponse)
-  @OpenAPI({ summary: 'Transfer a token with a binary blob' })
   async transferblob(
     @Req() req: Request,
     @UploadedFile('file') file: Express.Multer.File,
@@ -251,8 +227,6 @@ export class TokensController {
   }
 
   @Get('/balances')
-  @ResponseSchema(TokenBalance, { isArray: true })
-  @OpenAPI({ summary: 'Query token balances' })
   async balances(
     @QueryParam('pool') pool: string,
     @QueryParam('key') key: string,
@@ -282,7 +256,6 @@ export class TokensController {
  * For demonstration purposes only.
  */
 @JsonController('/tokens/template')
-@OpenAPI({ tags: ['Tokens'] })
 export class TokensTemplateController {
   @Get('/pools')
   tokenpoolsTemplate() {

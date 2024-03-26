@@ -1,5 +1,8 @@
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -63,13 +66,18 @@ const DEFAULT_ABI_SCHEMA = [
 ];
 
 export const DefineInterfaceForm: React.FC = () => {
-  const { blockchainPlugin, setJsonPayload, setPayloadMissingFields } =
-    useContext(ApplicationContext);
+  const {
+    blockchainPlugin,
+    multiparty,
+    setJsonPayload,
+    setPayloadMissingFields,
+  } = useContext(ApplicationContext);
   const { t } = useTranslation();
   const theme = useTheme();
 
   const [interfaceFormat, setInterfaceFormat] = useState<string>('ffi');
   const [name, setName] = useState<string>('');
+  const [publish, setPublish] = useState<boolean>(true);
   const [schema, setSchema] = useState<object>(DEFAULT_FFI_SCHEMA);
   const { formID } = useContext(FormContext);
   const [schemaString, setSchemaString] = useState<string>(
@@ -90,8 +98,9 @@ export const DefineInterfaceForm: React.FC = () => {
       name,
       version,
       schema,
+      publish: multiparty ? publish : undefined,
     });
-  }, [interfaceFormat, schema, name, version, formID]);
+  }, [interfaceFormat, schema, name, version, formID, multiparty, publish]);
 
   useEffect(() => {
     blockchainPlugin === BLOCKCHAIN_TYPE.FABRIC && setInterfaceFormats(['ffi']);
@@ -181,6 +190,29 @@ export const DefineInterfaceForm: React.FC = () => {
             }}
           />
         </Grid>
+        {/* Publish */}
+        {multiparty && (
+          <Grid container item justifyContent="space-between" spacing={1}>
+            <Grid item xs={12}>
+              <FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={publish}
+                      onChange={() => {
+                        setPublish(!publish);
+                      }}
+                    />
+                  }
+                  label={t('publishToNetwork')}
+                />
+                <FormHelperText>
+                  {t('publishContractInterfaceHelperText')}
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

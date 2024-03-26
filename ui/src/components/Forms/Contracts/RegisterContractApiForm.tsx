@@ -1,5 +1,7 @@
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
   FormHelperText,
   Grid,
   InputLabel,
@@ -22,8 +24,12 @@ import { fetchCatcher } from '../../../utils/fetches';
 import { isValidFFName, isValidAddress } from '../../../utils/regex';
 
 export const RegisterContractApiForm: React.FC = () => {
-  const { blockchainPlugin, setJsonPayload, setPayloadMissingFields } =
-    useContext(ApplicationContext);
+  const {
+    blockchainPlugin,
+    multiparty,
+    setJsonPayload,
+    setPayloadMissingFields,
+  } = useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const { reportFetchError } = useContext(SnackbarContext);
   const { t } = useTranslation();
@@ -33,6 +39,7 @@ export const RegisterContractApiForm: React.FC = () => {
   >([]);
   const [contractInterfaceIdx, setContractInterfaceIdx] = useState<number>(0);
   const [name, setName] = useState<string>('');
+  const [publish, setPublish] = useState<boolean>(true);
   const [nameError, setNameError] = useState<string>('');
   const [chaincode, setChaincode] = useState<string>('');
   const [channel, setChannel] = useState<string>('');
@@ -64,6 +71,7 @@ export const RegisterContractApiForm: React.FC = () => {
         interfaceVersion:
           contractInterfaces[contractInterfaceIdx]?.version || '',
         address: contractAddress,
+        publish: multiparty ? publish : undefined,
       });
     } else {
       setJsonPayload({
@@ -74,6 +82,7 @@ export const RegisterContractApiForm: React.FC = () => {
         chaincode: chaincode,
         channel: channel,
         address: '',
+        publish: multiparty ? publish : undefined,
       });
     }
   }, [
@@ -84,6 +93,8 @@ export const RegisterContractApiForm: React.FC = () => {
     contractAddress,
     formID,
     blockchainPlugin,
+    multiparty,
+    publish,
   ]);
 
   useEffect(() => {
@@ -209,6 +220,29 @@ export const RegisterContractApiForm: React.FC = () => {
               </FormControl>
             </Grid>
           </>
+        )}
+        {/* Publish */}
+        {multiparty && (
+          <Grid container item justifyContent="space-between" spacing={1}>
+            <Grid item xs={12}>
+              <FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={publish}
+                      onChange={() => {
+                        setPublish(!publish);
+                      }}
+                    />
+                  }
+                  label={t('publishToNetwork')}
+                />
+                <FormHelperText>
+                  {t('publishContractAPIHelperText')}
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+          </Grid>
         )}
       </Grid>
     </Grid>

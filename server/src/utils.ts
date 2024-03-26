@@ -4,7 +4,11 @@ import { getMetadataArgsStorage, RoutingControllersOptions } from 'routing-contr
 import { OpenAPI, routingControllersToSpec } from 'routing-controllers-openapi';
 import { WebSocketServer } from 'ws';
 import { validationMetadatasToSchemas } from 'class-validator-jsonschema';
-import { FireFlyDataRequest, FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
+import {
+  FireFlyCreateOptions,
+  FireFlyDataRequest,
+  FireFlyTokenPoolResponse,
+} from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 import { BroadcastValue, PrivateValue } from './interfaces';
 
@@ -18,6 +22,13 @@ export enum FF_MESSAGES {
   PRIVATE = 'private',
   TRANSFER_PRIVATE = 'transfer_private',
   GROUP_INIT = 'groupinit',
+}
+
+export function getFireflyOptions(publish?: boolean): FireFlyCreateOptions {
+  if (publish === undefined) {
+    return {};
+  }
+  return { publish: publish };
 }
 
 export function genOpenAPI(options: RoutingControllersOptions) {
@@ -111,25 +122,33 @@ export function quoteAndEscape(varName: string, options?: QuoteOptions) {
   return result;
 }
 
-export function getBroadcastMessageBody(body: BroadcastValue, blobId?: string, messageType?: FF_MESSAGES) {
+export function getBroadcastMessageBody(
+  body: BroadcastValue,
+  blobId?: string,
+  messageType?: FF_MESSAGES,
+) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: messageType || undefined
+      type: messageType || undefined,
     },
     data: [dataBody],
   };
 }
 
-export function getPrivateMessageBody(body: PrivateValue, blobId?: string, messageType?: FF_MESSAGES) {
+export function getPrivateMessageBody(
+  body: PrivateValue,
+  blobId?: string,
+  messageType?: FF_MESSAGES,
+) {
   const dataBody = blobId ? { id: blobId } : getMessageBody(body);
   return {
     header: {
       tag: body.tag || undefined,
       topics: body.topic ? [body.topic] : undefined,
-      type: messageType || undefined
+      type: messageType || undefined,
     },
     group: {
       members: body.recipients.map((r) => ({ identity: r })),

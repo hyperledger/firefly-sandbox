@@ -153,6 +153,10 @@ export class TokenPoolInput {
   @IsString()
   @IsOptional()
   blockNumber?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  publish?: boolean;
 }
 
 export class TokenPool extends TokenPoolInput {
@@ -241,6 +245,10 @@ export class ContractInterface {
   @IsDefined()
   @JSONSchema({ type: 'object' })
   schema: any;
+
+  @IsBoolean()
+  @IsOptional()
+  publish?: boolean;
 }
 
 export class ContractInterfaceEvent {
@@ -269,6 +277,10 @@ export class ContractAPI {
   @IsString()
   @IsOptional()
   chaincode?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  publish?: boolean;
 }
 
 export class ContractAPIURLs {

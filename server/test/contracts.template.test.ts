@@ -17,6 +17,7 @@ describe('Templates: Smart Contracts', () => {
             name: 'simple-storage',
             version: '1.0',
             schema: [{ name: 'method1' }, { name: 'event1' }],
+            publish: undefined,
           }),
         ).toBe(
           formatTemplate(`
@@ -36,11 +37,26 @@ describe('Templates: Smart Contracts', () => {
           compiled({
             format: 'ffi',
             schema: { methods: [{ name: 'method1' }] },
+            publish: undefined,
           }),
         ).toBe(
           formatTemplate(`
             const ffi = {"methods" ... ethod1"}]};
             const result = await firefly.createContractInterface(ffi);
+            return { type: 'message', id: result.message };
+        `),
+        );
+
+        expect(
+          compiled({
+            format: 'ffi',
+            schema: { methods: [{ name: 'method1' }] },
+            publish: true,
+          }),
+        ).toBe(
+          formatTemplate(`
+            const ffi = {"methods" ... ethod1"}]};
+            const result = await firefly.createContractInterface(ffi, { publish: true });
             return { type: 'message', id: result.message };
         `),
         );
@@ -60,6 +76,7 @@ describe('Templates: Smart Contracts', () => {
             interfaceName: 'simple-storage',
             interfaceVersion: '1.0',
             address: '0x123',
+            publish: undefined,
           }),
         ).toBe(
           formatTemplate(`
@@ -73,6 +90,30 @@ describe('Templates: Smart Contracts', () => {
                 address: '0x123',
               },
             });
+            return { type: 'message', id: api.message };
+        `),
+        );
+
+        expect(
+          compiled({
+            name: 'api1',
+            interfaceName: 'simple-storage',
+            interfaceVersion: '1.0',
+            address: '0x123',
+            publish: false,
+          }),
+        ).toBe(
+          formatTemplate(`
+            const api = await firefly.createContractAPI({
+              name: 'api1',
+              interface: {
+                name: 'simple-storage',
+                version: '1.0',
+              },
+              location: {
+                address: '0x123',
+              },
+            }, { publish: false });
             return { type: 'message', id: api.message };
         `),
         );
@@ -94,6 +135,7 @@ describe('Templates: Smart Contracts', () => {
             chaincode: 'chaincode123',
             channel: 'channel123',
             address: undefined,
+            publish: undefined,
           }),
         ).toBe(
           formatTemplate(`

@@ -1,7 +1,11 @@
 import * as http from 'http';
 import { Duplex } from 'stream';
 import { WebSocketServer } from 'ws';
-import { FireFlyDataRequest, FireFlyTokenPoolResponse } from '@hyperledger/firefly-sdk';
+import {
+  FireFlyCreateOptions,
+  FireFlyDataRequest,
+  FireFlyTokenPoolResponse,
+} from '@hyperledger/firefly-sdk';
 import stripIndent = require('strip-indent');
 import { BroadcastValue, PrivateValue } from './interfaces';
 
@@ -15,6 +19,13 @@ export enum FF_MESSAGES {
   PRIVATE = 'private',
   TRANSFER_PRIVATE = 'transfer_private',
   GROUP_INIT = 'groupinit',
+}
+
+export function getFireflyOptions(publish?: boolean): FireFlyCreateOptions {
+  if (publish === undefined) {
+    return {};
+  }
+  return { publish: publish };
 }
 
 export class WebsocketHandler {

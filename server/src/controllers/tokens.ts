@@ -16,6 +16,7 @@ import {
   FF_MESSAGES,
   formatTemplate,
   getBroadcastMessageBody,
+  getFireflyOptions,
   getPrivateMessageBody,
   mapPool,
   quoteAndEscape as q,
@@ -61,15 +62,18 @@ export class TokensController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See TokensTemplateController and keep template code up to date.
-    const pool = await firefly.createTokenPool({
-      name: body.name,
-      symbol: body.symbol,
-      type: body.type,
-      config: {
-        address: body.address,
-        blockNumber: body.blockNumber,
+    const pool = await firefly.createTokenPool(
+      {
+        name: body.name,
+        symbol: body.symbol,
+        type: body.type,
+        config: {
+          address: body.address,
+          blockNumber: body.blockNumber,
+        },
       },
-    });
+      getFireflyOptions(body.publish),
+    );
     return { type: 'token_pool', id: pool.id };
   }
 
@@ -264,7 +268,7 @@ export class TokensTemplateController {
           <% print('address: ' + ${q('address')} + ',') } %>
           blockNumber: <%= ${q('blockNumber')} %>,
         }
-      });
+      }<% if (publish !== undefined) { %>, { publish: <%= publish %> }<% }%>);
       return { type: 'token_pool', id: pool.id };
     `);
   }

@@ -1,5 +1,8 @@
 import {
+  Checkbox,
   FormControl,
+  FormControlLabel,
+  FormHelperText,
   Grid,
   InputLabel,
   MenuItem,
@@ -15,12 +18,13 @@ import { DEFAULT_SPACING } from '../../../theme';
 
 export const PoolForm: React.FC = () => {
   const { t } = useTranslation();
-  const { setJsonPayload, setPayloadMissingFields } =
+  const { multiparty, setJsonPayload, setPayloadMissingFields } =
     useContext(ApplicationContext);
   const { formID } = useContext(FormContext);
   const [name, setName] = useState<string>('');
   const [symbol, setSymbol] = useState<string>('');
   const [address, setAddress] = useState<string | undefined>();
+  const [publish, setPublish] = useState<boolean>(true);
   const [blockNumber, setBlockNumber] = useState('0');
   const [type, setType] = useState<'fungible' | 'nonfungible'>('fungible');
 
@@ -38,8 +42,9 @@ export const PoolForm: React.FC = () => {
       type,
       address,
       blockNumber,
+      publish: multiparty ? publish : undefined,
     });
-  }, [name, symbol, type, address, formID, blockNumber]);
+  }, [name, symbol, type, address, formID, blockNumber, multiparty, publish]);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.value.indexOf(' ') < 0) {
@@ -128,6 +133,29 @@ export const PoolForm: React.FC = () => {
             />
           </Grid>
         </Grid>
+        {/* Publish */}
+        {multiparty && (
+          <Grid container item justifyContent="space-between" spacing={1}>
+            <Grid item xs={12}>
+              <FormControl>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={publish}
+                      onChange={() => {
+                        setPublish(!publish);
+                      }}
+                    />
+                  }
+                  label={t('publishToNetwork')}
+                />
+                <FormHelperText>
+                  {t('publishTokenPoolHelperText')}
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+          </Grid>
+        )}
       </Grid>
     </Grid>
   );

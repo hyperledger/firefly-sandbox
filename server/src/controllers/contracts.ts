@@ -9,7 +9,7 @@ import {
   QueryParam,
 } from 'routing-controllers';
 import { getFireflyClient } from '../clients/fireflySDKWrapper';
-import { formatTemplate, quoteAndEscape as q } from '../utils';
+import { formatTemplate, getFireflyOptions, quoteAndEscape as q } from '../utils';
 import {
   AsyncResponse,
   ContractAPI,
@@ -42,7 +42,7 @@ export class ContractsController {
             input: { abi: body.schema },
           })
         : body.schema;
-    const result = await firefly.createContractInterface(ffi);
+    const result = await firefly.createContractInterface(ffi, getFireflyOptions(body.publish));
     return { type: 'message', id: result.message };
   }
 
@@ -54,16 +54,19 @@ export class ContractsController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
-    const api = await firefly.createContractAPI({
-      name: body.name,
-      interface: {
-        name: body.interfaceName,
-        version: body.interfaceVersion,
+    const api = await firefly.createContractAPI(
+      {
+        name: body.name,
+        interface: {
+          name: body.interfaceName,
+          version: body.interfaceVersion,
+        },
+        location: {
+          address: body.address,
+        },
       },
-      location: {
-        address: body.address,
-      },
-    });
+      getFireflyOptions(body.publish),
+    );
     return { type: 'message', id: api.message };
   }
 
@@ -75,17 +78,20 @@ export class ContractsController {
   ): Promise<AsyncResponse> {
     const firefly = getFireflyClient(namespace);
     // See ContractsTemplateController and keep template code up to date.
-    const api = await firefly.createContractAPI({
-      name: body.name,
-      interface: {
-        name: body.interfaceName,
-        version: body.interfaceVersion,
+    const api = await firefly.createContractAPI(
+      {
+        name: body.name,
+        interface: {
+          name: body.interfaceName,
+          version: body.interfaceVersion,
+        },
+        location: {
+          chaincode: body.chaincode,
+          channel: body.channel,
+        },
       },
-      location: {
-        chaincode: body.chaincode,
-        channel: body.channel,
-      },
-    });
+      getFireflyOptions(body.publish),
+    );
     return { type: 'message', id: api.message };
   }
 
@@ -189,7 +195,7 @@ export class ContractsTemplateController {
           abi: <%= ${q('schema', { isObject: true, truncate: true })} %>,
         },
       })<% } else { %><%= ${q('schema', { isObject: true, truncate: true })} %><% } %>;
-      const result = await firefly.createContractInterface(ffi);
+      const result = await firefly.createContractInterface(ffi<% if (publish !== undefined) { %>, { publish: <%= publish %> }<% }%>);
       return { type: 'message', id: result.message };
     `);
   }
@@ -208,7 +214,7 @@ export class ContractsTemplateController {
           chaincode: <%= ${q('chaincode')} %>,
           channel: <%= ${q('channel')} %>,<% } %>
         },
-      });
+      }<% if (publish !== undefined) { %>, { publish: <%= publish %> }<% }%>);
       return { type: 'message', id: api.message };
     `);
   }

@@ -2,7 +2,7 @@
 
 ![version-ui](https://img.shields.io/github/package-json/v/hyperledger/firefly-sandbox?color=orange&filename=ui%2Fpackage.json&label=firefly-sandbox-ui)
 ![version-server](https://img.shields.io/github/package-json/v/hyperledger/firefly-sandbox?color=orange&filename=server%2Fpackage.json&label=firefly-sandbox-server)
-[![FireFly Documentation](https://img.shields.io/static/v1?label=FireFly&message=documentation&color=informational)](https://hyperledger.github.io/firefly//)
+[![FireFly Documentation](https://img.shields.io/static/v1?label=FireFly&message=documentation&color=informational)](https://hyperledger.github.io/firefly/)
 
 ![Hyperledger FireFly](./images/hyperledger_firefly_logo.png)
 
@@ -50,7 +50,7 @@ that may be helpful to reference:
 
 Interested in contributing to the community?
 
-Check out our [Contributor Guide](https://hyperledger.github.io/firefly/contributors/contributors.html), and welcome!
+Check out our [Contributor Guide](https://hyperledger.github.io/firefly/latest/contributors/contributors.html), and welcome!
 
 Please adhere to this project's [Code of Conduct](CODE_OF_CONDUCT.md).
 

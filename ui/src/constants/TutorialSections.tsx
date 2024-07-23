@@ -59,7 +59,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.BROADCAST,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/broadcast_data.html',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/broadcast_data.html',
         endpoint: SDK_PATHS.messagesBroadcast,
         form: <BroadcastForm />,
         runnable: true,
@@ -71,7 +71,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.PRIVATE,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/private_send.html',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/private_send.html',
         endpoint: SDK_PATHS.messagesPrivate,
         form: <PrivateForm />,
         runnable: true,
@@ -83,7 +83,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.DATATYPE,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/define_datatype.html',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/define_datatype.html',
         endpoint: SDK_PATHS.messagesDatatypes,
         form: <DatatypeForm />,
         runnable: true,
@@ -101,7 +101,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.POOL,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#create-a-pool',
         endpoint: SDK_PATHS.tokensPools,
         form: <PoolForm />,
         runnable: true,
@@ -113,7 +113,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.MINT,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html',
         endpoint: SDK_PATHS.tokensMint,
         form: <MintForm />,
         runnable: true,
@@ -125,7 +125,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.TRANSFER,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#transfer-tokens',
         endpoint: SDK_PATHS.tokensTransfer,
         form: <TransferForm />,
         runnable: true,
@@ -137,7 +137,7 @@ export const TutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.BURN,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#burn-tokens',
         endpoint: SDK_PATHS.tokensBurn,
         form: <BurnForm />,
         runnable: true,
@@ -154,7 +154,7 @@ export const TutorialSections: ITutorialSection[] = [
     tutorials: [
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#contract-deployment',
         form: <DeployContractForm />,
         formID: TUTORIAL_FORMS.DEPLOY_CONTRACT,
         shortInfo: 'deployContractInfo',
@@ -165,7 +165,7 @@ export const TutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
         endpoint: SDK_PATHS.contractsInterface,
         form: <DefineInterfaceForm />,
         formID: TUTORIAL_FORMS.DEFINE_CONTRACT_INTERFACE,
@@ -177,7 +177,7 @@ export const TutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
         endpoint: SDK_PATHS.contractsApi,
         form: <RegisterContractApiForm />,
         formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API,
@@ -189,7 +189,7 @@ export const TutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
         endpoint: SDK_PATHS.contractsListener,
         form: <RegisterContractApiListenerForm />,
         formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API_LISTENER,
@@ -211,7 +211,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.POOL,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#create-a-pool',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#create-a-pool',
         endpoint: SDK_PATHS.tokensPools,
         form: <PoolForm />,
         runnable: true,
@@ -223,7 +223,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.MINT,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html',
         endpoint: SDK_PATHS.tokensMint,
         form: <MintForm />,
         runnable: true,
@@ -235,7 +235,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.TRANSFER,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#transfer-tokens',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#transfer-tokens',
         endpoint: SDK_PATHS.tokensTransfer,
         form: <TransferForm />,
         runnable: true,
@@ -247,7 +247,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       {
         formID: TUTORIAL_FORMS.BURN,
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/mint_tokens.html#burn-tokens',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/mint_tokens.html#burn-tokens',
         endpoint: SDK_PATHS.tokensBurn,
         form: <BurnForm />,
         runnable: true,
@@ -264,7 +264,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
     tutorials: [
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#contract-deployment',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#contract-deployment',
         form: <DeployContractForm />,
         formID: TUTORIAL_FORMS.DEPLOY_CONTRACT,
         shortInfo: 'deployContractInfo',
@@ -275,7 +275,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#broadcast-the-contract-interface',
         endpoint: SDK_PATHS.contractsInterface,
         form: <DefineInterfaceForm />,
         formID: TUTORIAL_FORMS.DEFINE_CONTRACT_INTERFACE,
@@ -287,7 +287,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#create-an-http-api-for-the-contract',
         endpoint: SDK_PATHS.contractsApi,
         form: <RegisterContractApiForm />,
         formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API,
@@ -299,7 +299,7 @@ export const GatewayTutorialSections: ITutorialSection[] = [
       },
       {
         docsURL:
-          'https://hyperledger.github.io/firefly/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
+          'https://hyperledger.github.io/firefly/latest/gettingstarted/custom_contracts.html#create-a-blockchain-event-listener',
         endpoint: SDK_PATHS.contractsListener,
         form: <RegisterContractApiListenerForm />,
         formID: TUTORIAL_FORMS.REGISTER_CONTRACT_API_LISTENER,

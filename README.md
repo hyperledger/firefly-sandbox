@@ -21,6 +21,8 @@ exercise it using the sandbox.
 
 ## Running manually
 
+Prereq: Needs Node 22 LTS
+
 To run the application manually, start the server and the UI:
 
 ```

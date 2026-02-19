@@ -31,7 +31,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.3",
     "nanoid": "^3.3.2",
-    "npm": "^10.5.0",
+    "npm": "^11.6.4",
     "reflect-metadata": "^0.1.13",
     "routing-controllers": "^0.11.2",
     "run": "^1.4.0",

@@ -114,6 +114,7 @@ describe('Templates: Tokens', () => {
               header: {
                 tag: 'test-tag',
                 topics: ['test-topic'],
+                type: 'transfer_broadcast',
               },
               data: [{ id: data.id }],
             }
@@ -165,7 +166,7 @@ describe('Templates: Tokens', () => {
             tag: 'test-tag',
             topic: 'test-topic',
             filename: 'document.pdf',
-          }),
+          }).replace(/\s+/g, ' '),
         ).toBe(
           formatTemplate(`
           const data = await firefly.uploadDataBlob(
@@ -177,16 +178,17 @@ describe('Templates: Tokens', () => {
             const transfer = await firefly.burnTokens({
               pool: 'pool1',
               amount: '1',
-                tokenIndex: '1',,
+              tokenIndex: '1',
               message: {
                 header: {
                   tag: 'test-tag',
                   topics: ['test-topic'],
+                  type: 'transfer_broadcast',
                 },
                 data: [{ id: data.id }],
               }
             });
-            return { type: 'token_transfer', id: transfer.localId };`),
+            return { type: 'token_transfer', id: transfer.localId };`).replace(/\s+/g, ' '),
         );
       });
   });
@@ -235,7 +237,7 @@ describe('Templates: Tokens', () => {
             tag: 'test-tag',
             topic: 'test-topic',
             filename: 'document.pdf',
-          }),
+          }).replace(/\s+/g, ' '),
         ).toBe(
           formatTemplate(`
           const data = await firefly.uploadDataBlob(
@@ -247,17 +249,64 @@ describe('Templates: Tokens', () => {
             const transfer = await firefly.transferTokens({
               pool: 'pool1',
               amount: '1',
-                tokenIndex: '1',,
+              tokenIndex: '1',
               message: {
                 header: {
                   tag: 'test-tag',
                   topics: ['test-topic'],
+                  type: 'transfer_broadcast',
                 },
                 data: [{ id: data.id }],
               }
             });
             return { type: 'token_transfer', id: transfer.localId };
-        `),
+        `).replace(/\s+/g, ' '),
+        );
+      });
+  });
+  test('Transfer template - private', () => {
+    return request(server)
+      .get('/api/tokens/template/transfer')
+      .expect(200)
+      .expect((resp) => {
+        const compiled = _.template(resp.body);
+        expect(
+          compiled({
+            pool: 'pool1',
+            amount: 1,
+            tokenIndex: '1',
+            to: '0x1111',
+            messagingMethod: 'private',
+            tag: 'test-tag',
+            topic: 'test-topic',
+            value: 'hello',
+            jsonValue: null,
+            recipients: ['member1', 'member2'],
+          }).replace(/\s+/g, ' '),
+        ).toBe(
+          formatTemplate(`
+            const transfer = await firefly.transferTokens({
+              pool: 'pool1',
+              to: '0x1111',
+              tokenIndex: '1',
+              amount: '1',
+              message: {
+                header: {
+                  tag: 'test-tag',
+                  topics: ['test-topic'],
+                  type: 'transfer_private',
+                },
+                group: {
+                  members: [
+                    { identity: 'member1' },
+                    { identity: 'member2' },
+                  ],
+                },
+                data: [ { value: 'hello' } ],
+              }
+            });
+            return { type: 'token_transfer', id: transfer.localId };
+        `).replace(/\s+/g, ' '),
         );
       });
   });

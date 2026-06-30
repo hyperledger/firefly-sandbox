@@ -12,7 +12,7 @@ export const ResourceUrls = {
     'https://hyperledger.github.io/firefly/latest/tutorials/custom_contracts/ethereum#contract-deployment',
   fireflyTutorialDeployContractFabric:
     'https://hyperledger.github.io/firefly/latest/tutorials/custom_contracts/fabric',
-  sandBoxGH: 'https://github.com/hyperledger/firefly-sandbox',
+  sandBoxGH: 'https://github.com/hyperledger-firefly/firefly-sandbox',
   solidityABI:
     'https://docs.ethers.io/v5/api/utils/abi/formats/#abi-formats--solidity',
   solidityInstall:

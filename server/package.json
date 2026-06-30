@@ -17,14 +17,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hyperledger/firefly-sandbox.git"
+    "url": "git+https://github.com/hyperledger-firefly/firefly-sandbox.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/hyperledger/firefly-sandbox/issues"
+    "url": "https://github.com/hyperledger-firefly/firefly-sandbox/issues"
   },
-  "homepage": "https://github.com/hyperledger/firefly-sandbox#readme",
+  "homepage": "https://github.com/hyperledger-firefly/firefly-sandbox#readme",
   "dependencies": {
     "@hyperledger/firefly-sdk": "^1.3.0",
     "body-parser": "^1.20.0",

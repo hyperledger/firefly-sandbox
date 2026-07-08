@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:26-alpine
 
 COPY --chown=node:node . /app
 

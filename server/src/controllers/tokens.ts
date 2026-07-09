@@ -286,6 +286,7 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            type: <%= messagingMethod === 'private' ? "'transfer_private'" : "'transfer_broadcast'" %>,
           },<% if(messagingMethod === 'private') { %>
           group: {
             members: [<% for (const r of recipients) { %>
@@ -336,6 +337,7 @@ export class TokensTemplateController {
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          type: 'transfer_broadcast',
         },
         data: [{ id: data.id }],
       }<% } else { %>
@@ -343,6 +345,7 @@ export class TokensTemplateController {
         header: {
           tag: <%= tag ? ${q('tag')} : 'undefined' %>,
           topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+          type: 'transfer_private',
         },
         group: {
           members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
@@ -366,6 +369,7 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            type: <%= messagingMethod === 'private' ? "'transfer_private'" : "'transfer_broadcast'" %>,
           },<% if(messagingMethod === 'private') { %>
             group: {
               members: [<% for (const r of recipients) { %>
@@ -411,11 +415,12 @@ export class TokensTemplateController {
         amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
           <% print('tokenIndex: ' + ${q(
             'tokenIndex',
-          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
+          )}) } %>,<% if(messagingMethod === 'broadcast') { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            type: 'transfer_broadcast',
           },
           data: [{ id: data.id }],
         }<% } else { %>
@@ -423,6 +428,7 @@ export class TokensTemplateController {
             header: {
               tag: <%= tag ? ${q('tag')} : 'undefined' %>,
               topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+              type: 'transfer_private',
             },
             group: {
               members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
@@ -447,6 +453,7 @@ export class TokensTemplateController {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            type: <%= messagingMethod === 'private' ? "'transfer_private'" : "'transfer_broadcast'" %>,
           },<% if(messagingMethod === 'private') { %>
             group: {
               members: [<% for (const r of recipients) { %>
@@ -464,13 +471,12 @@ export class TokensTemplateController {
                 truncate: true,
               })} : ${q('value')}%>
             }
-              <% } else { %>
-                { value: <%= jsonValue ? ${q('jsonValue', {
-                  isObject: true,
-                  truncate: true,
-                })} : ${q('value')}%> }
-            <%} 
-          %>],
+          <% } else { %>
+            { value: <%= jsonValue ? ${q('jsonValue', {
+              isObject: true,
+              truncate: true,
+            })} : ${q('value')}%> }
+          <% } %>],
         }
         <% } %>
       });
@@ -492,11 +498,12 @@ export class TokensTemplateController {
         amount: <%= ${q('amount')} %>,<% if (tokenIndex) { %>
           <% print('tokenIndex: ' + ${q(
             'tokenIndex',
-          )} + ',') } %>,<% if(messagingMethod === 'broadcast') { %>
+          )}) } %>,<% if(messagingMethod === 'broadcast') { %>
         message: {
           header: {
             tag: <%= tag ? ${q('tag')} : 'undefined' %>,
             topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+            type: 'transfer_broadcast',
           },
           data: [{ id: data.id }],
         }<% } else { %>
@@ -504,6 +511,7 @@ export class TokensTemplateController {
             header: {
               tag: <%= tag ? ${q('tag')} : 'undefined' %>,
               topics: <%= topic ? ('[' + ${q('topic')} + ']') : 'undefined' %>,
+              type: 'transfer_private',
             },
             group: {
               members: [<%= recipients.map((r) => '{ identity: ' + ${q('r')} + ' }').join(', ') %>],
